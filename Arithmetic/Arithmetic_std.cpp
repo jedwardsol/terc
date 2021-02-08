@@ -4,7 +4,7 @@
 
 std::string  to_string(const trit &t)
 {
-    return to_char(t);
+    return std::string(1,to_char(t));
 
 }
 

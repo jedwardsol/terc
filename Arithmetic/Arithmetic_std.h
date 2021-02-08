@@ -5,6 +5,8 @@
 #include <iostream>
 
 #include "Arithmetic.h"
+#include "trit.h"
+#include "tryte.h"
 
 namespace std
 {

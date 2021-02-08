@@ -15,25 +15,11 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Arithmetic.cpp">
+    <ClCompile Include="unittests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Arithmetic_std.cpp">
+    <ClCompile Include="trit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Arithmetic.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Arithmetic_std.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="trit.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="tryte.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>
