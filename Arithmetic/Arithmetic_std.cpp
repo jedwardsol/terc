@@ -25,6 +25,12 @@ std::string  to_string(const tryte &t)
 
 
 
+std::ostream &operator<<(std::ostream &out, const trit &t)
+{
+    out << to_char(t);
+    return out;
+}
+
 std::ostream &operator<<(std::ostream &out, const tryte &t)
 {
     out << to_string(t) << '(' << static_cast<int>(t) << ')';

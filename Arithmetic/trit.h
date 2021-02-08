@@ -56,4 +56,12 @@ private:
 
 
 
+constexpr inline bool operator< (const trit &lhs, const trit &rhs){ return   lhs.t < rhs.t;}
+constexpr inline bool operator> (const trit &lhs, const trit &rhs){ return   rhs < lhs;    }
+constexpr inline bool operator<=(const trit &lhs, const trit &rhs){ return !(lhs  > rhs);  }
+constexpr inline bool operator>=(const trit &lhs, const trit &rhs){ return !(lhs  < rhs);  }
+constexpr inline bool operator==(const trit &lhs, const trit &rhs){ return lhs.t == rhs.t; }
+constexpr inline bool operator!=(const trit &lhs, const trit &rhs){ return !(lhs == rhs);  }
+
+
 static_assert(sizeof(trit) ==1);
