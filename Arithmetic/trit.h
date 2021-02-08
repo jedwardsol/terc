@@ -146,12 +146,13 @@ static_assert(sizeof(trit) ==1);
 
 
 
+constexpr inline bool operator==(const trit &lhs, const trit &rhs) noexcept { return lhs.t == rhs.t; }
+constexpr inline bool operator!=(const trit &lhs, const trit &rhs) noexcept { return !(lhs == rhs);  }
+
 constexpr inline bool operator< (const trit &lhs, const trit &rhs) noexcept { return   lhs.t < rhs.t;}
 constexpr inline bool operator> (const trit &lhs, const trit &rhs) noexcept { return   rhs < lhs;    }
 constexpr inline bool operator<=(const trit &lhs, const trit &rhs) noexcept { return !(lhs  > rhs);  }
 constexpr inline bool operator>=(const trit &lhs, const trit &rhs) noexcept { return !(lhs  < rhs);  }
-constexpr inline bool operator==(const trit &lhs, const trit &rhs) noexcept { return lhs.t == rhs.t; }
-constexpr inline bool operator!=(const trit &lhs, const trit &rhs) noexcept { return !(lhs == rhs);  }
 
 
 constexpr inline trit operator+(trit lhs, const trit &rhs){   lhs += rhs; return lhs; }

@@ -231,8 +231,118 @@ TEST(TryteTest, ToString)
         str << t ;
 
         EXPECT_EQ   (str.str(),  test.s2 )  << "stream "s + std::to_string( test.i);
-
-
     }
 }
+
+
+TEST(TryteTest, equality) 
+{
+    tryte    l1{-200};
+    tryte    l2{ 300};
+    tryte    l3{   0};
+
+    tryte    r1{-200};
+    tryte    r2{ 300};
+    tryte    r3{   0};
+
+    EXPECT_EQ(l1,r1);
+    EXPECT_NE(l1,r2);
+    EXPECT_NE(l1,r3);
+
+    EXPECT_NE(l2,r1);
+    EXPECT_EQ(l2,r2);
+    EXPECT_NE(l2,r3);
+
+    EXPECT_NE(l3,r1);
+    EXPECT_NE(l3,r2);
+    EXPECT_EQ(l3,r3);
+}
+
+
+
+TEST(TryteTest, lessthan) 
+{
+    tryte    ln{-201};
+    tryte    lz{   0};
+    tryte    lp{  99};
+
+    tryte    rn{-201};
+    tryte    rz{   0};
+    tryte    rp{  99};
+
+    EXPECT_LE(ln,rn);
+    EXPECT_LE(ln,rz);
+    EXPECT_LT(ln,rz);
+    EXPECT_LE(ln,rp);
+    EXPECT_LT(ln,rp);
+
+    EXPECT_LE(lz,rz);
+    EXPECT_LE(lz,rp);
+    EXPECT_LT(lz,rp);
+
+    EXPECT_LE(lp,rp);
+}
+
+TEST(TryteTest, greaterthan) 
+{
+    tryte    ln{-201};
+    tryte    lz{   0};
+    tryte    lp{  99};
+
+    tryte    rn{-201};
+    tryte    rz{   0};
+    tryte    rp{  99};
+
+
+    EXPECT_GE(ln,rn);
+
+    EXPECT_GE(lz,rz);
+    EXPECT_GE(lz,rn);
+    EXPECT_GT(lz,rn);
+
+
+    EXPECT_GE(lp,rn);
+    EXPECT_GT(lp,rn);
+    EXPECT_GE(lp,rz);
+    EXPECT_GT(lp,rz);
+    EXPECT_GE(lp,rp);
+}
+
+
+TEST(TryteTest, allCompare) 
+{
+    for(int i =std::numeric_limits<tryte>::min();
+            i<=std::numeric_limits<tryte>::max();
+            i++)
+    {
+        for(int j =std::numeric_limits<tryte>::min();
+                j<=std::numeric_limits<tryte>::max();
+                j++)
+        {
+            tryte l{i};
+            tryte r{j};
+
+            if( i < j)
+            {
+                EXPECT_LT(l,r);
+                EXPECT_LE(l,r);
+                EXPECT_NE(l,r);
+            }
+            else if( i == j)
+            {
+                EXPECT_LE(l,r);
+                EXPECT_EQ(l,r);
+                EXPECT_GE(l,r);
+            }
+            else 
+            {
+                EXPECT_NE(l,r);
+                EXPECT_GE(l,r);
+                EXPECT_GT(l,r);
+            }
+        }
+    }
+}
+
+
 

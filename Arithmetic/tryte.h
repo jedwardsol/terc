@@ -56,11 +56,8 @@ public:
 			}
  
 			i /= 3;
-
 		}
 		
-
-
 		if(negative)
 		{
 			*this=-*this;
@@ -73,8 +70,6 @@ public:
     tryte(      tryte&&)            noexcept = default;
     tryte &operator=(const tryte&)  noexcept = default;
     tryte &operator=(      tryte&&) noexcept = default;
-
-
 
 
 
@@ -139,4 +134,35 @@ public:
 static_assert(sizeof(tryte)==2);
 
 
+constexpr inline bool operator==(const tryte &lhs, const tryte &rhs) noexcept 
+{ 
+	return    lhs.t5 == rhs.t5
+	       && lhs.t4 == rhs.t4
+	       && lhs.t3 == rhs.t3
+	       && lhs.t2 == rhs.t2
+	       && lhs.t1 == rhs.t1
+	       && lhs.t0 == rhs.t0;
+}
+constexpr inline bool operator!=(const tryte &lhs, const tryte &rhs) noexcept { return !(lhs == rhs);  }
 
+constexpr inline bool operator< (const tryte &lhs, const tryte &rhs) noexcept 
+{ 
+	return  (lhs.t5  < rhs.t5) ? true  :
+			(lhs.t5  > rhs.t5) ? false :
+			(lhs.t4  < rhs.t4) ? true  :
+			(lhs.t4  > rhs.t4) ? false :
+			(lhs.t3  < rhs.t3) ? true  :
+			(lhs.t3  > rhs.t3) ? false :
+			(lhs.t2  < rhs.t2) ? true  :
+			(lhs.t2  > rhs.t2) ? false :
+			(lhs.t1  < rhs.t1) ? true  :
+			(lhs.t1  > rhs.t1) ? false :
+			(lhs.t0  < rhs.t0) ? true  :
+			(lhs.t0  > rhs.t0) ? false :
+			false;
+}
+
+
+constexpr inline bool operator> (const tryte &lhs, const tryte &rhs) noexcept { return   rhs < lhs;    }
+constexpr inline bool operator<=(const tryte &lhs, const tryte &rhs) noexcept { return !(lhs  > rhs);  }
+constexpr inline bool operator>=(const tryte &lhs, const tryte &rhs) noexcept { return !(lhs  < rhs);  }
