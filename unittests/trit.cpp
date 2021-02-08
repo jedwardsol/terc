@@ -291,3 +291,134 @@ TEST(TritTest, postdecrement)
     EXPECT_EQ   ( t1i, trit{ 1});
     EXPECT_EQ   ( t1 , trit{ 0});
 }
+
+
+
+TEST(TritTest, halfaddertn) 
+{
+    trit  result;
+    trit  carry;
+
+    result=halfAdder(trit{-1}, trit{-1}, carry);
+    EXPECT_EQ   ( result, trit{1});
+    EXPECT_EQ   ( carry,  trit{-1});
+
+    result=halfAdder(trit{-1}, trit{0}, carry);
+    EXPECT_EQ   ( result, trit{-1});
+    EXPECT_EQ   ( carry,  trit{ 0});
+
+    result=halfAdder(trit{-1}, trit{1}, carry);
+    EXPECT_EQ   ( result, trit{0});
+    EXPECT_EQ   ( carry,  trit{0});
+}
+
+TEST(TritTest, halfaddert0) 
+{
+    trit  result;
+    trit  carry;
+
+    result=halfAdder(trit{0}, trit{-1}, carry);
+    EXPECT_EQ   ( result, trit{-1});
+    EXPECT_EQ   ( carry,  trit{ 0});
+
+    result=halfAdder(trit{0}, trit{0}, carry);
+    EXPECT_EQ   ( result, trit{ 0});
+    EXPECT_EQ   ( carry,  trit{ 0});
+
+    result=halfAdder(trit{0}, trit{1}, carry);
+    EXPECT_EQ   ( result, trit{1});
+    EXPECT_EQ   ( carry,  trit{0});
+}
+
+TEST(TritTest, halfaddert1) 
+{
+    trit  result;
+    trit  carry;
+
+    result=halfAdder(trit{1}, trit{-1}, carry);
+    EXPECT_EQ   ( result, trit{0});
+    EXPECT_EQ   ( carry,  trit{0});
+
+    result=halfAdder(trit{1}, trit{0}, carry);
+    EXPECT_EQ   ( result, trit{1});
+    EXPECT_EQ   ( carry,  trit{0});
+
+    result=halfAdder(trit{1}, trit{1}, carry);
+    EXPECT_EQ   ( result, trit{-1});
+    EXPECT_EQ   ( carry,  trit{ 1});
+}
+
+
+
+TEST(TritTest, fulladder) 
+{
+    struct  fulladderTest
+    {
+        trit    ain;
+        trit    bin;
+        trit    cin;
+
+        trit    result;
+        trit    carry;
+    };
+
+    // https://homepage.divms.uiowa.edu/~jones/ternary/arith.shtml#fullbalanced
+    fulladderTest    tests[]
+    {
+        { trit{-1}, trit{-1}, trit{-1},  trit{ 0}, trit{-1} },
+        { trit{-1}, trit{-1}, trit{ 0},  trit{ 1}, trit{-1} },
+        { trit{-1}, trit{-1}, trit{ 1},  trit{-1}, trit{ 0} },
+
+        { trit{-1}, trit{ 0}, trit{-1},  trit{ 1}, trit{-1} },
+        { trit{-1}, trit{ 0}, trit{ 0},  trit{-1}, trit{ 0} },
+        { trit{-1}, trit{ 0}, trit{ 1},  trit{ 0}, trit{ 0} },
+
+        { trit{-1}, trit{ 1}, trit{-1},  trit{-1}, trit{ 0} },
+        { trit{-1}, trit{ 1}, trit{ 0},  trit{ 0}, trit{ 0} },
+        { trit{-1}, trit{ 1}, trit{ 1},  trit{ 1}, trit{ 0} },
+
+        //-----
+
+        { trit{ 0}, trit{-1}, trit{-1},  trit{ 1}, trit{-1} },
+        { trit{ 0}, trit{-1}, trit{ 0},  trit{-1}, trit{ 0} },
+        { trit{ 0}, trit{-1}, trit{ 1},  trit{ 0}, trit{ 0} },
+
+        { trit{ 0}, trit{ 0}, trit{-1},  trit{-1}, trit{ 0} },
+        { trit{ 0}, trit{ 0}, trit{ 0},  trit{ 0}, trit{ 0} },
+        { trit{ 0}, trit{ 0}, trit{ 1},  trit{ 1}, trit{ 0} },
+
+        { trit{ 0}, trit{ 1}, trit{-1},  trit{ 0}, trit{ 0} },
+        { trit{ 0}, trit{ 1}, trit{ 0},  trit{ 1}, trit{ 0} },
+        { trit{ 0}, trit{ 1}, trit{ 1},  trit{-1}, trit{ 1} },
+
+        //-----
+
+
+        { trit{ 1}, trit{-1}, trit{-1},  trit{-1}, trit{ 0} },
+        { trit{ 1}, trit{-1}, trit{ 0},  trit{ 0}, trit{ 0} },
+        { trit{ 1}, trit{-1}, trit{ 1},  trit{ 1}, trit{ 0} },
+
+        { trit{ 1}, trit{ 0}, trit{-1},  trit{ 0}, trit{ 0} },
+        { trit{ 1}, trit{ 0}, trit{ 0},  trit{ 1}, trit{ 0} },
+        { trit{ 1}, trit{ 0}, trit{ 1},  trit{-1}, trit{ 1} },
+
+        { trit{ 1}, trit{ 1}, trit{-1},  trit{ 1}, trit{ 0} },
+        { trit{ 1}, trit{ 1}, trit{ 0},  trit{-1}, trit{ 1} },
+        { trit{ 1}, trit{ 1}, trit{ 1},  trit{ 0}, trit{ 1} },
+    };
+
+
+    for(auto test : tests)
+    {
+        trit carry{test.cin};
+
+        auto result = fullAdder(test.ain, test.bin, carry);
+
+        EXPECT_EQ   (result, test.result)  << "Result of "s + to_char(test.ain) + to_char(test.bin) + to_char(test.cin);
+        EXPECT_EQ   (carry,  test.carry)   << "Carry  of "s + to_char(test.ain) + to_char(test.bin) + to_char(test.cin);
+    }
+
+
+
+}
+

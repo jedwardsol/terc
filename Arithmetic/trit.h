@@ -6,7 +6,6 @@ using namespace std::literals;
 #include <exception>
 #include <stdexcept>
 
-
 class trit
 {
 public:
@@ -157,4 +156,37 @@ constexpr inline bool operator!=(const trit &lhs, const trit &rhs) noexcept { re
 
 constexpr inline trit operator+(trit lhs, const trit &rhs){   lhs += rhs; return lhs; }
 constexpr inline trit operator-(trit lhs, const trit &rhs){   lhs -= rhs; return lhs; }
+
+
+constexpr inline trit  halfAdder(const trit &lhs, const trit &rhs,  trit &carry)
+{
+    if(rhs == trit{1} && lhs==trit{1})
+    {
+        carry=trit{1};
+        return trit{-1};
+    }
+    else if(rhs == trit{-1} && lhs==trit{-1})
+    {
+        carry=trit{-1};
+        return trit{1};
+    }
+    else
+    {
+        carry=trit{0};
+        return lhs+rhs;
+    }
+}
+
+constexpr inline trit  fullAdder(const trit &lhs, const trit &rhs,  trit &carry)
+{
+    trit partialCarry{};
+    trit partialSum  {halfAdder(lhs,rhs, partialCarry)};
+    trit finalCarry  {};
+    trit finalSum    {halfAdder(partialSum,carry, finalCarry)};
+
+    carry = partialCarry+finalCarry;
+
+    return finalSum;
+}
+
 
