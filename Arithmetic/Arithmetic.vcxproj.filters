@@ -18,9 +18,15 @@
     <ClCompile Include="Arithmetic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Arithmetic_std.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Arithmetic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Arithmetic_std.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
