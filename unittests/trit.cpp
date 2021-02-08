@@ -179,3 +179,115 @@ TEST(TritTest, greaterthan)
     EXPECT_GE(l1,r1);
 }
 
+TEST(TritTest, minus) 
+{
+    trit    t0{ 0};
+    trit    t1{ 1};
+    trit    tn{-1};
+
+    EXPECT_EQ(t0, -t0);
+    EXPECT_EQ(t1, -tn);
+    EXPECT_EQ(tn, -t1);
+}
+
+
+TEST(TritTest, plusequal) 
+{
+    auto plusequal = [](int initial,int add)
+    {
+        trit    t{initial};
+
+        t+=trit{add};
+        
+        return t;
+    };
+    
+    EXPECT_THROW( plusequal(-1,-1),  std::overflow_error );
+    EXPECT_EQ   ( plusequal(-1, 0),  trit{-1});
+    EXPECT_EQ   ( plusequal(-1, 1),  trit{ 0});
+
+    EXPECT_EQ   ( plusequal( 0,-1),  trit{-1});
+    EXPECT_EQ   ( plusequal( 0, 0),  trit{ 0});
+    EXPECT_EQ   ( plusequal( 0, 1),  trit{ 1});
+
+    EXPECT_EQ   ( plusequal( 1,-1),  trit{ 0});
+    EXPECT_EQ   ( plusequal( 1, 0),  trit{ 1});
+    EXPECT_THROW( plusequal( 1, 1),  std::overflow_error );
+}
+
+TEST(TritTest, minusequal) 
+{
+    auto minusequal = [](int initial,int add)
+    {
+        trit    t{initial};
+
+        t-=trit{add};
+        
+        return t;
+    };
+    
+    EXPECT_EQ   ( minusequal(-1,-1),  trit{ 0});
+    EXPECT_EQ   ( minusequal(-1, 0),  trit{-1});
+    EXPECT_THROW( minusequal(-1, 1),  std::overflow_error );
+
+    EXPECT_EQ   ( minusequal( 0,-1),  trit{ 1});
+    EXPECT_EQ   ( minusequal( 0, 0),  trit{ 0});
+    EXPECT_EQ   ( minusequal( 0, 1),  trit{-1});
+
+    EXPECT_THROW( minusequal( 1,-1),  std::overflow_error);
+    EXPECT_EQ   ( minusequal( 1, 0),  trit{ 1});
+    EXPECT_EQ   ( minusequal( 1, 1),  trit{ 0});
+}
+
+
+TEST(TritTest, preincrement) 
+{
+    EXPECT_EQ   ( ++trit{-1}, trit{0});
+    EXPECT_EQ   ( ++trit{ 0}, trit{1});
+    EXPECT_THROW( ++trit{ 1}, std::overflow_error);
+}
+
+
+TEST(TritTest, postincrement) 
+{
+    trit    tn{-1};
+    trit    t0{ 0};
+    trit    t1{ 1};
+
+    auto tni = tn++;
+    auto t0i = t0++;
+
+    EXPECT_EQ   ( tni, trit{-1});
+    EXPECT_EQ   ( tn , trit{ 0});
+
+    EXPECT_EQ   ( t0i, trit{0});
+    EXPECT_EQ   ( t0 , trit{1});
+
+    EXPECT_THROW( t1++, std::overflow_error);
+}
+
+
+TEST(TritTest, predecrement) 
+{
+    EXPECT_THROW( --trit{-1}, std::overflow_error);
+    EXPECT_EQ   ( --trit{ 0}, trit{-1});
+    EXPECT_EQ   ( --trit{ 1}, trit{ 0});
+}
+
+TEST(TritTest, postdecrement) 
+{
+    trit    tn{-1};
+    trit    t0{ 0};
+    trit    t1{ 1};
+
+    auto t0i = t0--;
+    auto t1i = t1--;
+
+    EXPECT_THROW( tn--, std::overflow_error);
+
+    EXPECT_EQ   ( t0i, trit{ 0});
+    EXPECT_EQ   ( t0 , trit{-1});
+
+    EXPECT_EQ   ( t1i, trit{ 1});
+    EXPECT_EQ   ( t1 , trit{ 0});
+}

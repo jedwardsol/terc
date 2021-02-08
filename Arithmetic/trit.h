@@ -30,7 +30,6 @@ public:
         checkConstructor(i);
     }
 
-
     constexpr trit(const trit&)             noexcept = default;
     constexpr trit(      trit&&)            noexcept = default;
     constexpr trit &operator=(const trit&)  noexcept = default;
@@ -39,6 +38,97 @@ public:
     constexpr operator    int() const
     {
         return t;
+    }
+
+    constexpr trit operator-() noexcept
+    {
+        return trit{-t};
+    }
+
+    constexpr trit &operator++() 
+    {
+        if(t == 1)
+        {
+            throw std::overflow_error("trit++pre"s);
+        }
+
+        t++;
+
+        return *this;
+    }
+
+    constexpr trit operator++(int) 
+    {
+        if(t == 1)
+        {
+            throw std::overflow_error("trit++post"s);
+        }
+
+        auto previous = *this;
+        operator++();
+        return previous;
+    }
+
+
+    constexpr trit &operator--() 
+    {
+        if(t == -1)
+        {
+            throw std::overflow_error("trit--pre"s);
+        }
+
+        t--;
+
+        return *this;
+    }
+
+
+    constexpr trit operator--(int) 
+    {
+        if(t == -1)
+        {
+            throw std::overflow_error("trit--post"s);
+        }
+
+        auto previous = *this;
+        operator--();
+        return previous;
+    }
+
+
+
+    constexpr trit &operator+=(const trit &rhs) 
+    {
+        if(t == 1 && rhs.t == 1)
+        {
+            throw std::overflow_error("trit+= overflow"s);
+        }
+
+        if(t == -1 && rhs.t == -1)
+        {
+            throw std::overflow_error("trit+= underflow"s);
+        }
+
+        t+=rhs.t;
+
+        return *this;
+    }
+
+    constexpr trit &operator-=(const trit &rhs) 
+    {
+        if(t == 1 && rhs.t == -1)
+        {
+            throw std::overflow_error("trit+= overflow"s);
+        }
+
+        if(t == -1 && rhs.t == 1)
+        {
+            throw std::overflow_error("trit+= underflow"s);
+        }
+
+        t-=rhs.t;
+
+        return *this;
     }
 
 
@@ -51,17 +141,20 @@ private:
             throw std::out_of_range("trit constructor  "s + std::to_string(i));
         }
     }
-
 };
 
-
-
-constexpr inline bool operator< (const trit &lhs, const trit &rhs){ return   lhs.t < rhs.t;}
-constexpr inline bool operator> (const trit &lhs, const trit &rhs){ return   rhs < lhs;    }
-constexpr inline bool operator<=(const trit &lhs, const trit &rhs){ return !(lhs  > rhs);  }
-constexpr inline bool operator>=(const trit &lhs, const trit &rhs){ return !(lhs  < rhs);  }
-constexpr inline bool operator==(const trit &lhs, const trit &rhs){ return lhs.t == rhs.t; }
-constexpr inline bool operator!=(const trit &lhs, const trit &rhs){ return !(lhs == rhs);  }
-
-
 static_assert(sizeof(trit) ==1);
+
+
+
+constexpr inline bool operator< (const trit &lhs, const trit &rhs) noexcept { return   lhs.t < rhs.t;}
+constexpr inline bool operator> (const trit &lhs, const trit &rhs) noexcept { return   rhs < lhs;    }
+constexpr inline bool operator<=(const trit &lhs, const trit &rhs) noexcept { return !(lhs  > rhs);  }
+constexpr inline bool operator>=(const trit &lhs, const trit &rhs) noexcept { return !(lhs  < rhs);  }
+constexpr inline bool operator==(const trit &lhs, const trit &rhs) noexcept { return lhs.t == rhs.t; }
+constexpr inline bool operator!=(const trit &lhs, const trit &rhs) noexcept { return !(lhs == rhs);  }
+
+
+constexpr inline trit operator+(trit lhs, const trit &rhs){   lhs += rhs; return lhs; }
+constexpr inline trit operator-(trit lhs, const trit &rhs){   lhs -= rhs; return lhs; }
+
