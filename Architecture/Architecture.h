@@ -1,14 +1,26 @@
 #pragma once
 
+#include <fstream>
+#include <vector>
+
 #include "Arithmetic/Arithmetic.h"
 
 constexpr int     tritsInTryte       {6};
-constexpr int     instructionBusSize {6};
-constexpr int     dataBusSize       {12};
 
 
 
 
-constexpr int     instructionSectionSize {maxValue(instructionBusSize)};
-constexpr int     dataSectionSize        {maxValue(dataBusSize)};
+namespace  sixTritArchitecture
+{
+
+    constexpr int     instructionBusSize        {tritsInTryte};
+    constexpr int     dataBusSize               {tritsInTryte};
+
+
+    constexpr int     instructionSectionSize    {maxValue(instructionBusSize)};
+    constexpr int     dataSectionSize           {maxValue(dataBusSize)};
+    constexpr int     stackSectionSize          {maxValue(dataBusSize)};
+
+}
+
 

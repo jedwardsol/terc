@@ -4,6 +4,8 @@
 #include <string>
 #include <iostream>
 
+#include "Architecture/Architecture.h"
+
 #include "Arithmetic.h"
 #include "trit.h"
 #include "tryte.h"
@@ -83,7 +85,7 @@ public:
     static constexpr int                max_digits10        {3};                        
 
     static constexpr int                radix               {3};                        
-    static constexpr int                digits              {6};                       // 6 trits
+    static constexpr int                digits              {tritsInTryte};
 
 
 // functions

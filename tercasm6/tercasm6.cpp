@@ -14,13 +14,9 @@
 int main()
 try
 {
-
-    ROMemoryBlock   code {sixTritArchitecture::instructionSectionSize, ".code" };        
-    RWMemoryBlock   data {sixTritArchitecture::instructionSectionSize, ".data" };        
-    RWMemoryBlock   stack{sixTritArchitecture::instructionSectionSize, ".stack"};        
-
-
-    stack[0]=tryte{1};
+    MemoryBlock   code {sixTritArchitecture::instructionSectionSize, ".code" };        
+    MemoryBlock   data {sixTritArchitecture::dataSectionSize,        ".data" };        
+    MemoryBlock   stack{sixTritArchitecture::stackSectionSize,       ".stack"};        
 
 }
 catch(const std::exception &e)
