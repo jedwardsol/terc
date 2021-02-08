@@ -1,0 +1,2 @@
+# terc
+Ternary Computer
