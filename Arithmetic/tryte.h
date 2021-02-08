@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Arithmetic.h"
+#include "trit.h"
 
 class tryte 
 {
@@ -166,3 +168,24 @@ constexpr inline bool operator< (const tryte &lhs, const tryte &rhs) noexcept
 constexpr inline bool operator> (const tryte &lhs, const tryte &rhs) noexcept { return   rhs < lhs;    }
 constexpr inline bool operator<=(const tryte &lhs, const tryte &rhs) noexcept { return !(lhs  > rhs);  }
 constexpr inline bool operator>=(const tryte &lhs, const tryte &rhs) noexcept { return !(lhs  < rhs);  }
+
+
+constexpr inline tryte  halfAdder(const tryte &lhs, const tryte &rhs,  trit &carry)
+{
+	trit	partialCarry;    
+	tryte	result;	
+
+	result.t0 = halfAdder(trit{lhs.t0}, trit{rhs.t0}, partialCarry);
+	result.t1 = fullAdder(trit{lhs.t1}, trit{rhs.t1}, partialCarry);
+	result.t2 = fullAdder(trit{lhs.t2}, trit{rhs.t2}, partialCarry);
+	result.t3 = fullAdder(trit{lhs.t3}, trit{rhs.t3}, partialCarry);
+	result.t4 = fullAdder(trit{lhs.t4}, trit{rhs.t4}, partialCarry);
+	result.t5 = fullAdder(trit{lhs.t5}, trit{rhs.t5}, partialCarry);
+
+	carry = partialCarry;
+
+	return result;
+}
+
+
+
