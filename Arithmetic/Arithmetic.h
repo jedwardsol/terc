@@ -25,7 +25,7 @@ constexpr int     numValues(int numTrits)
 
 constexpr int     maxValue(int numTrits)
 {
-    return numValues(numTrits) - 1 / 2;
+    return (numValues(numTrits) - 1) / 2;
 }
 
 

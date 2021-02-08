@@ -39,7 +39,7 @@ public:
         return t;
     }
 
-    constexpr trit operator-() noexcept
+    constexpr trit operator-() const noexcept
     {
         return trit{-t};
     }

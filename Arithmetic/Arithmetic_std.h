@@ -87,9 +87,9 @@ public:
 
 
 // functions
-    [[nodiscard]]static constexpr       int max()           noexcept { return 243+81+27+9+3+1; }
+    [[nodiscard]]static constexpr       int max()           noexcept { return  maxValue(digits); }
     [[nodiscard]]static constexpr       int min()           noexcept { return -max(); }
-    [[nodiscard]]static constexpr       int lowest()        noexcept { return min(); }
+    [[nodiscard]]static constexpr       int lowest()        noexcept { return  min(); }
 
 
 // irrelevent float constants

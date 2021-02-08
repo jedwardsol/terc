@@ -3,11 +3,9 @@
 using namespace std::literals;
 #include <sstream>
 
-
 #include "Arithmetic/Arithmetic.h"
 #include "Arithmetic/Arithmetic_std.h"
 #include "Arithmetic/trit.h"
-
 
 
 TEST(TritTest, Construct) 
@@ -75,7 +73,6 @@ TEST(TritTest, int)
     trit    t1{ 1};
     trit    tn{-1};
 
-
     EXPECT_EQ(static_cast<int>(t0), 0);
     EXPECT_EQ(static_cast<int>(t1), 1);
     EXPECT_EQ(static_cast<int>(tn),-1);
@@ -87,7 +84,6 @@ TEST(TritTest, to_string)
     trit    t0{ 0};
     trit    t1{ 1};
     trit    tn{-1};
-
 
     EXPECT_EQ(to_string(t0),"0"s);
     EXPECT_EQ(to_string(t1),"+"s);
@@ -293,7 +289,7 @@ TEST(TritTest, postdecrement)
 }
 
 
-
+//https://homepage.divms.uiowa.edu/~jones/ternary/arith.shtml#halfbalanced
 TEST(TritTest, halfaddertn) 
 {
     trit  result;
@@ -417,8 +413,5 @@ TEST(TritTest, fulladder)
         EXPECT_EQ   (result, test.result)  << "Result of "s + to_char(test.ain) + to_char(test.bin) + to_char(test.cin);
         EXPECT_EQ   (carry,  test.carry)   << "Carry  of "s + to_char(test.ain) + to_char(test.bin) + to_char(test.cin);
     }
-
-
-
 }
 
