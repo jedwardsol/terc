@@ -162,9 +162,9 @@ TEST(TryteTest, StringConstruct)
     tryte  z{"000000"};
     tryte  p{"++++++"};
 
-    ASSERT_EQ(n,std::numeric_limits<tryte>::min());
-    ASSERT_EQ(z,0);
-    ASSERT_EQ(p,std::numeric_limits<tryte>::max());
+    EXPECT_EQ(n,std::numeric_limits<tryte>::min());
+    EXPECT_EQ(z,0);
+    EXPECT_EQ(p,std::numeric_limits<tryte>::max());
 
     for(int i =std::numeric_limits<tryte>::min();
             i<=std::numeric_limits<tryte>::max();
@@ -174,8 +174,8 @@ TEST(TryteTest, StringConstruct)
 
         tryte s{ to_string(t) };
 
-        ASSERT_EQ(t,s);
-        ASSERT_EQ(s.operator int(), i);
+        EXPECT_EQ(t,s);
+        EXPECT_EQ(s.operator int(), i);
     }
 }
 

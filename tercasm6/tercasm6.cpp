@@ -1,9 +1,12 @@
+#include <fstream>
 #include <vector>
 #include <string>
+#include <string_view>
 #include <iostream>
+
 #include <exception>
-
-
+#include <system_error>
+#include <stdexcept>
 
 
 #include "Arithmetic/Arithmetic.h"
@@ -14,12 +17,55 @@
 #include "Architecture/sixTritCPU.h"
 
 
-int main()
+
+class Assembler
+{
+public:
+
+    Assembler(const std::string_view &filename) : source{filename}
+    {
+        if(!source)
+        {
+            throw std::system_error{errno,std::generic_category(),"Error opening source file"};
+        }
+    }
+
+    void assemble()
+    {
+
+    }
+
+
+private:
+
+    std::ifstream   source;
+
+    int             lineNumber        {1};
+    int             currentInstruction{0};
+    int             currentDataTryte  {0};
+
+    MemoryBlock     code {sixTritArchitecture::codeSize,  ".code" };        
+    MemoryBlock     data {sixTritArchitecture::dataSize,  ".data" };        
+    MemoryBlock     stack{sixTritArchitecture::stackSize, ".stack"};        
+};
+
+
+int main(int argc, const char *argv[])
 try
 {
-    MemoryBlock   code {sixTritArchitecture::codeSize,  ".code" };        
-    MemoryBlock   data {sixTritArchitecture::dataSize,  ".data" };        
-    MemoryBlock   stack{sixTritArchitecture::stackSize, ".stack"};        
+    std::vector<std::string_view>   args(argv+1, argv+argc);
+
+    if(args.empty())
+    {
+        throw std::runtime_error{"Missing input FileName"};
+    }
+
+
+    Assembler assembler{args[0]};
+    
+    assembler.assemble();
+
+
 
 }
 catch(const std::exception &e)

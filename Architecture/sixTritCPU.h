@@ -68,20 +68,37 @@ enum  Exception         // min to max
     Halted,
     RanOffEnd,                      // should be some overflow pointing at RPC
     InvalidOpCode,
+    InvalidRegister,
 };
+
+/*
+ 
+Each instruction is 2 trytes
+
+    first tryte
+        low trybble     :   opcode
+        high trybble    :   register
+    second tryte        :   arbitrary argument
+
+ 
+ 
+*/
+
+
 
 enum  OpCode        // -13 to 13
 {
-    Invalid = -13,
-    Halt    =   0,
-    Nop,
+ // Opcode                  // register         operand                                             exceptions
+
+    Invalid = -13,          // unused           unused                                              InvalidOpCode
+    Halt    =   0,          // unused           unused                                              Halted
+    Nop,                    // unused           unused                                              None
+    MovIR,                  // destination      immediate       // move immediate to register       InvalidRegister if destination = REXC, REXA
+    MovRR,                  // destination      low:source      // move immediate to register       InvalidRegister if destination = REXC, REXA     InvalidRegister if source:high is not zero
+
 };
 
 
-
-//constexpr   static tryte    ExceptionOkay     {0};
-//constexpr   static tryte    ExceptionHalted   {1};
-//constexpr   static tryte    ExceptionRanOffEnd{2};
 
 
 
@@ -98,7 +115,7 @@ public:
     {
         constexpr int     registerOffset    {maxValue(3)};
 
-        return registers[ static_cast<int>(r) + registerOffset];
+        return registers.at(static_cast<int>(r) + registerOffset);
     }
 
 

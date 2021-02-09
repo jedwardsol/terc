@@ -34,8 +34,10 @@ void CPU::execute()
 
 
     auto  first          = code[PC];
-    auto  second         = code[PC+1];
-    auto [opcode, opreg] = first.trybbles();
+    auto  operand        = code[PC+1];
+
+    auto opcode = static_cast<OpCode>  (static_cast<int>(first.trybbles().first));
+    auto opreg  = static_cast<Register>(static_cast<int>(first.trybbles().second));
 
 
     switch(opcode)
@@ -46,6 +48,42 @@ void CPU::execute()
         break;
 
     case OpCode::Nop:
+        break;
+
+    case OpCode::MovIR:
+
+        if(   opreg == Register::REXC
+           || opreg == Register::REXA)
+        {
+            reg(Register::REXC) = tryte{Exception::InvalidRegister};
+            reg(Register::REXA) = PC;
+        }
+        else
+        {
+            reg(opreg) = operand;
+        }
+        break;
+
+
+    case OpCode::MovRR:
+
+        if(   opreg == Register::REXC
+           || opreg == Register::REXA)
+        {
+            reg(Register::REXC) = tryte{Exception::InvalidRegister};
+            reg(Register::REXA) = PC;
+        }
+        else if(operand.trybbles().second != trybble{0})
+        {
+            reg(Register::REXC) = tryte{Exception::InvalidRegister};
+            reg(Register::REXA) = PC;
+        }
+        else
+        {
+            auto srcreg  = static_cast<Register>(static_cast<int>(operand.trybbles().first));
+
+            reg(opreg) = reg(srcreg);
+        }
         break;
 
 
