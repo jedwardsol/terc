@@ -174,6 +174,43 @@ TEST(TryteTest, StringConstruct)
 
 
 
+TEST(TryteTest, TrybbleConstruct) 
+{
+    trybble small{"000---"};
+    trybble big  {"000+++"};
+
+
+    EXPECT_EQ((tryte{small, small}), tryte{"------"});
+    EXPECT_EQ((tryte{small, big}),   tryte{"+++---"});
+    EXPECT_EQ((tryte{big,   small}), tryte{"---+++"});
+    EXPECT_EQ((tryte{big,   big}),   tryte{"++++++"});
+
+
+}
+
+
+TEST(TryteTest, BadTrybbleConstruct) 
+{
+    auto construct = [](const trybble &low, const trybble &high)
+    {
+        tryte t{low, high};
+    };
+
+
+    trybble okay    {"000000"};
+    trybble tooSmall{"00-000"};
+    trybble tooBig  {"00+000"};
+
+
+    EXPECT_THROW(construct(     okay, tooSmall),std::out_of_range);
+    EXPECT_THROW(construct(     okay,   tooBig),std::out_of_range);
+    EXPECT_THROW(construct( tooSmall,     okay),std::out_of_range);
+    EXPECT_THROW(construct(   tooBig,     okay),std::out_of_range);
+}
+
+
+
+
 TEST(TryteTest, CopyConstruct) 
 {
     for(int i =std::numeric_limits<tryte>::min();

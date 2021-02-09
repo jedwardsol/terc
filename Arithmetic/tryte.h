@@ -9,7 +9,11 @@ constexpr int     tritsInTryte       {6};
 
 
 class tryte;
-using trybble=tryte;
+using trybble=tryte;			  // 2 trybbles in a tryte.  Should be 3 really,  but then they're too small ( -4 to +4 )
+
+constexpr inline tryte  halfAdder(const tryte &lhs, const tryte &rhs,  trit &carry);
+std::string  to_string(const tryte&);
+
 
 class tryte 
 {
@@ -28,7 +32,7 @@ public:
     constexpr tryte() noexcept : t0{0}, t1{0}, t2{0}, t3{0}, t4{0}, t5{0}, unused{0}
     {}
 
-    constexpr explicit tryte(int i) : t0{0}, t1{0}, t2{0}, t3{0}, t4{0}, t5{0}, unused{0}
+    constexpr explicit tryte(int i) : tryte{}
 	{
 		if(    i >  maxValue(6)
 		   ||  i < -maxValue(6))
@@ -76,7 +80,7 @@ public:
 	}
 
 
-    explicit tryte(const std::string &s) : t0{0}, t1{0}, t2{0}, t3{0}, t4{0}, t5{0}, unused{0}
+    explicit tryte(const std::string &s) : tryte{}
 	{
 		if(s.size() != 6)
 		{
@@ -103,6 +107,34 @@ public:
 		t1 = toTrit(s[4]);
 		t0 = toTrit(s[5]);
 	}
+
+
+
+	constexpr tryte(const trybble &low, const trybble &high) : tryte{}
+	{
+		if(   low > tryte{"000+++"}
+			|| low < tryte{"000---"})
+		{
+			throw std::out_of_range("tryte constructor low "s + to_string(low));
+		}
+
+		if(   high > tryte{"000+++"}
+			|| high < tryte{"000---"})
+		{
+			throw std::out_of_range("tryte constructor high "s + to_string(high));
+		}
+
+
+		tryte	higher{high};
+
+		higher <<= 3;
+
+		trit carry;
+		*this = halfAdder(higher,low, carry);
+	}
+
+
+
 
     tryte(const tryte&)             noexcept = default;
     tryte(      tryte&&)            noexcept = default;
