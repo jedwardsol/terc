@@ -45,7 +45,7 @@ TEST_F(CPUTest, InitialState)
     ASSERT_EQ(cpu.reg(sixTritArchitecture::Register::R0),   tryte{0});
     ASSERT_EQ(cpu.reg(sixTritArchitecture::Register::RPC),  tryte{0});
     ASSERT_EQ(cpu.reg(sixTritArchitecture::Register::RSP),  tryte{sixTritArchitecture::stackSize});
-    ASSERT_EQ(cpu.reg(sixTritArchitecture::Register::REXC), tryte{sixTritArchitecture::ExceptionOkay});
+    ASSERT_EQ(cpu.reg(sixTritArchitecture::Register::REXC), tryte{sixTritArchitecture::Exception::Okay});
 }
 
 TEST_F(CPUTest, DefaultInstructionIsHalt)
@@ -53,7 +53,7 @@ TEST_F(CPUTest, DefaultInstructionIsHalt)
     cpu.execute();
 
     ASSERT_EQ(cpu.reg(sixTritArchitecture::Register::RPC),  tryte{2});
-    ASSERT_EQ(cpu.reg(sixTritArchitecture::Register::REXC), tryte{sixTritArchitecture::ExceptionHalted});
+    ASSERT_EQ(cpu.reg(sixTritArchitecture::Register::REXC), tryte{sixTritArchitecture::Exception::Halted});
     ASSERT_EQ(cpu.reg(sixTritArchitecture::Register::REXA), tryte{0});
 }
 
@@ -65,5 +65,5 @@ TEST_F(CPUTest, RanOffEnd)
     cpu.execute();
 
     ASSERT_EQ(cpu.reg(sixTritArchitecture::Register::RPC),  tryte{sixTritArchitecture::codeSize - 1});
-    ASSERT_EQ(cpu.reg(sixTritArchitecture::Register::REXC), tryte{sixTritArchitecture::ExceptionRanOffEnd});
+    ASSERT_EQ(cpu.reg(sixTritArchitecture::Register::REXC), tryte{sixTritArchitecture::Exception::RanOffEnd});
 }

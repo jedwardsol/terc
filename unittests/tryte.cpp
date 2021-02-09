@@ -37,7 +37,7 @@ TEST(TryteTest, ZeroConstruct)
 
 
 
-TEST(TryteTest, BadConstruct) 
+TEST(TryteTest, BadIntConstruct) 
 {
     auto construct = [](int i)
     {
@@ -49,8 +49,21 @@ TEST(TryteTest, BadConstruct)
 }
 
 
+TEST(TryteTest, BadStringConstruct) 
+{
+    auto construct = [](const std::string &s)
+    {
+        tryte t{s};
+    };
 
-TEST(TryteTest, Construct) 
+    EXPECT_THROW(construct( "+++"     ),std::out_of_range); // too short
+    EXPECT_THROW(construct( "+++++++" ),std::out_of_range); // too long
+    EXPECT_THROW(construct( "00X000"  ),std::out_of_range); // bad char
+}
+
+
+
+TEST(TryteTest, IntConstruct) 
 {
     struct  constructTest
     {
@@ -143,6 +156,23 @@ TEST(TryteTest, Construct)
 }
 
 
+TEST(TryteTest, StringConstruct) 
+{
+    for(int i =std::numeric_limits<tryte>::min();
+            i<=std::numeric_limits<tryte>::max();
+            i++)
+    {
+        tryte t{i};
+
+        tryte s{ to_string(t) };
+
+        ASSERT_EQ(t,s);
+        ASSERT_EQ(s.operator int(), i);
+
+    }
+}
+
+
 
 TEST(TryteTest, CopyConstruct) 
 {
@@ -171,6 +201,22 @@ TEST(TryteTest, CopyAssign)
         EXPECT_EQ   (static_cast<int>(t), static_cast<int>(c))  << "copyConstruct "s + std::to_string(i);
     }
 }
+
+TEST(TryteTest, trybbles) 
+{
+    tryte   t{"0++-0+"};
+
+    auto [low,high] = t.trybbles();
+
+    EXPECT_EQ(t,    tryte{100});
+    EXPECT_EQ(low,  tryte{ -8});
+    EXPECT_EQ(high, tryte{  4});
+
+    EXPECT_EQ( to_string(t),    "0++-0+"s);
+    EXPECT_EQ( to_string(low),  "000-0+"s);
+    EXPECT_EQ( to_string(high), "0000++"s);
+}
+
 
 TEST(TryteTest, ToString) 
 {

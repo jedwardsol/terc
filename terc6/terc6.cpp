@@ -25,7 +25,7 @@ try
     do
     {
         cpu.execute();
-    } while(cpu.reg(sixTritArchitecture::Register::REXC) == sixTritArchitecture::ExceptionHalted);
+    } while(cpu.reg(sixTritArchitecture::Register::REXC) == sixTritArchitecture::Exception::Halted);
 }
 catch(const std::exception &e)
 {

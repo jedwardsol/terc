@@ -61,10 +61,23 @@ enum class Register
 };
 
 
+enum  Exception
+{
+    Okay = 0,
+    Halted,
+    RanOffEnd,
+};
 
-constexpr   static tryte    ExceptionOkay     {0};
-constexpr   static tryte    ExceptionHalted   {1};
-constexpr   static tryte    ExceptionRanOffEnd{2};
+enum  OpCode
+{
+    Halt,
+};
+
+
+
+//constexpr   static tryte    ExceptionOkay     {0};
+//constexpr   static tryte    ExceptionHalted   {1};
+//constexpr   static tryte    ExceptionRanOffEnd{2};
 
 
 

@@ -2,9 +2,14 @@
 
 #include "Arithmetic.h"
 #include "trit.h"
+#include <tuple>
+#include <string>
 
 constexpr int     tritsInTryte       {6};
 
+
+class tryte;
+using trybble=tryte;
 
 class tryte 
 {
@@ -71,13 +76,38 @@ public:
 	}
 
 
+    explicit tryte(const std::string &s) : t0{0}, t1{0}, t2{0}, t3{0}, t4{0}, t5{0}, unused{0}
+	{
+		if(s.size() != 6)
+		{
+            throw std::out_of_range("tryte constructor size "s + s);
+		}
+
+		auto toTrit = [](char c) 
+		{
+			switch(c)
+			{
+			case '-': return -1;
+			case '0': return  0;
+			case '+': return  1;
+			default : throw std::out_of_range("tryte constructor char "s + c);
+			}
+
+			return 0;
+		};
+
+		t5 = toTrit(s[0]);
+		t4 = toTrit(s[1]);
+		t3 = toTrit(s[2]);
+		t2 = toTrit(s[3]);
+		t1 = toTrit(s[4]);
+		t0 = toTrit(s[5]);
+	}
 
     tryte(const tryte&)             noexcept = default;
     tryte(      tryte&&)            noexcept = default;
     tryte &operator=(const tryte&)  noexcept = default;
     tryte &operator=(      tryte&&) noexcept = default;
-
-
 
 public:
 
@@ -90,6 +120,19 @@ public:
 			   + t1 * pow3(1)
 			   + t0 * pow3(0);
 	}
+
+
+	constexpr std::pair<trybble,trybble> trybbles() const
+	{
+		trybble  low {*this};
+		trybble  high{*this};
+
+		low.t3 = low.t4 = low.t5 = 0;
+		high >>= 3;			
+
+		return std::make_pair(low,high);
+	}
+
 
     constexpr tryte operator-() const noexcept
     {
