@@ -12,7 +12,8 @@ using namespace std::literals;
 #include <cerrno>
 #include "Arithmetic/tryte.h"
 
-
+namespace Architecture
+{
 
 class MemoryBlock 
 {
@@ -129,3 +130,6 @@ protected:
 
     std::string             filename;
 };
+
+
+}

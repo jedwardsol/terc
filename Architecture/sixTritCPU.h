@@ -9,11 +9,12 @@
 
 
 #include "MemoryBlock.h"
+#include "IOPorts.h"
 
 
 
 
-namespace  sixTritArchitecture
+namespace Architecture::sixTrit
 {
 
 constexpr int     instructionBusSize        {6};
@@ -61,15 +62,6 @@ enum class Register     // -13 to 13
 };
 
 
-enum  Exception         // min to max
-{
-    DoubleFault = -1,               // execute called after an exception
-    Okay        =  0,
-    Halted,
-    RanOffEnd,                      // should be some overflow pointing at RPC
-    InvalidOpCode,
-    InvalidRegister,
-};
 
 /*
  
@@ -94,7 +86,9 @@ enum  OpCode        // -13 to 13
     Halt    =   0,          // unused           unused                                              Halted
     Nop,                    // unused           unused                                              None
     MovIR,                  // destination      immediate       // move immediate to register       InvalidRegister if destination = REXC, REXA
-    MovRR,                  // destination      low:source      // move immediate to register       InvalidRegister if destination = REXC, REXA     InvalidRegister if source:high is not zero
+    MovRR,                  // destination      low:source      // move register  to register       InvalidRegister if destination = REXC, REXA     InvalidRegister if source:high is not zero
+
+    Out,                    // source           low:port        // move register to port            InvalidPort
 
 };
 
@@ -106,7 +100,10 @@ class CPU
 {
 public:
 
-    CPU(ROMemoryBlock   &code, RWMemoryBlock   &data, RWMemoryBlock   &stack) : code{code}, data{data}, stack{stack}
+    CPU(Architecture::ROMemoryBlock   &code, 
+        Architecture::RWMemoryBlock   &data, 
+        Architecture::RWMemoryBlock   &stack,
+        Architecture::IOPorts         &IOPorts) : code{code}, data{data}, stack{stack},  IOPorts{IOPorts}
     {
         reg(Register::RSP)=tryte{stackSize};
     }
@@ -124,13 +121,12 @@ public:
 
 private:
 
-    ROMemoryBlock                       &code;
-    RWMemoryBlock                       &data;
-    RWMemoryBlock                       &stack;
+    Architecture::ROMemoryBlock                       &code;
+    Architecture::RWMemoryBlock                       &data;
+    Architecture::RWMemoryBlock                       &stack;
+    Architecture::IOPorts                             &IOPorts;
 
     std::array<tryte,numRegisters>       registers{};
-
-
 
 
 };

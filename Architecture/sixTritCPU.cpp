@@ -10,20 +10,20 @@
 #include "sixTritCPU.h"
 
 
-namespace sixTritArchitecture
+namespace Architecture::sixTrit
 {
 
 void CPU::execute()
 {
-    if( reg(Register::REXC) !=  tryte{ Exception::Okay})
+    if( reg(Register::REXC) !=  tryte{ Architecture::Exception::Okay})
     {
-        reg(Register::REXC) = tryte{Exception::DoubleFault};
+        reg(Register::REXC) = tryte{Architecture::Exception::DoubleFault};
         return;
     }
 
     if( reg(Register::RPC) > tryte{ codeSize-2})
     {
-        reg(Register::REXC) = tryte{Exception::RanOffEnd};
+        reg(Register::REXC) = tryte{Architecture::Exception::RanOffEnd};
         reg(Register::REXA) = reg(Register::RPC);
         return;
     }
@@ -43,7 +43,7 @@ void CPU::execute()
     switch(opcode)
     {
     case OpCode::Halt:
-        reg(Register::REXC) = tryte{Exception::Halted};
+        reg(Register::REXC) = tryte{Architecture::Exception::Halted};
         reg(Register::REXA) = PC;
         break;
 
@@ -55,7 +55,7 @@ void CPU::execute()
         if(   opreg == Register::REXC
            || opreg == Register::REXA)
         {
-            reg(Register::REXC) = tryte{Exception::InvalidRegister};
+            reg(Register::REXC) = tryte{Architecture::Exception::InvalidRegister};
             reg(Register::REXA) = PC;
         }
         else
@@ -70,12 +70,12 @@ void CPU::execute()
         if(   opreg == Register::REXC
            || opreg == Register::REXA)
         {
-            reg(Register::REXC) = tryte{Exception::InvalidRegister};
+            reg(Register::REXC) = tryte{Architecture::Exception::InvalidRegister};
             reg(Register::REXA) = PC;
         }
         else if(operand.trybbles().second != trybble{0})
         {
-            reg(Register::REXC) = tryte{Exception::InvalidRegister};
+            reg(Register::REXC) = tryte{Architecture::Exception::InvalidRegister};
             reg(Register::REXA) = PC;
         }
         else
@@ -89,7 +89,7 @@ void CPU::execute()
 
     case OpCode::Invalid:
     default:
-        reg(Register::REXC) = tryte{Exception::InvalidOpCode};
+        reg(Register::REXC) = tryte{Architecture::Exception::InvalidOpCode};
         reg(Register::REXA) = PC;
         break;
 

@@ -16,16 +16,17 @@
 int main()
 try
 {
-    ROMemoryBlock   code {sixTritArchitecture::codeSize,  ".code" };        
-    RWMemoryBlock   data {sixTritArchitecture::dataSize,  ".data" };        
-    RWMemoryBlock   stack{sixTritArchitecture::stackSize, ".stack"};        
+    Architecture::ROMemoryBlock   code {Architecture::sixTrit::codeSize,  ".code" };        
+    Architecture::RWMemoryBlock   data {Architecture::sixTrit::dataSize,  ".data" };        
+    Architecture::RWMemoryBlock   stack{Architecture::sixTrit::stackSize, ".stack"};        
+    Architecture::DummyIOPorts    ioPorts;
 
-    sixTritArchitecture::CPU        cpu{code,data,stack};
+    Architecture::sixTrit::CPU    cpu{code,data,stack,ioPorts};
 
     do
     {
         cpu.execute();
-    } while(cpu.reg(sixTritArchitecture::Register::REXC) == sixTritArchitecture::Exception::Halted);
+    } while(cpu.reg(Architecture::sixTrit::Register::REXC) == Architecture::Exception::Halted);
 }
 catch(const std::exception &e)
 {

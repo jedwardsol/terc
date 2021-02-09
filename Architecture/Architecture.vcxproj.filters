@@ -21,6 +21,12 @@
     <ClInclude Include="sixTritCPU.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="IOPorts.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="exception.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sixTritCPU.cpp">
