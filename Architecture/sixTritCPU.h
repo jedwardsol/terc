@@ -62,8 +62,9 @@ enum class Register
 
 
 
-constexpr   static tryte    ExceptionOkay{0};
-constexpr   static tryte    ExceptionHalted{1};
+constexpr   static tryte    ExceptionOkay     {0};
+constexpr   static tryte    ExceptionHalted   {1};
+constexpr   static tryte    ExceptionRanOffEnd{2};
 
 
 
