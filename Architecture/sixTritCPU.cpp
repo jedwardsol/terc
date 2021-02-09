@@ -15,6 +15,12 @@ namespace sixTritArchitecture
 
 void CPU::execute()
 {
+    if( reg(Register::REXC) !=  tryte{ Exception::Okay})
+    {
+        reg(Register::REXC) = tryte{Exception::DoubleFault};
+        return;
+    }
+
     if( reg(Register::RPC) > tryte{ codeSize-2})
     {
         reg(Register::REXC) = tryte{Exception::RanOffEnd};
@@ -38,6 +44,17 @@ void CPU::execute()
         reg(Register::REXC) = tryte{Exception::Halted};
         reg(Register::REXA) = PC;
         break;
+
+    case OpCode::Nop:
+        break;
+
+
+    case OpCode::Invalid:
+    default:
+        reg(Register::REXC) = tryte{Exception::InvalidOpCode};
+        reg(Register::REXA) = PC;
+        break;
+
 
     }
 

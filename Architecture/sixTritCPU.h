@@ -26,7 +26,7 @@ constexpr int     stackSize                 {maxValue (dataBusSize)};
 constexpr int     numRegisters              {numValues(3)};
 
 
-enum class Register
+enum class Register     // -13 to 13
 {
     RPC  = -13,   // program counter        
     RSP  = -12,   // stack pointer
@@ -61,16 +61,20 @@ enum class Register
 };
 
 
-enum  Exception
+enum  Exception         // min to max
 {
-    Okay = 0,
+    DoubleFault = -1,               // execute called after an exception
+    Okay        =  0,
     Halted,
-    RanOffEnd,
+    RanOffEnd,                      // should be some overflow pointing at RPC
+    InvalidOpCode,
 };
 
-enum  OpCode
+enum  OpCode        // -13 to 13
 {
-    Halt,
+    Invalid = -13,
+    Halt    =   0,
+    Nop,
 };
 
 
@@ -92,8 +96,6 @@ public:
 
     tryte &reg(Register  r)
     {
-        static std::array<tryte,numRegisters>       registers;
-
         constexpr int     registerOffset    {maxValue(3)};
 
         return registers[ static_cast<int>(r) + registerOffset];
@@ -109,6 +111,7 @@ private:
     RWMemoryBlock                       &data;
     RWMemoryBlock                       &stack;
 
+    std::array<tryte,numRegisters>       registers{};
 
 
 

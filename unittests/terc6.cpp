@@ -32,6 +32,19 @@ protected:
     RWMemoryBlock               stack{sixTritArchitecture::stackSize};    
 
     sixTritArchitecture::CPU    cpu{code,data,stack};
+
+
+    void Assemble(int                           PC,
+                  sixTritArchitecture::OpCode   opcode,
+                  sixTritArchitecture::Register reg,
+                  int                           argument)
+    {
+        tryte   first  { trybble{static_cast<int>(opcode)}, trybble{static_cast<int>(reg)}};
+        tryte   second { argument};
+
+        code[PC]   = first;
+        code[PC+1] = second;
+    }
 };
 
 
@@ -67,3 +80,88 @@ TEST_F(CPUTest, RanOffEnd)
     ASSERT_EQ(cpu.reg(sixTritArchitecture::Register::RPC),  tryte{sixTritArchitecture::codeSize - 1});
     ASSERT_EQ(cpu.reg(sixTritArchitecture::Register::REXC), tryte{sixTritArchitecture::Exception::RanOffEnd});
 }
+
+
+TEST_F(CPUTest, Invalid)
+{
+    Assemble(0,  
+             sixTritArchitecture::OpCode::Invalid,
+             sixTritArchitecture::Register::R0,
+             0);
+
+
+    cpu.execute();
+
+    ASSERT_EQ(cpu.reg(sixTritArchitecture::Register::RPC),  tryte{2});
+    ASSERT_EQ(cpu.reg(sixTritArchitecture::Register::REXC), tryte{sixTritArchitecture::Exception::InvalidOpCode});
+    ASSERT_EQ(cpu.reg(sixTritArchitecture::Register::REXA), tryte{0});
+}
+
+
+
+
+TEST_F(CPUTest, DoubleFault)
+{
+    Assemble(0,  
+             sixTritArchitecture::OpCode::Invalid,
+             sixTritArchitecture::Register::R0,
+             0);
+
+    Assemble(2,  
+             sixTritArchitecture::OpCode::Invalid,
+             sixTritArchitecture::Register::R0,
+             0);
+
+    cpu.execute();
+
+    ASSERT_EQ(cpu.reg(sixTritArchitecture::Register::RPC),  tryte{2});
+    ASSERT_EQ(cpu.reg(sixTritArchitecture::Register::REXC), tryte{sixTritArchitecture::Exception::InvalidOpCode});
+    ASSERT_EQ(cpu.reg(sixTritArchitecture::Register::REXA), tryte{0});
+
+
+    cpu.execute();
+
+    ASSERT_EQ(cpu.reg(sixTritArchitecture::Register::RPC),  tryte{2});
+    ASSERT_EQ(cpu.reg(sixTritArchitecture::Register::REXC), tryte{sixTritArchitecture::Exception::DoubleFault});
+    ASSERT_EQ(cpu.reg(sixTritArchitecture::Register::REXA), tryte{0});
+
+}
+
+
+
+
+TEST_F(CPUTest, Nop)
+{
+    Assemble(0,  
+             sixTritArchitecture::OpCode::Nop,
+             sixTritArchitecture::Register::R0,
+             0);
+
+
+    cpu.execute();
+
+    ASSERT_EQ(cpu.reg(sixTritArchitecture::Register::RPC),  tryte{2});
+    ASSERT_EQ(cpu.reg(sixTritArchitecture::Register::REXC), tryte{sixTritArchitecture::Exception::Okay});
+    ASSERT_EQ(cpu.reg(sixTritArchitecture::Register::REXA), tryte{0});
+}
+
+TEST_F(CPUTest, NopNop)
+{
+    Assemble(0,  
+             sixTritArchitecture::OpCode::Nop,
+             sixTritArchitecture::Register::R0,
+             0);
+
+    Assemble(2,  
+             sixTritArchitecture::OpCode::Nop,
+             sixTritArchitecture::Register::R0,
+             0);
+
+    cpu.execute();
+    cpu.execute();
+
+    ASSERT_EQ(cpu.reg(sixTritArchitecture::Register::RPC),  tryte{4});
+    ASSERT_EQ(cpu.reg(sixTritArchitecture::Register::REXC), tryte{sixTritArchitecture::Exception::Okay});
+    ASSERT_EQ(cpu.reg(sixTritArchitecture::Register::REXA), tryte{0});
+}
+

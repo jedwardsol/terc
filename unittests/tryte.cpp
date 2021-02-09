@@ -158,6 +158,14 @@ TEST(TryteTest, IntConstruct)
 
 TEST(TryteTest, StringConstruct) 
 {
+    tryte  n{"------"};
+    tryte  z{"000000"};
+    tryte  p{"++++++"};
+
+    ASSERT_EQ(n,std::numeric_limits<tryte>::min());
+    ASSERT_EQ(z,0);
+    ASSERT_EQ(p,std::numeric_limits<tryte>::max());
+
     for(int i =std::numeric_limits<tryte>::min();
             i<=std::numeric_limits<tryte>::max();
             i++)
@@ -168,7 +176,6 @@ TEST(TryteTest, StringConstruct)
 
         ASSERT_EQ(t,s);
         ASSERT_EQ(s.operator int(), i);
-
     }
 }
 
@@ -179,13 +186,10 @@ TEST(TryteTest, TrybbleConstruct)
     trybble small{"000---"};
     trybble big  {"000+++"};
 
-
     EXPECT_EQ((tryte{small, small}), tryte{"------"});
     EXPECT_EQ((tryte{small, big}),   tryte{"+++---"});
     EXPECT_EQ((tryte{big,   small}), tryte{"---+++"});
     EXPECT_EQ((tryte{big,   big}),   tryte{"++++++"});
-
-
 }
 
 
@@ -196,19 +200,15 @@ TEST(TryteTest, BadTrybbleConstruct)
         tryte t{low, high};
     };
 
-
     trybble okay    {"000000"};
     trybble tooSmall{"00-000"};
     trybble tooBig  {"00+000"};
-
 
     EXPECT_THROW(construct(     okay, tooSmall),std::out_of_range);
     EXPECT_THROW(construct(     okay,   tooBig),std::out_of_range);
     EXPECT_THROW(construct( tooSmall,     okay),std::out_of_range);
     EXPECT_THROW(construct(   tooBig,     okay),std::out_of_range);
 }
-
-
 
 
 TEST(TryteTest, CopyConstruct) 
