@@ -18,13 +18,13 @@
     <ClCompile Include="unittests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="1_trit.cpp">
+    <ClCompile Include="trit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="2_tryte.cpp">
+    <ClCompile Include="tryte.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="3_terc6.cpp">
+    <ClCompile Include="terc6.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

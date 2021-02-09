@@ -54,5 +54,4 @@ TEST_F(CPUTest, DefaultInstructionIsHalt)
 
     ASSERT_EQ(cpu.reg(sixTritArchitecture::Register::RPC),  tryte{2});
     ASSERT_EQ(cpu.reg(sixTritArchitecture::Register::REXC), tryte{sixTritArchitecture::ExceptionHalted});
-
 }

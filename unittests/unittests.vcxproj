@@ -152,9 +152,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="unittests.cpp" />
-    <ClCompile Include="1_trit.cpp" />
-    <ClCompile Include="2_tryte.cpp" />
-    <ClCompile Include="3_terc6.cpp" />
+    <ClCompile Include="trit.cpp" />
+    <ClCompile Include="tryte.cpp" />
+    <ClCompile Include="terc6.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
