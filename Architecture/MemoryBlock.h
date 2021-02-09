@@ -51,10 +51,12 @@ class ROMemoryBlock
 {
 public:
 
+    ROMemoryBlock(int size) : memory(size,tryte{0})
+    {
+    }
+
     ROMemoryBlock(int size, const std::string  &filename) : memory(size,tryte{0})
     {
-        memory.resize(size);
-
         auto fileSize = fs::file_size(filename);
 
         if(fileSize != size*sizeof(tryte))
@@ -98,18 +100,23 @@ class RWMemoryBlock : public ROMemoryBlock
 {
 public:
 
+    RWMemoryBlock(int size) : ROMemoryBlock{size}
+    {}
+
     RWMemoryBlock(int size,  std::string  filename) : ROMemoryBlock{size,filename} , filename{std::move(filename)}
     {}
 
     ~RWMemoryBlock()
     {
-    
-        std::ofstream   file{filename + ".final", std::ios::binary | std::ios::out};
-
-        if(file)
+        if(!filename.empty())    
         {
-            file.write(reinterpret_cast<char*>(memory.data()), memory.size() * sizeof(tryte));                
-        }    
+            std::ofstream   file{filename + ".final", std::ios::binary | std::ios::out};
+
+            if(file)
+            {
+                file.write(reinterpret_cast<char*>(memory.data()), memory.size() * sizeof(tryte));                
+            }    
+        }
     }
 
     tryte &operator[](int index)

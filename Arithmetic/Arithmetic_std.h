@@ -4,9 +4,6 @@
 #include <string>
 #include <iostream>
 
-#include "Architecture/Architecture.h"
-
-#include "Arithmetic.h"
 #include "trit.h"
 #include "tryte.h"
 

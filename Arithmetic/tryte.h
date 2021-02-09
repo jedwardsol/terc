@@ -3,8 +3,12 @@
 #include "Arithmetic.h"
 #include "trit.h"
 
+constexpr int     tritsInTryte       {6};
+
+
 class tryte 
 {
+
 public:
     int16_t     t0 : 2;             // 3^0   1
     int16_t     t1 : 2;             // 3^1   3
@@ -24,7 +28,7 @@ public:
 		if(    i >  maxValue(6)
 		   ||  i < -maxValue(6))
 		{
-            throw std::out_of_range("trit constructor  "s + std::to_string(i));
+            throw std::out_of_range("tryte constructor  "s + std::to_string(i));
 		}
 
 

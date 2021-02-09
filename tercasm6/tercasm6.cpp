@@ -3,20 +3,23 @@
 #include <iostream>
 #include <exception>
 
-#include "Architecture/Architecture.h"
-#include "Architecture/MemoryBlock.h"
+
+
 
 #include "Arithmetic/Arithmetic.h"
 #include "Arithmetic/Arithmetic_std.h"
 
 
+#include "Architecture/MemoryBlock.h"
+#include "Architecture/sixTritCPU.h"
+
 
 int main()
 try
 {
-    MemoryBlock   code {sixTritArchitecture::instructionSectionSize, ".code" };        
-    MemoryBlock   data {sixTritArchitecture::dataSectionSize,        ".data" };        
-    MemoryBlock   stack{sixTritArchitecture::stackSectionSize,       ".stack"};        
+    MemoryBlock   code {sixTritArchitecture::codeSize,  ".code" };        
+    MemoryBlock   data {sixTritArchitecture::dataSize,  ".data" };        
+    MemoryBlock   stack{sixTritArchitecture::stackSize, ".stack"};        
 
 }
 catch(const std::exception &e)

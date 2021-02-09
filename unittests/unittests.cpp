@@ -9,10 +9,6 @@
 #include "Arithmetic/Arithmetic.h"
 #pragma comment(lib,"arithmetic")
 
-TEST(MainTest, MainRuns) 
-{
-  EXPECT_EQ(true,true);
-}
 
 int main(int argc, char *argv[]) 
 {

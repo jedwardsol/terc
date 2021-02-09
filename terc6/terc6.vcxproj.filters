@@ -15,15 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MemoryBlock.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="sixTritCPU.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="sixTritCPU.cpp">
+    <ClCompile Include="terc6.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -6,6 +6,8 @@ using namespace std::literals;
 #include <exception>
 #include <stdexcept>
 
+
+
 class trit
 {
 public:

@@ -27,6 +27,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TernaryNumbers", "TernaryNu
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tercasm6", "tercasm6\tercasm6.vcxproj", "{470A92C4-7AFC-4585-B3C9-2B31F835B63F}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "terc6", "terc6\terc6.vcxproj", "{C94E557F-AB5C-4A5D-AD98-269B348F0DFC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -83,6 +85,14 @@ Global
 		{470A92C4-7AFC-4585-B3C9-2B31F835B63F}.Release|x64.Build.0 = Release|x64
 		{470A92C4-7AFC-4585-B3C9-2B31F835B63F}.Release|x86.ActiveCfg = Release|Win32
 		{470A92C4-7AFC-4585-B3C9-2B31F835B63F}.Release|x86.Build.0 = Release|Win32
+		{C94E557F-AB5C-4A5D-AD98-269B348F0DFC}.Debug|x64.ActiveCfg = Debug|x64
+		{C94E557F-AB5C-4A5D-AD98-269B348F0DFC}.Debug|x64.Build.0 = Debug|x64
+		{C94E557F-AB5C-4A5D-AD98-269B348F0DFC}.Debug|x86.ActiveCfg = Debug|Win32
+		{C94E557F-AB5C-4A5D-AD98-269B348F0DFC}.Debug|x86.Build.0 = Debug|Win32
+		{C94E557F-AB5C-4A5D-AD98-269B348F0DFC}.Release|x64.ActiveCfg = Release|x64
+		{C94E557F-AB5C-4A5D-AD98-269B348F0DFC}.Release|x64.Build.0 = Release|x64
+		{C94E557F-AB5C-4A5D-AD98-269B348F0DFC}.Release|x86.ActiveCfg = Release|Win32
+		{C94E557F-AB5C-4A5D-AD98-269B348F0DFC}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
