@@ -45,7 +45,7 @@ bool    CPU::checkPC()
         return false;
     }
 
-    if( reg(Register::RPC) >= code.size()-1)
+    if( reg(Register::RPC) >= code.positiveSize()-1)
     {
         raiseException(Exception::BadPC, reg(Register::RPC));
         return false;
@@ -208,7 +208,7 @@ void CPU::execute()
 
 
 
-void CPU::load (RWMemoryBlock       &memory, 
+void CPU::load (MemoryBlock         &memory, 
                 sixTrit::Register   destReg,
                 sixTrit::Register   addressReg, 
                 trybble             offset)
@@ -228,7 +228,7 @@ void CPU::load (RWMemoryBlock       &memory,
     }
 }
 
-void CPU::store(RWMemoryBlock       &memory, 
+void CPU::store(MemoryBlock         &memory, 
                 sixTrit::Register   sourceReg,
                 sixTrit::Register   addressReg, 
                 trybble             offset)

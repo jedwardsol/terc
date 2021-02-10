@@ -10,135 +10,142 @@ using namespace std::literals;
 #include <exception>
 #include <system_error>
 #include <cerrno>
+#include <cstdint>
 #include "Arithmetic/tryte.h"
+
+
 
 namespace Architecture
 {
+
 
 class MemoryBlock 
 {
 public:
 
-    MemoryBlock(int size,  std::string  filename) : memory(size,tryte{0}) , filename{std::move(filename)}
-    {}
-
-    ~MemoryBlock()
+    int negativeSize() const noexcept 
     {
-    
-        std::ofstream   file{filename, std::ios::binary | std::ios::out};
+        return zeroOffset;
+    }
 
-        if(file)
-        {
-            file.write(reinterpret_cast<char*>(memory.data()), memory.size() * sizeof(tryte));                
-        }    
+    int positiveSize() const noexcept 
+    {                  
+        return totalSize - zeroOffset;
     }
 
     tryte &operator[](int index)
     {
-        return memory.at(index);
+        return memory.at(index+zeroOffset);
     }
 
-    int size()
+    const tryte &operator[](int index) const
     {
-        return static_cast<int>(memory.size());
+        return memory.at(index+zeroOffset);
     }
 
-
-protected:
-
-    std::vector<tryte>      memory;
-    std::string             filename;
-};
-
-
-
-
-class ROMemoryBlock
-{
 public:
 
-    ROMemoryBlock(int size) : memory(size,tryte{0})
-    {
-    }
+// sized
 
-    ROMemoryBlock(int size, const std::string  &filename) : memory(size,tryte{0})
-    {
-        auto fileSize = fs::file_size(filename);
+    MemoryBlock(int32_t         negativeSize,
+                int32_t         positiveSize,
+                std::string     saveFilename) : zeroOffset  {negativeSize},
+                                                totalSize   {negativeSize+positiveSize},
+                                                memory      (totalSize, tryte{}),
+                                                saveFilename{std::move(saveFilename)}
+    {}
 
-        if(fileSize != size*sizeof(tryte))
+
+    MemoryBlock(int32_t         negativeSize,
+                int32_t         positiveSize) : MemoryBlock{negativeSize,positiveSize,{}}
+    {}
+
+
+// file based
+
+    MemoryBlock(const std::string       &loadFilename,
+                      std::string        saveFilename) : saveFilename{std::move(saveFilename)}
+    {
+// check and open
+
+        auto fileSize = fs::file_size(loadFilename);
+
+        if(fileSize < 2 * sizeof(int32_t))
         {
-            throw std::runtime_error{filename + " is the wrong size"s};
+            throw std::runtime_error{loadFilename + " is much too small"s};
         }
 
-        std::ifstream   file{filename, std::ios::binary | std::ios::in};
+        std::ifstream   file{loadFilename, std::ios::binary | std::ios::in};
 
         if(!file)
         {
-            throw std::system_error{errno,std::generic_category(),"Opening "s + filename};
+            throw std::system_error{errno,std::generic_category(),"Opening "s + loadFilename};
         }
+
+// read sizes and check
+
+        file.read(reinterpret_cast<char*>(&zeroOffset), sizeof(int32_t));                
+        file.read(reinterpret_cast<char*>(&totalSize),  sizeof(int32_t));                
+
+        if(!file)
+        {
+            throw std::system_error{errno,std::generic_category(),"Reading sizes from  "s + loadFilename};
+        }
+
+
+        if(fileSize !=  (2*sizeof(int32_t))  + (totalSize*sizeof(tryte)))
+        {
+            throw std::runtime_error{loadFilename + " is the wrong size"s};
+        }
+
+// read data
+
+        memory.resize(totalSize);
 
         file.read(reinterpret_cast<char*>(memory.data()), memory.size() * sizeof(tryte));                
 
         if(!file)
         {
-            throw std::system_error{errno,std::generic_category(),"Reading "s + filename};
+            throw std::system_error{errno,std::generic_category(),"Reading "s + loadFilename};
         }
 
         if(file.gcount() != fileSize)
         {
-            throw std::runtime_error{"read the wrong number of bytes from "s + filename };
+            throw std::runtime_error{"read the wrong number of bytes from "s + loadFilename};
         }
     }
 
-    const tryte &operator[](int index)
-    {
-        return memory.at(index);
-    }
-
-    int size()
-    {
-        return static_cast<int>(memory.size());
-    }
-
-protected:
-
-    std::vector<tryte>      memory;
-};
-
-
-class RWMemoryBlock : public ROMemoryBlock
-{
-public:
-
-    RWMemoryBlock(int size) : ROMemoryBlock{size}
+    MemoryBlock(const std::string       &loadFilename) : MemoryBlock{ loadFilename, {}}
     {}
 
-    RWMemoryBlock(int size,  std::string  filename) : ROMemoryBlock{size,filename} , filename{std::move(filename)}
-    {}
 
-    ~RWMemoryBlock()
+    ~MemoryBlock()
     {
-        if(!filename.empty())    
+        if(!saveFilename.empty())
         {
-            std::ofstream   file{filename + ".final", std::ios::binary | std::ios::out};
+            std::ofstream   file{saveFilename, std::ios::binary | std::ios::out};
 
             if(file)
             {
+                file.write(reinterpret_cast<char*>(&zeroOffset), sizeof(int32_t));                
+                file.write(reinterpret_cast<char*>(&totalSize),  sizeof(int32_t));                
+
                 file.write(reinterpret_cast<char*>(memory.data()), memory.size() * sizeof(tryte));                
             }    
         }
     }
 
-    tryte &operator[](int index)
-    {
-        return memory.at(index);
-    }
-
 
 protected:
 
-    std::string             filename;
+    int32_t                 zeroOffset;
+    int32_t                 totalSize;
+    std::vector<tryte>      memory;
+
+    std::string             saveFilename;
 };
 
 
 }
+
+

@@ -16,10 +16,10 @@
 int main()
 try
 {
-    Architecture::ROMemoryBlock   code {Architecture::sixTrit::recCodeSize,  ".code" };        
-    Architecture::RWMemoryBlock   data {Architecture::sixTrit::recDataSize,  ".data" };        
-    Architecture::RWMemoryBlock   stack{Architecture::sixTrit::recStackSize, ".stack"};        
-    Architecture::DummyIOPorts    ioPorts;
+    const Architecture::MemoryBlock     code {".code" };        
+          Architecture::MemoryBlock     data {".data" , ".data.final" };        
+          Architecture::MemoryBlock     stack{".stack", ".stack.final"};        
+          Architecture::DummyIOPorts    ioPorts;
 
     Architecture::sixTrit::CPU    cpu{code,data,stack,ioPorts};
 

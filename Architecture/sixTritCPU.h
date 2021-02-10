@@ -13,7 +13,7 @@
 #include "IOPorts.h"
 
 
-
+// TODO : use negative address in data section for stack
 
 namespace Architecture::sixTrit
 {
@@ -87,39 +87,39 @@ Each instruction is 2 trytes
 
 enum  OpCode        // -13 to 13
 {
- // Opcode                  // register         operand                                                     exceptions
-
-    Invalid = -13,          // unused           unused                                                      InvalidOpCode
-    Nop,                    // unused           unused                                                      InvalidOpCode
-    In11,                   // unused           unused                                                      InvalidOpCode
-    In10,                   // unused           unused                                                      InvalidOpCode
-    In9,                    // unused           unused                                                      InvalidOpCode
-    In8,                    // unused           unused                                                      InvalidOpCode
-    In7,                    // unused           unused                                                      InvalidOpCode
-    In6,                    // unused           unused                                                      InvalidOpCode
-    In5,                    // unused           unused                                                      InvalidOpCode
-    In4,                    // unused           unused                                                      InvalidOpCode
-    In3,                    // unused           unused                                                      InvalidOpCode
-    In2,                    // unused           unused                                                      InvalidOpCode
-    In1,                    // unused           unused                                                      InvalidOpCode
-
-    Halt    =   0,          // unused           unused                                                      Halted
-
-    LoadImmediate,          // destination      immediate                   dest = immediate                InvalidRegister if destination = REXC, REXA
-    Copy,                   // destination      low:source                  destination = source            InvalidRegister if destination = REXC, REXA     
-    Out,                    // source           low:port                    write source to port            InvalidPort,  InvalidData
-    In,                     // destination      low:port                    read port to destination        InvalidPort,  InvalidData
-
-    LoadData,               // destination      low:source high:offset      dest = [source+offset]          AccessViolation is address is out of range.  InvalidRegister if destination = REXC, REXA     
-    StoreData,              // source           low:dest   high:offset      [dest+offset] = source          AccessViolation is address is out of range.  
-    LoadStack,              // destination      low:source high:offset      dest = [source+offset]          AccessViolation is address is out of range.  InvalidRegister if destination = REXC, REXA     
-    StoreStack,             // source           low:dest   high:offset      [dest+offset] = source          AccessViolation is address is out of range.  
-
-    Push,                   // source           unused                      SP-- stack[SP]=src              StackOverflow if stack is full
-    Pop,                    // destination      unused                      dest=stack[SP] SP++             StackOverflow if stack is empty
-    I11,                    // unused           unused                                                      InvalidOpCode
-    I12,                    // unused           unused                                                      InvalidOpCode
-    I13,                    // unused           unused                                                      InvalidOpCode
+ // Opcode                  // register         operand                                                             exceptions
+                                                                   
+    Invalid = -13,          // unused           unused                                                              InvalidOpCode
+    Nop,                    // unused           unused                                                              InvalidOpCode
+    In11,                   // unused           unused                                                              InvalidOpCode
+    In10,                   // unused           unused                                                              InvalidOpCode
+    In9,                    // unused           unused                                                              InvalidOpCode
+    In8,                    // unused           unused                                                              InvalidOpCode
+    In7,                    // unused           unused                                                              InvalidOpCode
+    In6,                    // unused           unused                                                              InvalidOpCode
+    In5,                    // unused           unused                                                              InvalidOpCode
+    In4,                    // unused           unused                                                              InvalidOpCode
+    In3,                    // unused           unused                                                              InvalidOpCode
+    In2,                    // unused           unused                                                              InvalidOpCode
+    In1,                    // unused           unused                                                              InvalidOpCode
+                                                                   
+    Halt    =   0,          // unused           unused                                                              Halted
+                                                                   
+    LoadImmediate,          // destination      immediate                           dest = immediate                InvalidRegister if destination = REXC, REXA
+    Copy,                   // destination      low:source                          destination = source            InvalidRegister if destination = REXC, REXA     
+    Out,                    // source           low:port                            write source to port            InvalidPort,  InvalidData
+    In,                     // destination      low:port                            read port to destination        InvalidPort,  InvalidData
+                                                                   
+    LoadData,               // destination      low:regsource      high:offset      dest = [source+offset]          AccessViolation is address is out of range.  InvalidRegister if destination = REXC, REXA     
+    StoreData,              // source           low:regdest        high:offset      [dest+offset] = source          AccessViolation is address is out of range.  
+    LoadStack,              // destination      low:regsource      high:offset      dest = [source+offset]          AccessViolation is address is out of range.  InvalidRegister if destination = REXC, REXA     
+    StoreStack,             // source           low:regdest        high:offset      [dest+offset] = source          AccessViolation is address is out of range.  
+                                                                   
+    Push,                   // source           unused                              SP-- stack[SP]=src              StackOverflow if stack is full
+    Pop,                    // destination      unused                              dest=stack[SP] SP++             StackOverflow if stack is empty
+    I11,                    // unused           unused                                                              InvalidOpCode
+    I12,                    // unused           unused                                                              InvalidOpCode
+    I13,                    // unused           unused                                                              InvalidOpCode
 
 };
 
@@ -131,12 +131,12 @@ class CPU
 {
 public:
 
-    CPU(Architecture::ROMemoryBlock   &code, 
-        Architecture::RWMemoryBlock   &data, 
-        Architecture::RWMemoryBlock   &stack,
-        Architecture::IOPorts         &ioPorts) : code{code}, data{data}, stack{stack},  ioPorts{ioPorts}
+    CPU(Architecture::MemoryBlock   const &code, 
+        Architecture::MemoryBlock         &data, 
+        Architecture::MemoryBlock         &stack,
+        Architecture::IOPorts             &ioPorts) : code{code}, data{data}, stack{stack},  ioPorts{ioPorts}
     {
-        reg(Register::RSP)=tryte{stack.size()};
+        reg(Register::RSP)=tryte{stack.positiveSize()};
     }
 
     tryte &reg(Register  r)
@@ -156,12 +156,12 @@ private:
 
     void    raiseException(Architecture::Exception code, tryte PC);
 
-    void    load (Architecture::RWMemoryBlock       &memory, 
+    void    load (Architecture::MemoryBlock        &memory, 
                   Architecture::sixTrit::Register   destReg,
                   Architecture::sixTrit::Register   addressReg, 
                   trybble                           offset);
 
-    void    store(Architecture::RWMemoryBlock       &memory, 
+    void    store(Architecture::MemoryBlock        &memory, 
                   Architecture::sixTrit::Register   sourceReg,
                   Architecture::sixTrit::Register   addressReg, 
                   trybble                           offset);
@@ -177,9 +177,9 @@ private:
 
 private:
 
-    Architecture::ROMemoryBlock                       &code;
-    Architecture::RWMemoryBlock                       &data;
-    Architecture::RWMemoryBlock                       &stack;
+    Architecture::MemoryBlock const                   &code;
+    Architecture::MemoryBlock                         &data;
+    Architecture::MemoryBlock                         &stack;
     Architecture::IOPorts                             &ioPorts;
 
     std::array<tryte,numRegisters>                     registers{};

@@ -53,9 +53,9 @@ protected:
         return Architecture::Exception::Okay;
     }
 
-    Architecture::RWMemoryBlock         code {Architecture::sixTrit::recCodeSize};    
-    Architecture::RWMemoryBlock         data {Architecture::sixTrit::recDataSize};    
-    Architecture::RWMemoryBlock         stack{Architecture::sixTrit::recStackSize};    
+    Architecture::MemoryBlock           code {0,Architecture::sixTrit::recCodeSize};    
+    Architecture::MemoryBlock           data {0,Architecture::sixTrit::recDataSize};    
+    Architecture::MemoryBlock           stack{0,Architecture::sixTrit::recStackSize};    
     Architecture::sixTrit::CPU          cpu  {code,data,stack,*this};
 
     void Assemble(Architecture::sixTrit::OpCode   opcode,
@@ -101,7 +101,7 @@ TEST_F(CPUTest, InitialState)
 
     EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::R0),   tryte{0});
     EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::RPC),  tryte{0});
-    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::RSP),  tryte{stack.size()});
+    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::RSP),  tryte{stack.positiveSize()});
     EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXC), tryte{Architecture::Exception::Okay});
 }
 
@@ -117,11 +117,11 @@ TEST_F(CPUTest, DefaultInstructionIsHalt)
 
 TEST_F(CPUTest, RanOffEnd)
 {
-    cpu.reg(Architecture::sixTrit::Register::RPC) = tryte{code.size() - 1};
+    cpu.reg(Architecture::sixTrit::Register::RPC) = tryte{code.positiveSize() - 1};
 
     cpu.execute();
 
-    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::RPC),  tryte{code.size() - 1});
+    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::RPC),  tryte{code.positiveSize() - 1});
     EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXC), tryte{Architecture::Exception::BadPC});
 }
 
@@ -452,10 +452,10 @@ TEST_F(CPUTest, PushPop)
 {
     auto rsp = Architecture::sixTrit::Register::RSP;
 
-    ASSERT_EQ( cpu.reg(rsp), stack.size() );
-    ASSERT_EQ( stack[ stack.size() - 1] , 0 );
-    ASSERT_EQ( stack[ stack.size() - 2] , 0 );
-    ASSERT_EQ( stack[ stack.size() - 3] , 0 );
+    ASSERT_EQ( cpu.reg(rsp), stack.positiveSize() );
+    ASSERT_EQ( stack[ stack.positiveSize() - 1] , 0 );
+    ASSERT_EQ( stack[ stack.positiveSize() - 2] , 0 );
+    ASSERT_EQ( stack[ stack.positiveSize() - 3] , 0 );
 
     Assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::R0, 42);
     cpu.execute();
@@ -463,35 +463,35 @@ TEST_F(CPUTest, PushPop)
 
     Assemble(Architecture::sixTrit::OpCode::Push,           Architecture::sixTrit::Register::R0, 0 );
     cpu.execute();
-    EXPECT_EQ( cpu.reg(rsp), stack.size()-1 );
-    EXPECT_EQ( stack[ stack.size() - 1] , 42 );
+    EXPECT_EQ( cpu.reg(rsp), stack.positiveSize()-1 );
+    EXPECT_EQ( stack[ stack.positiveSize() - 1] , 42 );
 
     Assemble(Architecture::sixTrit::OpCode::Push,           Architecture::sixTrit::Register::R0, 0 );
     cpu.execute();
-    EXPECT_EQ( cpu.reg(rsp), stack.size()-2 );
-    EXPECT_EQ( stack[ stack.size() - 2] , 42 );
+    EXPECT_EQ( cpu.reg(rsp), stack.positiveSize()-2 );
+    EXPECT_EQ( stack[ stack.positiveSize() - 2] , 42 );
 
     Assemble(Architecture::sixTrit::OpCode::Push,           Architecture::sixTrit::Register::R0, 0 );
     cpu.execute();
-    EXPECT_EQ( cpu.reg(rsp), stack.size()-3 );
-    EXPECT_EQ( stack[ stack.size() - 3] , 42 );
+    EXPECT_EQ( cpu.reg(rsp), stack.positiveSize()-3 );
+    EXPECT_EQ( stack[ stack.positiveSize() - 3] , 42 );
 
 
 //--
 
     Assemble(Architecture::sixTrit::OpCode::Pop,            Architecture::sixTrit::Register::R1, 0 );
     cpu.execute();
-    EXPECT_EQ( cpu.reg(rsp), stack.size()-2 );
+    EXPECT_EQ( cpu.reg(rsp), stack.positiveSize()-2 );
     EXPECT_EQ( cpu.reg(Register::R1), 42 );
 
     Assemble(Architecture::sixTrit::OpCode::Pop,            Architecture::sixTrit::Register::R2, 0 );
     cpu.execute();
-    EXPECT_EQ( cpu.reg(rsp), stack.size()-1 );
+    EXPECT_EQ( cpu.reg(rsp), stack.positiveSize()-1 );
     EXPECT_EQ( cpu.reg(Register::R2), 42 );
 
     Assemble(Architecture::sixTrit::OpCode::Pop,            Architecture::sixTrit::Register::R3, 0 );
     cpu.execute();
-    EXPECT_EQ( cpu.reg(rsp), stack.size() );
+    EXPECT_EQ( cpu.reg(rsp), stack.positiveSize() );
     EXPECT_EQ( cpu.reg(Register::R3), 42 );
 
 
@@ -505,11 +505,11 @@ TEST_F(CPUTest, StackOverflow)
 {
     auto rsp = Architecture::sixTrit::Register::RSP;
 
-    ASSERT_EQ( cpu.reg(rsp), stack.size() );
+    ASSERT_EQ( cpu.reg(rsp), stack.positiveSize() );
 
     Assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::R0, 42);
 
-    for(int i=0;i<=stack.size();i++)
+    for(int i=0;i<=stack.positiveSize();i++)
     {
         Assemble(Architecture::sixTrit::OpCode::Push,           Architecture::sixTrit::Register::R0, 0 );
     }
@@ -535,7 +535,7 @@ TEST_F(CPUTest, StackUnderflow)
 {
     auto rsp = Architecture::sixTrit::Register::RSP;
 
-    ASSERT_EQ( cpu.reg(rsp), stack.size() );
+    ASSERT_EQ( cpu.reg(rsp), stack.positiveSize() );
 
     Assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::R0, 42);
 
@@ -559,6 +559,5 @@ TEST_F(CPUTest, StackUnderflow)
 
     EXPECT_EQ( cpu.reg(Register::REXC), Architecture::Exception::AccessViolation );
     EXPECT_EQ( cpu.reg(Register::R0),   42 );
-    EXPECT_EQ( cpu.reg(rsp), stack.size() );
-
+    EXPECT_EQ( cpu.reg(rsp), stack.positiveSize() );
 }
