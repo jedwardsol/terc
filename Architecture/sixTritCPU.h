@@ -88,8 +88,8 @@ enum  OpCode        // -13 to 13
     MovIR,                  // destination      immediate       // move immediate to register       InvalidRegister if destination = REXC, REXA
     MovRR,                  // destination      low:source      // move register  to register       InvalidRegister if destination = REXC, REXA     InvalidRegister if source:high is not zero
 
-    Out,                    // source           low:port        // move register to port            InvalidPort
-
+    Out,                    // source           low:port        // move register to port            InvalidPort,  InvalidData
+    In,                     // destination      low:port        // move port to register            InvalidPort,  InvalidData
 };
 
 

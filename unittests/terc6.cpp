@@ -15,7 +15,7 @@ using namespace std::literals;
 #pragma comment(lib,"Architecture")
 
 
-class CPUTest : public ::testing::Test
+class CPUTest : public ::testing::Test , public Architecture::IOPorts
 {
 protected:
 
@@ -27,12 +27,26 @@ protected:
     {
     }
 
-    Architecture::RWMemoryBlock               code {Architecture::sixTrit::codeSize};    
-    Architecture::RWMemoryBlock               data {Architecture::sixTrit::dataSize};    
-    Architecture::RWMemoryBlock               stack{Architecture::sixTrit::stackSize};    
-    Architecture::DummyIOPorts                ioPorts;
+    virtual Architecture::Exception  out(const tryte    port,  const tryte    data)
+    {
+        outs.emplace_back(port,data);
+        return Architecture::Exception::Okay;
+    }
 
-    Architecture::sixTrit::CPU    cpu{code,data,stack,ioPorts};
+    virtual Architecture::Exception  in (const tryte    port,        tryte   &result)
+    {
+        ins.emplace_back(port);
+        result=tryte{ static_cast<int>(ins.size()) };
+        return Architecture::Exception::Okay;
+    }
+
+    Architecture::RWMemoryBlock         code {Architecture::sixTrit::codeSize};    
+    Architecture::RWMemoryBlock         data {Architecture::sixTrit::dataSize};    
+    Architecture::RWMemoryBlock         stack{Architecture::sixTrit::stackSize};    
+
+    Architecture::sixTrit::CPU          cpu{code,data,stack,*this};
+
+
 
 
     void Assemble(Architecture::sixTrit::OpCode   opcode,
@@ -47,6 +61,9 @@ protected:
     }
 
     int PC{0};
+
+    std::vector<std::pair<tryte,tryte>> outs;
+    std::vector<tryte>                  ins;
 
 };
 
@@ -124,10 +141,7 @@ TEST_F(CPUTest, DoubleFault)
     EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::RPC),  tryte{2});
     EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXC), tryte{Architecture::Exception::DoubleFault});
     EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXA), tryte{0});
-
 }
-
-
 
 
 TEST_F(CPUTest, Nop)
@@ -278,3 +292,40 @@ TEST_F(CPUTest, MovRrBadOperand)
     EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::R10),  tryte{0});
     EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXC), tryte{Architecture::Exception::InvalidRegister});
 }
+
+
+
+TEST_F(CPUTest, InOut)
+{
+    Assemble(Architecture::sixTrit::OpCode::MovIR,  Architecture::sixTrit::Register::Rn1, -42);
+
+    Assemble(Architecture::sixTrit::OpCode::Out,    Architecture::sixTrit::Register::Rn1, 1);
+    Assemble(Architecture::sixTrit::OpCode::Out,    Architecture::sixTrit::Register::Rn1, 2);
+
+    Assemble(Architecture::sixTrit::OpCode::In,     Architecture::sixTrit::Register::Rn2, 3);
+    Assemble(Architecture::sixTrit::OpCode::In,     Architecture::sixTrit::Register::Rn3, 4);
+
+    cpu.execute();
+    cpu.execute();
+    cpu.execute();
+    cpu.execute();
+    cpu.execute();
+
+    ASSERT_EQ( outs.size(), 2 );
+
+    EXPECT_EQ( outs[0].first,  tryte{1} );
+    EXPECT_EQ( outs[0].second, tryte{-42} );
+
+    EXPECT_EQ( outs[1].first,  tryte{2} );
+    EXPECT_EQ( outs[1].second, tryte{-42} );
+
+    ASSERT_EQ( ins.size(), 2 );
+    EXPECT_EQ( ins[0],  tryte{3} );
+    EXPECT_EQ( ins[1],  tryte{4} );
+
+    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::Rn2), tryte{1});
+    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::Rn3), tryte{2});
+
+    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXC), tryte{Architecture::Exception::Okay});
+}
+

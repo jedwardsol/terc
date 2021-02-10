@@ -1,20 +1,11 @@
 #pragma once
 
 #include "Arithmetic/tryte.h"
-
+#include "exception.h"
 
 namespace Architecture
 {
 
-enum  Exception         // min to max
-{
-    DoubleFault = -1,               // execute called after an exception
-    Okay        =  0,
-    Halted,
-    RanOffEnd,                      // should be some overflow pointing at RPC
-    InvalidOpCode,
-    InvalidRegister,
-};
 
 
 struct IOPorts

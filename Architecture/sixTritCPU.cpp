@@ -15,7 +15,12 @@ namespace Architecture::sixTrit
 
 void CPU::execute()
 {
-    if( reg(Register::REXC) !=  tryte{ Architecture::Exception::Okay})
+    if( reg(Register::REXC) ==  tryte{ Architecture::Exception::DoubleFault})
+    {
+        throw std::runtime_error{"Continue after double fault"};
+    }
+
+    if( reg(Register::REXC) >  tryte{ Architecture::Exception::Okay})
     {
         reg(Register::REXC) = tryte{Architecture::Exception::DoubleFault};
         return;
