@@ -134,11 +134,7 @@ public:
         Architecture::IOPorts             &ioPorts) : code   {code}, 
                                                       data   {data},  
                                                       ioPorts{ioPorts}
-    {
-
-
-
-    }
+    {}
 
     tryte &reg(Register  r)
     {
@@ -146,7 +142,7 @@ public:
 
         return registers.at(static_cast<int>(r) + registerOffset);
     }
-
+    // todo : replace with get/set & validation
 
     void    execute();
 
