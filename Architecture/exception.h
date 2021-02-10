@@ -17,9 +17,10 @@ enum  Exception         // min to max
 // positive exceptions are fatal
 
     Halted,
-    RanOffEnd,                      // should be some overflow pointing at RPC
+    BadPC,                      // negative, odd,  
     InvalidOpCode,
     InvalidRegister,
+    AccessViolation,            // bad address
     DoubleFault = std::numeric_limits<tryte>::max()     // execution after a fatal fault
 };
 

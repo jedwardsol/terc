@@ -26,7 +26,7 @@ try
     do
     {
         cpu.execute();
-    } while(cpu.reg(Architecture::sixTrit::Register::REXC) == Architecture::Exception::Halted);
+    } while(cpu.reg(Architecture::sixTrit::Register::REXC) <= 0);
 }
 catch(const std::exception &e)
 {

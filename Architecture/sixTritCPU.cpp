@@ -13,29 +13,53 @@
 namespace Architecture::sixTrit
 {
 
+void CPU::raiseException(Exception code, tryte PC)
+{
+    static auto exceptionPort = tryte{ static_cast<int>( KnownIOPorts::ExceptionOut)};
+           auto exceptionCode = tryte{ static_cast<int>( code)};
+
+    reg(Register::REXC) = exceptionCode;
+    reg(Register::REXA) = PC;
+
+
+    ioPorts.out( exceptionPort  ,exceptionCode);
+}
+
+
 void CPU::execute()
 {
-    if( reg(Register::REXC) ==  tryte{ Architecture::Exception::DoubleFault})
+    if( reg(Register::REXC) ==  tryte{ Exception::DoubleFault})
     {
         throw std::runtime_error{"Continue after double fault"};
     }
 
-    if( reg(Register::REXC) >  tryte{ Architecture::Exception::Okay})
+    if( reg(Register::REXC) >  tryte{ Exception::Okay})
     {
-        reg(Register::REXC) = tryte{Architecture::Exception::DoubleFault};
+        raiseException(Exception::DoubleFault, reg(Register::REXA));
         return;
     }
 
-    if( reg(Register::RPC) > tryte{ codeSize-2})
+    if( reg(Register::RPC) < tryte{ 0 })
     {
-        reg(Register::REXC) = tryte{Architecture::Exception::RanOffEnd};
-        reg(Register::REXA) = reg(Register::RPC);
+        raiseException(Exception::BadPC, reg(Register::RPC));
         return;
     }
 
     auto PC = reg(Register::RPC);
-    reg(Register::RPC) =  tryte { static_cast<int>(reg(Register::RPC))+2 };     // TODO do tryte arithmetic
-                                                                                // TODO can overflow here.  new excption
+
+
+
+    trit carry{};
+
+    reg(Register::RPC) =  halfAdder(reg(Register::RPC),tryte{2},carry);
+    
+    if(carry != 0)
+    {
+        reg(Register::RPC) =  PC;
+        raiseException(Exception::BadPC, PC);
+        return;
+    }
+    
 
 
     auto  first          = code[PC];
@@ -48,20 +72,19 @@ void CPU::execute()
     switch(opcode)
     {
     case OpCode::Halt:
-        reg(Register::REXC) = tryte{Architecture::Exception::Halted};
-        reg(Register::REXA) = PC;
+
+        raiseException(Exception::Halted, PC);
         break;
 
     case OpCode::Nop:
         break;
 
-    case OpCode::MovIR:
+    case OpCode::LoadImmediate:
 
         if(   opreg == Register::REXC
            || opreg == Register::REXA)
         {
-            reg(Register::REXC) = tryte{Architecture::Exception::InvalidRegister};
-            reg(Register::REXA) = PC;
+            raiseException(Exception::InvalidRegister, PC);
         }
         else
         {
@@ -70,18 +93,12 @@ void CPU::execute()
         break;
 
 
-    case OpCode::MovRR:
+    case OpCode::Copy:
 
         if(   opreg == Register::REXC
            || opreg == Register::REXA)
         {
-            reg(Register::REXC) = tryte{Architecture::Exception::InvalidRegister};
-            reg(Register::REXA) = PC;
-        }
-        else if(operand.trybbles().second != trybble{0})
-        {
-            reg(Register::REXC) = tryte{Architecture::Exception::InvalidRegister};
-            reg(Register::REXA) = PC;
+            raiseException(Exception::InvalidRegister, PC);
         }
         else
         {
@@ -92,19 +109,127 @@ void CPU::execute()
         break;
 
 
-    case OpCode::Invalid:
-    default:
-        reg(Register::REXC) = tryte{Architecture::Exception::InvalidOpCode};
-        reg(Register::REXA) = PC;
+
+    case OpCode::Out:
+
+        {
+            auto exception = ioPorts.out(operand.trybbles().first, reg(opreg));
+
+            if(exception != Exception::Okay)
+            {
+                raiseException(exception, PC);
+            }
+        }
+        break;
+
+    case OpCode::In:
+
+        {
+            auto exception = ioPorts.in(operand.trybbles().first, reg(opreg));
+
+            if(exception != Exception::Okay)
+            {
+                raiseException(exception, PC);
+            }
+        }
         break;
 
 
+    case OpCode::LoadData:
+        load(data,
+             opreg,
+             static_cast<sixTrit::Register>(operand.trybbles().first.operator int()),
+             operand.trybbles().second);
+
+        break;
+
+    case OpCode::LoadStack:
+        load(stack,
+             opreg,
+             static_cast<sixTrit::Register>(operand.trybbles().first.operator int()),
+             operand.trybbles().second);
+        break;
+
+    case OpCode::StoreData:
+        store(data,
+              opreg,
+              static_cast<sixTrit::Register>(operand.trybbles().first.operator int()),
+              operand.trybbles().second);
+        break;
+
+    case OpCode::StoreStack:
+        store(stack,
+              opreg,
+              static_cast<sixTrit::Register>(operand.trybbles().first.operator int()),
+              operand.trybbles().second);
+        break;
+
+
+    case OpCode::Invalid:
+    default:
+        raiseException(Exception::InvalidOpCode, PC);
+        break;
+    }
+}
+
+
+
+void CPU::load (RWMemoryBlock       &memory, 
+                sixTrit::Register   destReg,
+                sixTrit::Register   addressReg, 
+                trybble             offset)
+{
+    auto address = calculateAddress(addressReg, offset);
+
+    if(address)
+    {
+        try
+        {
+            reg(destReg) = memory[address.value()];
+        }
+        catch(std::out_of_range &)
+        {
+            raiseException(Exception::AccessViolation, reg(Register::RPC));
+        }
+    }
+}
+
+void CPU::store(RWMemoryBlock       &memory, 
+                sixTrit::Register   sourceReg,
+                sixTrit::Register   addressReg, 
+                trybble             offset)
+{
+    auto address = calculateAddress(addressReg, offset);
+
+    if(address)
+    {
+        try
+        {
+            memory[address.value()] = reg(sourceReg);
+        }
+        catch(std::out_of_range &)
+        {
+            raiseException(Exception::AccessViolation, reg(Register::RPC));
+        }
+    }
+}
+
+
+std::optional<tryte> CPU::calculateAddress(Architecture::sixTrit::Register   addressReg, 
+                                           trybble                           offset)
+{
+    auto address = reg(addressReg);
+
+    trit    carry;
+    address = halfAdder(address,offset,carry);
+
+    if(carry != 0)
+    {
+        raiseException(Exception::AccessViolation, reg(Register::RPC));
+        return std::nullopt;
     }
 
-
-
-
-
+    return address;
 }
 
 

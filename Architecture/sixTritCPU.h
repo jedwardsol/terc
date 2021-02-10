@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <array>
+#include <optional>
 
 #include "Arithmetic/Arithmetic.h"
 #include "Arithmetic/tryte.h"
@@ -80,16 +81,40 @@ Each instruction is 2 trytes
 
 enum  OpCode        // -13 to 13
 {
- // Opcode                  // register         operand                                             exceptions
+ // Opcode                  // register         operand                                                     exceptions
 
-    Invalid = -13,          // unused           unused                                              InvalidOpCode
-    Halt    =   0,          // unused           unused                                              Halted
-    Nop,                    // unused           unused                                              None
-    MovIR,                  // destination      immediate       // move immediate to register       InvalidRegister if destination = REXC, REXA
-    MovRR,                  // destination      low:source      // move register  to register       InvalidRegister if destination = REXC, REXA     InvalidRegister if source:high is not zero
+    Invalid = -13,          // unused           unused                                                      InvalidOpCode
+    Nop,                    // unused           unused                                                      InvalidOpCode
+    In11,                   // unused           unused                                                      InvalidOpCode
+    In10,                   // unused           unused                                                      InvalidOpCode
+    In9,                    // unused           unused                                                      InvalidOpCode
+    In8,                    // unused           unused                                                      InvalidOpCode
+    In7,                    // unused           unused                                                      InvalidOpCode
+    In6,                    // unused           unused                                                      InvalidOpCode
+    In5,                    // unused           unused                                                      InvalidOpCode
+    In4,                    // unused           unused                                                      InvalidOpCode
+    In3,                    // unused           unused                                                      InvalidOpCode
+    In2,                    // unused           unused                                                      InvalidOpCode
+    In1,                    // unused           unused                                                      InvalidOpCode
 
-    Out,                    // source           low:port        // move register to port            InvalidPort,  InvalidData
-    In,                     // destination      low:port        // move port to register            InvalidPort,  InvalidData
+    Halt    =   0,          // unused           unused                                                      Halted
+
+    LoadImmediate,          // destination      immediate                   dest = immediate                InvalidRegister if destination = REXC, REXA
+    Copy,                   // destination      low:source                  destination = source            InvalidRegister if destination = REXC, REXA     
+    Out,                    // source           low:port                    write source to port            InvalidPort,  InvalidData
+    In,                     // destination      low:port                    read port to destination        InvalidPort,  InvalidData
+
+    LoadData,               // destination      low:source high:offset      dest = [source+offset]          InvalidRegister if destination = REXC, REXA     
+    StoreData,              // source           low:dest   high:offset      [dest+offset] = source          
+    LoadStack,              // destination      low:source high:offset      dest = [source+offset]          InvalidRegister if destination = REXC, REXA     
+    StoreStack,             // sourcee          low:dest   high:offset      [dest+offset] = source          
+
+    I9,                     // unused           unused                                                      InvalidOpCode
+    I10,                    // unused           unused                                                      InvalidOpCode
+    I11,                    // unused           unused                                                      InvalidOpCode
+    I12,                    // unused           unused                                                      InvalidOpCode
+    I13,                    // unused           unused                                                      InvalidOpCode
+
 };
 
 
@@ -103,7 +128,7 @@ public:
     CPU(Architecture::ROMemoryBlock   &code, 
         Architecture::RWMemoryBlock   &data, 
         Architecture::RWMemoryBlock   &stack,
-        Architecture::IOPorts         &IOPorts) : code{code}, data{data}, stack{stack},  IOPorts{IOPorts}
+        Architecture::IOPorts         &ioPorts) : code{code}, data{data}, stack{stack},  ioPorts{ioPorts}
     {
         reg(Register::RSP)=tryte{stackSize};
     }
@@ -117,14 +142,28 @@ public:
 
 
     void    execute();
+    void    raiseException(Architecture::Exception code, tryte PC);
 
+    void    load (Architecture::RWMemoryBlock       &memory, 
+                  Architecture::sixTrit::Register   destReg,
+                  Architecture::sixTrit::Register   addressReg, 
+                  trybble                           offset);
+
+    void    store(Architecture::RWMemoryBlock       &memory, 
+                  Architecture::sixTrit::Register   sourceReg,
+                  Architecture::sixTrit::Register   addressReg, 
+                  trybble                           offset);
+
+    std::optional<tryte> calculateAddress(Architecture::sixTrit::Register   addressReg, 
+                                          trybble                           offset);
+   
 
 private:
 
     Architecture::ROMemoryBlock                       &code;
     Architecture::RWMemoryBlock                       &data;
     Architecture::RWMemoryBlock                       &stack;
-    Architecture::IOPorts                             &IOPorts;
+    Architecture::IOPorts                             &ioPorts;
 
     std::array<tryte,numRegisters>       registers{};
 

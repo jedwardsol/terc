@@ -33,9 +33,11 @@ struct DummyIOPorts : IOPorts
 };
 
 
-enum KnownIOPorts
+enum class KnownIOPorts
 {
-    ASCIIOut,
+    ExceptionOut = std::numeric_limits<tryte>::min(),
+
+    ASCIIOut     = 0,
     tryteOut,
 };
 
