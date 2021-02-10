@@ -54,9 +54,10 @@ protected:
     }
 
     Architecture::MemoryBlock           code {0,Architecture::sixTrit::recCodeSize};    
-    Architecture::MemoryBlock           data {0,Architecture::sixTrit::recDataSize};    
-    Architecture::MemoryBlock           stack{0,Architecture::sixTrit::recStackSize};    
-    Architecture::sixTrit::CPU          cpu  {code,data,stack,*this};
+    Architecture::MemoryBlock           data {Architecture::sixTrit::recStackSize,
+                                              Architecture::sixTrit::recDataSize};    
+
+    Architecture::sixTrit::CPU          cpu  {code,data,*this};
 
     void Assemble(Architecture::sixTrit::OpCode   opcode,
                   Architecture::sixTrit::Register reg,
@@ -97,11 +98,11 @@ TEST_F(CPUTest, InitialState)
 {
     EXPECT_EQ(code[0],  tryte{0});
     EXPECT_EQ(data[0],  tryte{0});
-    EXPECT_EQ(stack[0], tryte{0});
+    EXPECT_EQ(data[-1], tryte{0});
 
     EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::R0),   tryte{0});
     EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::RPC),  tryte{0});
-    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::RSP),  tryte{stack.positiveSize()});
+    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::RSP),  tryte{0});
     EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXC), tryte{Architecture::Exception::Okay});
 }
 
@@ -342,30 +343,31 @@ TEST_F(CPUTest, InOut)
 }
 
 
+
 TEST_F(CPUTest, DataLoadAndStore)
 {
-    auto addressReg = trybble{static_cast<int>(Architecture::sixTrit::Register::R0)};
+    auto addressReg = trybble{static_cast<int>(Architecture::sixTrit::Register::R13)};
+    int  value      = 201;
     int  address    = 281;
 
-    Assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::R0, address);
+    Assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::R13, address);
 
-    Assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::R1, 201);
-    Assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::R2, 202);
-    Assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::R3, 203);
+    Assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::Rn1, value-1);
+    Assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::R0,  value);
+    Assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::R1,  value+1);
 
+    Assemble(Architecture::sixTrit::OpCode::Store,          Architecture::sixTrit::Register::Rn1, addressReg, trybble{-1});      // write 201 to data[280]
+    Assemble(Architecture::sixTrit::OpCode::Store,          Architecture::sixTrit::Register::R0,  addressReg, trybble{ 0});      // write 202 to data[281]
+    Assemble(Architecture::sixTrit::OpCode::Store,          Architecture::sixTrit::Register::R1,  addressReg, trybble{+1});      // write 203 to data[282]
 
-    Assemble(Architecture::sixTrit::OpCode::StoreData,      Architecture::sixTrit::Register::R1, addressReg, trybble{-1});      // write 201 to data[280]
-    Assemble(Architecture::sixTrit::OpCode::StoreData,      Architecture::sixTrit::Register::R2, addressReg, trybble{ 0});      // write 202 to data[281]
-    Assemble(Architecture::sixTrit::OpCode::StoreData,      Architecture::sixTrit::Register::R3, addressReg, trybble{+1});      // write 203 to data[282]
-
-
-    Assemble(Architecture::sixTrit::OpCode::LoadData,       Architecture::sixTrit::Register::R4, addressReg, trybble{-1});      // load from data[280]
-    Assemble(Architecture::sixTrit::OpCode::LoadData,       Architecture::sixTrit::Register::R5, addressReg, trybble{ 0});      // load from data[281]
-    Assemble(Architecture::sixTrit::OpCode::LoadData,       Architecture::sixTrit::Register::R6, addressReg, trybble{+1});      // load from data[282]
+    Assemble(Architecture::sixTrit::OpCode::Load,           Architecture::sixTrit::Register::R4,  addressReg, trybble{-1});      // load from data[280]
+//  Assemble(Architecture::sixTrit::OpCode::Nop,            Architecture::sixTrit::Register::R0,  1);                            // break
+    Assemble(Architecture::sixTrit::OpCode::Load,           Architecture::sixTrit::Register::R5,  addressReg, trybble{ 0});      // load from data[281]
+    Assemble(Architecture::sixTrit::OpCode::Load,           Architecture::sixTrit::Register::R6,  addressReg, trybble{+1});      // load from data[282]
 
 
     ASSERT_EQ( data[address-1],0);
-    ASSERT_EQ( data[address],0);
+    ASSERT_EQ( data[address],  0);
     ASSERT_EQ( data[address+1],0);
 
     ASSERT_EQ( cpu.reg(Architecture::sixTrit::Register::R4),0);
@@ -378,13 +380,13 @@ TEST_F(CPUTest, DataLoadAndStore)
     } while(cpu.reg(Architecture::sixTrit::Register::REXC) <=0 );
 
 
-    EXPECT_EQ( data[address-1],201);
-    EXPECT_EQ( data[address],202);
-    EXPECT_EQ( data[address+1],203);
+    EXPECT_EQ( data[address-1],value-1);
+    EXPECT_EQ( data[address],  value);
+    EXPECT_EQ( data[address+1],value+1);
 
-    EXPECT_EQ( cpu.reg(Architecture::sixTrit::Register::R4),201);
-    EXPECT_EQ( cpu.reg(Architecture::sixTrit::Register::R5),202);
-    EXPECT_EQ( cpu.reg(Architecture::sixTrit::Register::R6),203);
+    EXPECT_EQ( cpu.reg(Architecture::sixTrit::Register::R4),value-1);
+    EXPECT_EQ( cpu.reg(Architecture::sixTrit::Register::R5),value);
+    EXPECT_EQ( cpu.reg(Architecture::sixTrit::Register::R6),value+1);
 }
 
 
@@ -393,25 +395,27 @@ TEST_F(CPUTest, DataLoadAndStore)
 TEST_F(CPUTest, StackLoadAndStore)
 {
     auto addressReg = trybble{static_cast<int>(Architecture::sixTrit::Register::RSP)};
-    int  address    = 30;
+    int  value      = 123;
+    int  address    = -30;
 
     Assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::RSP, address);
 
-    Assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::R1, -301);
-    Assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::R2, -302);
-    Assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::R3, -303);
+    Assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::Rn1, value-1);
+    Assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::R0,  value);
+    Assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::R1,  value+1);
 
-    Assemble(Architecture::sixTrit::OpCode::StoreStack,     Architecture::sixTrit::Register::R1, addressReg, trybble{-1});      // write -301 to stack[30]
-    Assemble(Architecture::sixTrit::OpCode::StoreStack,     Architecture::sixTrit::Register::R2, addressReg, trybble{ 0});      // write -302 to stack[31]
-    Assemble(Architecture::sixTrit::OpCode::StoreStack,     Architecture::sixTrit::Register::R3, addressReg, trybble{+1});      // write -303 to stack[32]
+    Assemble(Architecture::sixTrit::OpCode::Store,      Architecture::sixTrit::Register::Rn1, addressReg, trybble{-1});      // write 201 to data[280]
+    Assemble(Architecture::sixTrit::OpCode::Store,      Architecture::sixTrit::Register::R0,  addressReg, trybble{ 0});      // write 202 to data[281]
+    Assemble(Architecture::sixTrit::OpCode::Store,      Architecture::sixTrit::Register::R1,  addressReg, trybble{+1});      // write 203 to data[282]
 
-    Assemble(Architecture::sixTrit::OpCode::LoadStack,      Architecture::sixTrit::Register::R4, addressReg, trybble{-1});      // read from stack[30]
-    Assemble(Architecture::sixTrit::OpCode::LoadStack,      Architecture::sixTrit::Register::R5, addressReg, trybble{ 0});      // read from stack[31]
-    Assemble(Architecture::sixTrit::OpCode::LoadStack,      Architecture::sixTrit::Register::R6, addressReg, trybble{+1});      // read from stack[32]
+    Assemble(Architecture::sixTrit::OpCode::Load,       Architecture::sixTrit::Register::R4, addressReg, trybble{-1});      // load from data[280]
+    Assemble(Architecture::sixTrit::OpCode::Load,       Architecture::sixTrit::Register::R5, addressReg, trybble{ 0});      // load from data[281]
+    Assemble(Architecture::sixTrit::OpCode::Load,       Architecture::sixTrit::Register::R6, addressReg, trybble{+1});      // load from data[282]
 
-    ASSERT_EQ( stack[address-1],0);
-    ASSERT_EQ( stack[address],0);
-    ASSERT_EQ( stack[address+1],0);
+
+    ASSERT_EQ( data[address-1],0);
+    ASSERT_EQ( data[address],  0);
+    ASSERT_EQ( data[address+1],0);
 
     ASSERT_EQ( cpu.reg(Architecture::sixTrit::Register::R4),0);
     ASSERT_EQ( cpu.reg(Architecture::sixTrit::Register::R5),0);
@@ -423,22 +427,22 @@ TEST_F(CPUTest, StackLoadAndStore)
     } while(cpu.reg(Architecture::sixTrit::Register::REXC) <=0 );
 
 
-    EXPECT_EQ( stack[address-1],-301);
-    EXPECT_EQ( stack[address],-302);
-    EXPECT_EQ( stack[address+1],-303);
+    EXPECT_EQ( data[address-1],value-1);
+    EXPECT_EQ( data[address],  value);
+    EXPECT_EQ( data[address+1],value+1);
 
-    EXPECT_EQ( cpu.reg(Architecture::sixTrit::Register::R4),-301);
-    EXPECT_EQ( cpu.reg(Architecture::sixTrit::Register::R5),-302);
-    EXPECT_EQ( cpu.reg(Architecture::sixTrit::Register::R6),-303);
+    EXPECT_EQ( cpu.reg(Architecture::sixTrit::Register::R4),value-1);
+    EXPECT_EQ( cpu.reg(Architecture::sixTrit::Register::R5),value);
+    EXPECT_EQ( cpu.reg(Architecture::sixTrit::Register::R6),value+1);
 }
 
 TEST_F(CPUTest, AccessViolation)
 {
     auto addressReg = trybble{static_cast<int>(Architecture::sixTrit::Register::RSP)};
-    int  address    = 100;  // stack is 81
+    int  address    = -100;  // stack is 81
 
     Assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::RSP, address);
-    Assemble(Architecture::sixTrit::OpCode::LoadStack,      Architecture::sixTrit::Register::R5, addressReg, trybble{ 0});      // read from stack[100]
+    Assemble(Architecture::sixTrit::OpCode::Load,           Architecture::sixTrit::Register::R5, addressReg, trybble{ 0});      // read from stack[-100]
 
     cpu.execute();
     cpu.execute();
@@ -452,10 +456,10 @@ TEST_F(CPUTest, PushPop)
 {
     auto rsp = Architecture::sixTrit::Register::RSP;
 
-    ASSERT_EQ( cpu.reg(rsp), stack.positiveSize() );
-    ASSERT_EQ( stack[ stack.positiveSize() - 1] , 0 );
-    ASSERT_EQ( stack[ stack.positiveSize() - 2] , 0 );
-    ASSERT_EQ( stack[ stack.positiveSize() - 3] , 0 );
+    ASSERT_EQ( cpu.reg(rsp), 0 );
+    ASSERT_EQ( data[-1] , 0 );
+    ASSERT_EQ( data[-2] , 0 );
+    ASSERT_EQ( data[-3] , 0 );
 
     Assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::R0, 42);
     cpu.execute();
@@ -463,40 +467,39 @@ TEST_F(CPUTest, PushPop)
 
     Assemble(Architecture::sixTrit::OpCode::Push,           Architecture::sixTrit::Register::R0, 0 );
     cpu.execute();
-    EXPECT_EQ( cpu.reg(rsp), stack.positiveSize()-1 );
-    EXPECT_EQ( stack[ stack.positiveSize() - 1] , 42 );
+    EXPECT_EQ( cpu.reg(rsp), -1 );
+    EXPECT_EQ( data[ -1] , 42 );
 
     Assemble(Architecture::sixTrit::OpCode::Push,           Architecture::sixTrit::Register::R0, 0 );
     cpu.execute();
-    EXPECT_EQ( cpu.reg(rsp), stack.positiveSize()-2 );
-    EXPECT_EQ( stack[ stack.positiveSize() - 2] , 42 );
+    EXPECT_EQ( cpu.reg(rsp), -2 );
+    EXPECT_EQ( data[ -2] , 42 );
 
     Assemble(Architecture::sixTrit::OpCode::Push,           Architecture::sixTrit::Register::R0, 0 );
     cpu.execute();
-    EXPECT_EQ( cpu.reg(rsp), stack.positiveSize()-3 );
-    EXPECT_EQ( stack[ stack.positiveSize() - 3] , 42 );
+    EXPECT_EQ( cpu.reg(rsp), -3 );
+    EXPECT_EQ( data[ -3] , 42 );
 
 
 //--
 
     Assemble(Architecture::sixTrit::OpCode::Pop,            Architecture::sixTrit::Register::R1, 0 );
     cpu.execute();
-    EXPECT_EQ( cpu.reg(rsp), stack.positiveSize()-2 );
+    EXPECT_EQ( cpu.reg(rsp), -2 );
     EXPECT_EQ( cpu.reg(Register::R1), 42 );
 
     Assemble(Architecture::sixTrit::OpCode::Pop,            Architecture::sixTrit::Register::R2, 0 );
     cpu.execute();
-    EXPECT_EQ( cpu.reg(rsp), stack.positiveSize()-1 );
+    EXPECT_EQ( cpu.reg(rsp), -1 );
     EXPECT_EQ( cpu.reg(Register::R2), 42 );
 
     Assemble(Architecture::sixTrit::OpCode::Pop,            Architecture::sixTrit::Register::R3, 0 );
     cpu.execute();
-    EXPECT_EQ( cpu.reg(rsp), stack.positiveSize() );
+    EXPECT_EQ( cpu.reg(rsp), 0 );
     EXPECT_EQ( cpu.reg(Register::R3), 42 );
 
 
     EXPECT_NE( cpu.reg(Register::REXC), Architecture::Exception::AccessViolation );
-
 }
 
 
@@ -505,14 +508,19 @@ TEST_F(CPUTest, StackOverflow)
 {
     auto rsp = Architecture::sixTrit::Register::RSP;
 
-    ASSERT_EQ( cpu.reg(rsp), stack.positiveSize() );
+    ASSERT_EQ( cpu.reg(rsp), 0 );
 
     Assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::R0, 42);
 
-    for(int i=0;i<=stack.positiveSize();i++)
+    auto stackSize = -data.negativeSize();
+
+    for(int i=0;i < stackSize;i++)
     {
         Assemble(Architecture::sixTrit::OpCode::Push,           Architecture::sixTrit::Register::R0, 0 );
     }
+
+//  Assemble(Architecture::sixTrit::OpCode::Nop,            Architecture::sixTrit::Register::R0,  1);                            // break
+    Assemble(Architecture::sixTrit::OpCode::Push,           Architecture::sixTrit::Register::R0, 0 );
 
 
     do
@@ -523,8 +531,8 @@ TEST_F(CPUTest, StackOverflow)
 
 
     EXPECT_EQ( cpu.reg(Register::REXC), Architecture::Exception::AccessViolation );
-    EXPECT_EQ( cpu.reg(rsp), -1 );
-    EXPECT_EQ( stack[ 0 ] , 42 );
+    EXPECT_EQ( cpu.reg(rsp), data.negativeSize()-1);
+    EXPECT_EQ( data[ -1 ] , 42 );
 
 }
 
@@ -535,7 +543,7 @@ TEST_F(CPUTest, StackUnderflow)
 {
     auto rsp = Architecture::sixTrit::Register::RSP;
 
-    ASSERT_EQ( cpu.reg(rsp), stack.positiveSize() );
+    ASSERT_EQ( cpu.reg(rsp), 0 );
 
     Assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::R0, 42);
 
@@ -544,11 +552,13 @@ TEST_F(CPUTest, StackUnderflow)
         Assemble(Architecture::sixTrit::OpCode::Push,           Architecture::sixTrit::Register::R0, i+42 );
     }
 
-    for(int i=0;i<4;i++)
+    for(int i=0;i<3;i++)
     {
         Assemble(Architecture::sixTrit::OpCode::Pop,           Architecture::sixTrit::Register::R0, 0 );
     }
 
+    Assemble(Architecture::sixTrit::OpCode::Nop,            Architecture::sixTrit::Register::R0,  1);                            // break
+    Assemble(Architecture::sixTrit::OpCode::Pop,           Architecture::sixTrit::Register::R0, 0 );
 
     do
     {
@@ -559,5 +569,5 @@ TEST_F(CPUTest, StackUnderflow)
 
     EXPECT_EQ( cpu.reg(Register::REXC), Architecture::Exception::AccessViolation );
     EXPECT_EQ( cpu.reg(Register::R0),   42 );
-    EXPECT_EQ( cpu.reg(rsp), stack.positiveSize() );
+    EXPECT_EQ( cpu.reg(rsp), 0 );
 }

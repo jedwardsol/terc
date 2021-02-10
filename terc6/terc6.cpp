@@ -18,10 +18,9 @@ try
 {
     const Architecture::MemoryBlock     code {".code" };        
           Architecture::MemoryBlock     data {".data" , ".data.final" };        
-          Architecture::MemoryBlock     stack{".stack", ".stack.final"};        
           Architecture::DummyIOPorts    ioPorts;
 
-    Architecture::sixTrit::CPU    cpu{code,data,stack,ioPorts};
+    Architecture::sixTrit::CPU    cpu{code,data,ioPorts};
 
     do
     {

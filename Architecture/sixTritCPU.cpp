@@ -1,3 +1,5 @@
+#define NOMINMAX
+#include <Windows.h>
 
 #include <vector>
 #include <array>
@@ -148,31 +150,15 @@ void CPU::execute()
         break;
 
 
-    case OpCode::LoadData:
-        load(data,
-             opreg,
+    case OpCode::Load:
+        load(opreg,
              static_cast<sixTrit::Register>(operand.trybbles().first.operator int()),
              operand.trybbles().second);
 
         break;
 
-    case OpCode::LoadStack:
-        load(stack,
-             opreg,
-             static_cast<sixTrit::Register>(operand.trybbles().first.operator int()),
-             operand.trybbles().second);
-        break;
-
-    case OpCode::StoreData:
-        store(data,
-              opreg,
-              static_cast<sixTrit::Register>(operand.trybbles().first.operator int()),
-              operand.trybbles().second);
-        break;
-
-    case OpCode::StoreStack:
-        store(stack,
-              opreg,
+    case OpCode::Store:
+        store(opreg,
               static_cast<sixTrit::Register>(operand.trybbles().first.operator int()),
               operand.trybbles().second);
         break;
@@ -193,6 +179,12 @@ void CPU::execute()
         break;
 
     case OpCode::Nop:
+
+        if(operand != 0)
+        {
+            if(::IsDebuggerPresent()) __debugbreak();
+        }
+
         break;
 
     case OpCode::Invalid:
@@ -208,8 +200,7 @@ void CPU::execute()
 
 
 
-void CPU::load (MemoryBlock         &memory, 
-                sixTrit::Register   destReg,
+void CPU::load (sixTrit::Register   destReg,
                 sixTrit::Register   addressReg, 
                 trybble             offset)
 {
@@ -219,7 +210,7 @@ void CPU::load (MemoryBlock         &memory,
     {
         try
         {
-            reg(destReg) = memory[address.value()];
+            reg(destReg) = data[address.value()];
         }
         catch(const std::out_of_range &)
         {
@@ -228,8 +219,7 @@ void CPU::load (MemoryBlock         &memory,
     }
 }
 
-void CPU::store(MemoryBlock         &memory, 
-                sixTrit::Register   sourceReg,
+void CPU::store(sixTrit::Register   sourceReg,
                 sixTrit::Register   addressReg, 
                 trybble             offset)
 {
@@ -239,7 +229,7 @@ void CPU::store(MemoryBlock         &memory,
     {
         try
         {
-            memory[address.value()] = reg(sourceReg);
+            data[address.value()] = reg(sourceReg);
         }
         catch(const std::out_of_range &)
         {
@@ -272,14 +262,21 @@ void CPU::push (Architecture::sixTrit::Register   sourceReg)
     
     if(address)
     {
-        try
-        {
-            reg(Register::RSP) = address.value();
-            stack[address.value()] = reg(sourceReg);
-        }
-        catch(const std::out_of_range &)
+        if(address.value() >= 0)
         {
             raiseException(Exception::AccessViolation, reg(Register::RPC));
+        }
+        else
+        {
+            try
+            {
+                reg(Register::RSP) = address.value();
+                data[address.value()] = reg(sourceReg);
+            }
+            catch(const std::out_of_range &)
+            {
+                raiseException(Exception::AccessViolation, reg(Register::RPC));
+            }
         }
     }
 }
@@ -291,14 +288,21 @@ void CPU::pop  (Architecture::sixTrit::Register   destReg)
     
     if(newAddress)
     {
-        try
-        {
-            reg(destReg)       = stack[currentAddress] ;
-            reg(Register::RSP) = newAddress.value();
-        }
-        catch(const std::out_of_range &)
+        if(newAddress.value() > 0)
         {
             raiseException(Exception::AccessViolation, reg(Register::RPC));
+        }
+        else
+        {
+            try
+            {
+                reg(destReg)       = data[currentAddress] ;
+                reg(Register::RSP) = newAddress.value();
+            }
+            catch(const std::out_of_range &)
+            {
+                raiseException(Exception::AccessViolation, reg(Register::RPC));
+            }
         }
     }
 }

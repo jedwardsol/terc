@@ -25,7 +25,7 @@ public:
 
     int negativeSize() const noexcept 
     {
-        return zeroOffset;
+        return -zeroOffset;
     }
 
     int positiveSize() const noexcept 

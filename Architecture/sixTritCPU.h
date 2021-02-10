@@ -13,7 +13,6 @@
 #include "IOPorts.h"
 
 
-// TODO : use negative address in data section for stack
 
 namespace Architecture::sixTrit
 {
@@ -78,8 +77,6 @@ Each instruction is 2 trytes
         low trybble     :   opcode
         high trybble    :   register
     second tryte        :   arbitrary argument
-
- 
  
 */
 
@@ -90,7 +87,7 @@ enum  OpCode        // -13 to 13
  // Opcode                  // register         operand                                                             exceptions
                                                                    
     Invalid = -13,          // unused           unused                                                              InvalidOpCode
-    Nop,                    // unused           unused                                                              InvalidOpCode
+    Nop,                    // unused           break                                                               InvalidOpCode
     In11,                   // unused           unused                                                              InvalidOpCode
     In10,                   // unused           unused                                                              InvalidOpCode
     In9,                    // unused           unused                                                              InvalidOpCode
@@ -110,13 +107,14 @@ enum  OpCode        // -13 to 13
     Out,                    // source           low:port                            write source to port            InvalidPort,  InvalidData
     In,                     // destination      low:port                            read port to destination        InvalidPort,  InvalidData
                                                                    
-    LoadData,               // destination      low:regsource      high:offset      dest = [source+offset]          AccessViolation is address is out of range.  InvalidRegister if destination = REXC, REXA     
-    StoreData,              // source           low:regdest        high:offset      [dest+offset] = source          AccessViolation is address is out of range.  
-    LoadStack,              // destination      low:regsource      high:offset      dest = [source+offset]          AccessViolation is address is out of range.  InvalidRegister if destination = REXC, REXA     
-    StoreStack,             // source           low:regdest        high:offset      [dest+offset] = source          AccessViolation is address is out of range.  
+    Load,                   // destination      low:regsource      high:offset      dest = [source+offset]          AccessViolation is address is out of range.  InvalidRegister if destination = REXC, REXA     
+    Store,                  // source           low:regdest        high:offset      [dest+offset] = source          AccessViolation is address is out of range.  
                                                                    
     Push,                   // source           unused                              SP-- stack[SP]=src              StackOverflow if stack is full
     Pop,                    // destination      unused                              dest=stack[SP] SP++             StackOverflow if stack is empty
+
+    I9,                     // unused           unused                                                              InvalidOpCode
+    I10,                    // unused           unused                                                              InvalidOpCode
     I11,                    // unused           unused                                                              InvalidOpCode
     I12,                    // unused           unused                                                              InvalidOpCode
     I13,                    // unused           unused                                                              InvalidOpCode
@@ -133,10 +131,13 @@ public:
 
     CPU(Architecture::MemoryBlock   const &code, 
         Architecture::MemoryBlock         &data, 
-        Architecture::MemoryBlock         &stack,
-        Architecture::IOPorts             &ioPorts) : code{code}, data{data}, stack{stack},  ioPorts{ioPorts}
+        Architecture::IOPorts             &ioPorts) : code   {code}, 
+                                                      data   {data},  
+                                                      ioPorts{ioPorts}
     {
-        reg(Register::RSP)=tryte{stack.positiveSize()};
+
+
+
     }
 
     tryte &reg(Register  r)
@@ -156,13 +157,11 @@ private:
 
     void    raiseException(Architecture::Exception code, tryte PC);
 
-    void    load (Architecture::MemoryBlock        &memory, 
-                  Architecture::sixTrit::Register   destReg,
+    void    load (Architecture::sixTrit::Register   destReg,
                   Architecture::sixTrit::Register   addressReg, 
                   trybble                           offset);
 
-    void    store(Architecture::MemoryBlock        &memory, 
-                  Architecture::sixTrit::Register   sourceReg,
+    void    store(Architecture::sixTrit::Register   sourceReg,
                   Architecture::sixTrit::Register   addressReg, 
                   trybble                           offset);
 
@@ -179,7 +178,6 @@ private:
 
     Architecture::MemoryBlock const                   &code;
     Architecture::MemoryBlock                         &data;
-    Architecture::MemoryBlock                         &stack;
     Architecture::IOPorts                             &ioPorts;
 
     std::array<tryte,numRegisters>                     registers{};
