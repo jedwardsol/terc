@@ -25,7 +25,7 @@ void CPU::raiseException(Exception code, tryte PC)
     ioPorts.out( exceptionPort  ,exceptionCode);
 }
 
-bool    CPU::updatePC()
+bool    CPU::checkPC()
 {
     if( reg(Register::REXC) ==  tryte{ Exception::DoubleFault})
     {
@@ -45,24 +45,29 @@ bool    CPU::updatePC()
         return false;
     }
 
-    if( reg(Register::RPC) >= code.size())
+    if( reg(Register::RPC) >= code.size()-1)
     {
         raiseException(Exception::BadPC, reg(Register::RPC));
         return false;
     }
 
+    // TODO : check for odd
 
+    return true;
+}
+
+bool    CPU::updatePC()
+{
     trit carry{};
 
     auto newPC =  halfAdder(reg(Register::RPC),tryte{2},carry);
     
     if(carry != 0)
     {
-        raiseException(Exception::BadPC, currentPC);
+        raiseException(Exception::BadPC, reg(Register::RPC));
         return false;
     }
     
-    currentPC = reg(Register::RPC);
     reg(Register::RPC) = newPC;
 
     return true;
@@ -71,14 +76,14 @@ bool    CPU::updatePC()
 
 void CPU::execute()
 {
-    if(!updatePC())
+    if(!checkPC())
     {
         return;
     }
 
 
-    auto  operation      = code[currentPC];
-    auto  operand        = code[currentPC+1];
+    auto  operation      = code[reg(Register::RPC)];
+    auto  operand        = code[reg(Register::RPC)+1];
 
     auto opcode = static_cast<OpCode>  (static_cast<int>(operation.trybbles().first));
     auto opreg  = static_cast<Register>(static_cast<int>(operation.trybbles().second));
@@ -92,7 +97,7 @@ void CPU::execute()
         if(   opreg == Register::REXC
            || opreg == Register::REXA)
         {
-            raiseException(Exception::InvalidRegister, currentPC);
+            raiseException(Exception::InvalidRegister, reg(Register::RPC));
         }
         else
         {
@@ -106,7 +111,7 @@ void CPU::execute()
         if(   opreg == Register::REXC
            || opreg == Register::REXA)
         {
-            raiseException(Exception::InvalidRegister, currentPC);
+            raiseException(Exception::InvalidRegister, reg(Register::RPC));
         }
         else
         {
@@ -125,7 +130,7 @@ void CPU::execute()
 
             if(exception != Exception::Okay)
             {
-                raiseException(exception, currentPC);
+                raiseException(exception, reg(Register::RPC));
             }
         }
         break;
@@ -137,7 +142,7 @@ void CPU::execute()
 
             if(exception != Exception::Okay)
             {
-                raiseException(exception, currentPC);
+                raiseException(exception, reg(Register::RPC));
             }
         }
         break;
@@ -184,7 +189,7 @@ void CPU::execute()
 
 
     case OpCode::Halt:
-        raiseException(Exception::Halted, currentPC);
+        raiseException(Exception::Halted, reg(Register::RPC));
         break;
 
     case OpCode::Nop:
@@ -192,9 +197,13 @@ void CPU::execute()
 
     case OpCode::Invalid:
     default:
-        raiseException(Exception::InvalidOpCode, currentPC);
+        raiseException(Exception::InvalidOpCode, reg(Register::RPC));
         break;
     }
+
+
+    updatePC();
+
 }
 
 
@@ -214,7 +223,7 @@ void CPU::load (RWMemoryBlock       &memory,
         }
         catch(const std::out_of_range &)
         {
-            raiseException(Exception::AccessViolation, currentPC);
+            raiseException(Exception::AccessViolation, reg(Register::RPC));
         }
     }
 }
@@ -234,7 +243,7 @@ void CPU::store(RWMemoryBlock       &memory,
         }
         catch(const std::out_of_range &)
         {
-            raiseException(Exception::AccessViolation, currentPC);
+            raiseException(Exception::AccessViolation, reg(Register::RPC));
         }
     }
 }
@@ -250,7 +259,7 @@ std::optional<tryte> CPU::calculateAddress(Architecture::sixTrit::Register   add
 
     if(carry != 0)
     {
-        raiseException(Exception::AccessViolation, currentPC);
+        raiseException(Exception::AccessViolation, reg(Register::RPC));
         return std::nullopt;
     }
 
@@ -270,7 +279,7 @@ void CPU::push (Architecture::sixTrit::Register   sourceReg)
         }
         catch(const std::out_of_range &)
         {
-            raiseException(Exception::AccessViolation, currentPC);
+            raiseException(Exception::AccessViolation, reg(Register::RPC));
         }
     }
 }
@@ -289,7 +298,7 @@ void CPU::pop  (Architecture::sixTrit::Register   destReg)
         }
         catch(const std::out_of_range &)
         {
-            raiseException(Exception::AccessViolation, currentPC);
+            raiseException(Exception::AccessViolation, reg(Register::RPC));
         }
     }
 }

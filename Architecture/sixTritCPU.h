@@ -151,6 +151,7 @@ public:
 
 private:
 
+    bool    checkPC();
     bool    updatePC();
 
     void    raiseException(Architecture::Exception code, tryte PC);
@@ -182,7 +183,6 @@ private:
     Architecture::IOPorts                             &ioPorts;
 
     std::array<tryte,numRegisters>                     registers{};
-    tryte                                              currentPC;
 
 };
 
