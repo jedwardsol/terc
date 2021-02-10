@@ -18,6 +18,8 @@ using namespace std::literals;
 #pragma comment(lib,"Architecture")
 
 
+using namespace Architecture::sixTrit;
+
 class CPUTest : public ::testing::Test , public Architecture::IOPorts
 {
 protected:
@@ -34,7 +36,10 @@ protected:
     {
         if( static_cast<Architecture::KnownIOPorts>(static_cast<int>(port)) == Architecture::KnownIOPorts::ExceptionOut)
         {
-            std::cout << "Exception " << data << " raised at address " << cpu.reg(Architecture::sixTrit::Register::REXA) << "\n";
+            if(data > 1)
+            {
+                std::cout << "                 Exception " << data << " raised at address " << cpu.reg(Architecture::sixTrit::Register::REXA) << "\n";
+            }
         }
 
         outs.emplace_back(port,data);
@@ -51,11 +56,7 @@ protected:
     Architecture::RWMemoryBlock         code {Architecture::sixTrit::recCodeSize};    
     Architecture::RWMemoryBlock         data {Architecture::sixTrit::recDataSize};    
     Architecture::RWMemoryBlock         stack{Architecture::sixTrit::recStackSize};    
-
-    Architecture::sixTrit::CPU          cpu{code,data,stack,*this};
-
-
-
+    Architecture::sixTrit::CPU          cpu  {code,data,stack,*this};
 
     void Assemble(Architecture::sixTrit::OpCode   opcode,
                   Architecture::sixTrit::Register reg,
@@ -446,3 +447,118 @@ TEST_F(CPUTest, AccessViolation)
     EXPECT_EQ( cpu.reg(Architecture::sixTrit::Register::REXC),Architecture::Exception::AccessViolation);
 }
 
+
+TEST_F(CPUTest, PushPop)
+{
+    auto rsp = Architecture::sixTrit::Register::RSP;
+
+    ASSERT_EQ( cpu.reg(rsp), stack.size() );
+    ASSERT_EQ( stack[ stack.size() - 1] , 0 );
+    ASSERT_EQ( stack[ stack.size() - 2] , 0 );
+    ASSERT_EQ( stack[ stack.size() - 3] , 0 );
+
+    Assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::R0, 42);
+    cpu.execute();
+
+
+    Assemble(Architecture::sixTrit::OpCode::Push,           Architecture::sixTrit::Register::R0, 0 );
+    cpu.execute();
+    EXPECT_EQ( cpu.reg(rsp), stack.size()-1 );
+    EXPECT_EQ( stack[ stack.size() - 1] , 42 );
+
+    Assemble(Architecture::sixTrit::OpCode::Push,           Architecture::sixTrit::Register::R0, 0 );
+    cpu.execute();
+    EXPECT_EQ( cpu.reg(rsp), stack.size()-2 );
+    EXPECT_EQ( stack[ stack.size() - 2] , 42 );
+
+    Assemble(Architecture::sixTrit::OpCode::Push,           Architecture::sixTrit::Register::R0, 0 );
+    cpu.execute();
+    EXPECT_EQ( cpu.reg(rsp), stack.size()-3 );
+    EXPECT_EQ( stack[ stack.size() - 3] , 42 );
+
+
+//--
+
+    Assemble(Architecture::sixTrit::OpCode::Pop,            Architecture::sixTrit::Register::R1, 0 );
+    cpu.execute();
+    EXPECT_EQ( cpu.reg(rsp), stack.size()-2 );
+    EXPECT_EQ( cpu.reg(Register::R1), 42 );
+
+    Assemble(Architecture::sixTrit::OpCode::Pop,            Architecture::sixTrit::Register::R2, 0 );
+    cpu.execute();
+    EXPECT_EQ( cpu.reg(rsp), stack.size()-1 );
+    EXPECT_EQ( cpu.reg(Register::R2), 42 );
+
+    Assemble(Architecture::sixTrit::OpCode::Pop,            Architecture::sixTrit::Register::R3, 0 );
+    cpu.execute();
+    EXPECT_EQ( cpu.reg(rsp), stack.size() );
+    EXPECT_EQ( cpu.reg(Register::R3), 42 );
+
+
+    EXPECT_NE( cpu.reg(Register::REXC), Architecture::Exception::AccessViolation );
+
+}
+
+
+
+TEST_F(CPUTest, StackOverflow)
+{
+    auto rsp = Architecture::sixTrit::Register::RSP;
+
+    ASSERT_EQ( cpu.reg(rsp), stack.size() );
+
+    Assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::R0, 42);
+
+    for(int i=0;i<=stack.size();i++)
+    {
+        Assemble(Architecture::sixTrit::OpCode::Push,           Architecture::sixTrit::Register::R0, 0 );
+    }
+
+
+    do
+    {
+        cpu.execute();
+    } while(cpu.reg(Architecture::sixTrit::Register::REXC) <=0 );
+
+
+
+    EXPECT_EQ( cpu.reg(Register::REXC), Architecture::Exception::AccessViolation );
+    EXPECT_EQ( cpu.reg(rsp), -1 );
+    EXPECT_EQ( stack[ 0 ] , 42 );
+
+}
+
+
+
+
+TEST_F(CPUTest, StackUnderflow)
+{
+    auto rsp = Architecture::sixTrit::Register::RSP;
+
+    ASSERT_EQ( cpu.reg(rsp), stack.size() );
+
+    Assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::R0, 42);
+
+    for(int i=0;i<3;i++)
+    {
+        Assemble(Architecture::sixTrit::OpCode::Push,           Architecture::sixTrit::Register::R0, i+42 );
+    }
+
+    for(int i=0;i<4;i++)
+    {
+        Assemble(Architecture::sixTrit::OpCode::Pop,           Architecture::sixTrit::Register::R0, 0 );
+    }
+
+
+    do
+    {
+        cpu.execute();
+    } while(cpu.reg(Architecture::sixTrit::Register::REXC) <=0 );
+
+
+
+    EXPECT_EQ( cpu.reg(Register::REXC), Architecture::Exception::AccessViolation );
+    EXPECT_EQ( cpu.reg(Register::R0),   42 );
+    EXPECT_EQ( cpu.reg(rsp), stack.size() );
+
+}

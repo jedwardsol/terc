@@ -77,22 +77,15 @@ void CPU::execute()
     }
 
 
-    auto  first          = code[currentPC];
+    auto  operation      = code[currentPC];
     auto  operand        = code[currentPC+1];
 
-    auto opcode = static_cast<OpCode>  (static_cast<int>(first.trybbles().first));
-    auto opreg  = static_cast<Register>(static_cast<int>(first.trybbles().second));
+    auto opcode = static_cast<OpCode>  (static_cast<int>(operation.trybbles().first));
+    auto opreg  = static_cast<Register>(static_cast<int>(operation.trybbles().second));
 
 
     switch(opcode)
     {
-    case OpCode::Halt:
-
-        raiseException(Exception::Halted, currentPC);
-        break;
-
-    case OpCode::Nop:
-        break;
 
     case OpCode::LoadImmediate:
 
@@ -180,6 +173,23 @@ void CPU::execute()
         break;
 
 
+    case OpCode::Push:
+        push(opreg);
+        break;
+
+    case OpCode::Pop:
+        pop(opreg);
+        break;
+
+
+
+    case OpCode::Halt:
+        raiseException(Exception::Halted, currentPC);
+        break;
+
+    case OpCode::Nop:
+        break;
+
     case OpCode::Invalid:
     default:
         raiseException(Exception::InvalidOpCode, currentPC);
@@ -247,6 +257,42 @@ std::optional<tryte> CPU::calculateAddress(Architecture::sixTrit::Register   add
     return address;
 }
 
+void CPU::push (Architecture::sixTrit::Register   sourceReg)
+{
+    auto address = calculateAddress(Register::RSP, trybble{-1});
+    
+    if(address)
+    {
+        try
+        {
+            reg(Register::RSP) = address.value();
+            stack[address.value()] = reg(sourceReg);
+        }
+        catch(const std::out_of_range &)
+        {
+            raiseException(Exception::AccessViolation, currentPC);
+        }
+    }
+}
+
+void CPU::pop  (Architecture::sixTrit::Register   destReg)
+{
+    auto currentAddress = reg(Register::RSP);
+    auto newAddress     = calculateAddress(Register::RSP, trybble{+1});
+    
+    if(newAddress)
+    {
+        try
+        {
+            reg(destReg)       = stack[currentAddress] ;
+            reg(Register::RSP) = newAddress.value();
+        }
+        catch(const std::out_of_range &)
+        {
+            raiseException(Exception::AccessViolation, currentPC);
+        }
+    }
+}
 
 
 }

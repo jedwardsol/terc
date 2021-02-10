@@ -7,16 +7,19 @@ namespace Architecture
 
 enum  Exception         // min to max
 {
-// positive exceptions are fatal
+// negative exceptions are not-fatal
 
     InvalidData = std::numeric_limits<tryte>::max(),
     InvalidPort,
 
     Okay        =  0,
 
-// positive exceptions are fatal
+// Halted is normal shutdown
 
     Halted,
+
+// positive exceptions are fatal
+
     BadPC,                      // negative, odd,  
     InvalidOpCode,
     InvalidRegister,

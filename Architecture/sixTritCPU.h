@@ -165,6 +165,11 @@ private:
                   Architecture::sixTrit::Register   addressReg, 
                   trybble                           offset);
 
+
+    void    push (Architecture::sixTrit::Register   sourceReg);
+    void    pop  (Architecture::sixTrit::Register   destReg);
+
+
     std::optional<tryte> calculateAddress(Architecture::sixTrit::Register   addressReg, 
                                           trybble                           offset);
    
