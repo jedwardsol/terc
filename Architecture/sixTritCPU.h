@@ -41,7 +41,7 @@ enum class Register     // -13 to 13
     RFL  = -11,   // flags
     RRA  = -10,   // return address
     REXC = -9,    // exception code
-    REXA = -8,    // exception addess
+    REXA = -8,    // exception address
 
     // General purpose registers
 
@@ -113,10 +113,10 @@ enum  OpCode        // -13 to 13
     LoadData,               // destination      low:source high:offset      dest = [source+offset]          AccessViolation is address is out of range.  InvalidRegister if destination = REXC, REXA     
     StoreData,              // source           low:dest   high:offset      [dest+offset] = source          AccessViolation is address is out of range.  
     LoadStack,              // destination      low:source high:offset      dest = [source+offset]          AccessViolation is address is out of range.  InvalidRegister if destination = REXC, REXA     
-    StoreStack,             // sourcee          low:dest   high:offset      [dest+offset] = source          AccessViolation is address is out of range.  
+    StoreStack,             // source           low:dest   high:offset      [dest+offset] = source          AccessViolation is address is out of range.  
 
-    I9,                     // unused           unused                                                      InvalidOpCode
-    I10,                    // unused           unused                                                      InvalidOpCode
+    Push,                   // source           unused                      SP-- stack[SP]=src              StackOverflow if stack is full
+    Pop,                    // destination      unused                      dest=stack[SP] SP++             StackOverflow if stack is empty
     I11,                    // unused           unused                                                      InvalidOpCode
     I12,                    // unused           unused                                                      InvalidOpCode
     I13,                    // unused           unused                                                      InvalidOpCode
@@ -148,6 +148,11 @@ public:
 
 
     void    execute();
+
+private:
+
+    bool    updatePC();
+
     void    raiseException(Architecture::Exception code, tryte PC);
 
     void    load (Architecture::RWMemoryBlock       &memory, 
@@ -171,8 +176,8 @@ private:
     Architecture::RWMemoryBlock                       &stack;
     Architecture::IOPorts                             &ioPorts;
 
-    std::array<tryte,numRegisters>       registers{};
-
+    std::array<tryte,numRegisters>                     registers{};
+    tryte                                              currentPC;
 
 };
 

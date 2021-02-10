@@ -25,8 +25,7 @@ void CPU::raiseException(Exception code, tryte PC)
     ioPorts.out( exceptionPort  ,exceptionCode);
 }
 
-
-void CPU::execute()
+bool    CPU::updatePC()
 {
     if( reg(Register::REXC) ==  tryte{ Exception::DoubleFault})
     {
@@ -36,34 +35,50 @@ void CPU::execute()
     if( reg(Register::REXC) >  tryte{ Exception::Okay})
     {
         raiseException(Exception::DoubleFault, reg(Register::REXA));
-        return;
+        return false;
     }
+
 
     if( reg(Register::RPC) < tryte{ 0 })
     {
         raiseException(Exception::BadPC, reg(Register::RPC));
-        return;
+        return false;
     }
 
-    auto PC = reg(Register::RPC);
-
+    if( reg(Register::RPC) >= code.size())
+    {
+        raiseException(Exception::BadPC, reg(Register::RPC));
+        return false;
+    }
 
 
     trit carry{};
 
-    reg(Register::RPC) =  halfAdder(reg(Register::RPC),tryte{2},carry);
+    auto newPC =  halfAdder(reg(Register::RPC),tryte{2},carry);
     
     if(carry != 0)
     {
-        reg(Register::RPC) =  PC;
-        raiseException(Exception::BadPC, PC);
-        return;
+        raiseException(Exception::BadPC, currentPC);
+        return false;
     }
     
+    currentPC = reg(Register::RPC);
+    reg(Register::RPC) = newPC;
+
+    return true;
+}
 
 
-    auto  first          = code[PC];
-    auto  operand        = code[PC+1];
+void CPU::execute()
+{
+    if(!updatePC())
+    {
+        return;
+    }
+
+
+    auto  first          = code[currentPC];
+    auto  operand        = code[currentPC+1];
 
     auto opcode = static_cast<OpCode>  (static_cast<int>(first.trybbles().first));
     auto opreg  = static_cast<Register>(static_cast<int>(first.trybbles().second));
@@ -73,7 +88,7 @@ void CPU::execute()
     {
     case OpCode::Halt:
 
-        raiseException(Exception::Halted, PC);
+        raiseException(Exception::Halted, currentPC);
         break;
 
     case OpCode::Nop:
@@ -84,7 +99,7 @@ void CPU::execute()
         if(   opreg == Register::REXC
            || opreg == Register::REXA)
         {
-            raiseException(Exception::InvalidRegister, PC);
+            raiseException(Exception::InvalidRegister, currentPC);
         }
         else
         {
@@ -98,7 +113,7 @@ void CPU::execute()
         if(   opreg == Register::REXC
            || opreg == Register::REXA)
         {
-            raiseException(Exception::InvalidRegister, PC);
+            raiseException(Exception::InvalidRegister, currentPC);
         }
         else
         {
@@ -117,7 +132,7 @@ void CPU::execute()
 
             if(exception != Exception::Okay)
             {
-                raiseException(exception, PC);
+                raiseException(exception, currentPC);
             }
         }
         break;
@@ -129,7 +144,7 @@ void CPU::execute()
 
             if(exception != Exception::Okay)
             {
-                raiseException(exception, PC);
+                raiseException(exception, currentPC);
             }
         }
         break;
@@ -167,7 +182,7 @@ void CPU::execute()
 
     case OpCode::Invalid:
     default:
-        raiseException(Exception::InvalidOpCode, PC);
+        raiseException(Exception::InvalidOpCode, currentPC);
         break;
     }
 }
@@ -189,7 +204,7 @@ void CPU::load (RWMemoryBlock       &memory,
         }
         catch(const std::out_of_range &)
         {
-            raiseException(Exception::AccessViolation, reg(Register::RPC));
+            raiseException(Exception::AccessViolation, currentPC);
         }
     }
 }
@@ -209,7 +224,7 @@ void CPU::store(RWMemoryBlock       &memory,
         }
         catch(const std::out_of_range &)
         {
-            raiseException(Exception::AccessViolation, reg(Register::RPC));
+            raiseException(Exception::AccessViolation, currentPC);
         }
     }
 }
@@ -225,7 +240,7 @@ std::optional<tryte> CPU::calculateAddress(Architecture::sixTrit::Register   add
 
     if(carry != 0)
     {
-        raiseException(Exception::AccessViolation, reg(Register::RPC));
+        raiseException(Exception::AccessViolation, currentPC);
         return std::nullopt;
     }
 
