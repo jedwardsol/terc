@@ -38,6 +38,11 @@ public:
         return memory.at(index);
     }
 
+    int size()
+    {
+        return static_cast<int>(memory.size());
+    }
+
 
 protected:
 
@@ -90,6 +95,10 @@ public:
         return memory.at(index);
     }
 
+    int size()
+    {
+        return static_cast<int>(memory.size());
+    }
 
 protected:
 

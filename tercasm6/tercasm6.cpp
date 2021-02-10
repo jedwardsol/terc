@@ -44,9 +44,9 @@ private:
     int             currentInstruction{0};
     int             currentDataTryte  {0};
 
-    Architecture::MemoryBlock     code {Architecture::sixTrit::codeSize,  ".code" };        
-    Architecture::MemoryBlock     data {Architecture::sixTrit::dataSize,  ".data" };        
-    Architecture::MemoryBlock     stack{Architecture::sixTrit::stackSize, ".stack"};        
+    Architecture::MemoryBlock     code {Architecture::sixTrit::recCodeSize,  ".code" };        
+    Architecture::MemoryBlock     data {Architecture::sixTrit::recDataSize,  ".data" };        
+    Architecture::MemoryBlock     stack{Architecture::sixTrit::recStackSize, ".stack"};        
 };
 
 

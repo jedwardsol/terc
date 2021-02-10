@@ -22,9 +22,15 @@ constexpr int     instructionBusSize        {6};
 constexpr int     dataBusSize               {6};
 
 
-constexpr int     codeSize                  {maxValue (instructionBusSize)};
-constexpr int     dataSize                  {maxValue (dataBusSize)};
-constexpr int     stackSize                 {maxValue (dataBusSize)};
+constexpr int     maxCodeSize               {maxValue (instructionBusSize)};
+constexpr int     maxDataSize               {maxValue (dataBusSize)};
+constexpr int     maxStackSize              {maxValue (dataBusSize)};
+
+constexpr int     recCodeSize               {maxCodeSize};
+constexpr int     recDataSize               {maxDataSize};
+constexpr int     recStackSize              {81};
+
+
 constexpr int     numRegisters              {numValues(3)};
 
 
@@ -104,10 +110,10 @@ enum  OpCode        // -13 to 13
     Out,                    // source           low:port                    write source to port            InvalidPort,  InvalidData
     In,                     // destination      low:port                    read port to destination        InvalidPort,  InvalidData
 
-    LoadData,               // destination      low:source high:offset      dest = [source+offset]          InvalidRegister if destination = REXC, REXA     
-    StoreData,              // source           low:dest   high:offset      [dest+offset] = source          
-    LoadStack,              // destination      low:source high:offset      dest = [source+offset]          InvalidRegister if destination = REXC, REXA     
-    StoreStack,             // sourcee          low:dest   high:offset      [dest+offset] = source          
+    LoadData,               // destination      low:source high:offset      dest = [source+offset]          AccessViolation is address is out of range.  InvalidRegister if destination = REXC, REXA     
+    StoreData,              // source           low:dest   high:offset      [dest+offset] = source          AccessViolation is address is out of range.  
+    LoadStack,              // destination      low:source high:offset      dest = [source+offset]          AccessViolation is address is out of range.  InvalidRegister if destination = REXC, REXA     
+    StoreStack,             // sourcee          low:dest   high:offset      [dest+offset] = source          AccessViolation is address is out of range.  
 
     I9,                     // unused           unused                                                      InvalidOpCode
     I10,                    // unused           unused                                                      InvalidOpCode
@@ -130,7 +136,7 @@ public:
         Architecture::RWMemoryBlock   &stack,
         Architecture::IOPorts         &ioPorts) : code{code}, data{data}, stack{stack},  ioPorts{ioPorts}
     {
-        reg(Register::RSP)=tryte{stackSize};
+        reg(Register::RSP)=tryte{stack.size()};
     }
 
     tryte &reg(Register  r)

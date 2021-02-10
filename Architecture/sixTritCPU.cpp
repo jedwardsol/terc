@@ -187,7 +187,7 @@ void CPU::load (RWMemoryBlock       &memory,
         {
             reg(destReg) = memory[address.value()];
         }
-        catch(std::out_of_range &)
+        catch(const std::out_of_range &)
         {
             raiseException(Exception::AccessViolation, reg(Register::RPC));
         }
@@ -207,7 +207,7 @@ void CPU::store(RWMemoryBlock       &memory,
         {
             memory[address.value()] = reg(sourceReg);
         }
-        catch(std::out_of_range &)
+        catch(const std::out_of_range &)
         {
             raiseException(Exception::AccessViolation, reg(Register::RPC));
         }
