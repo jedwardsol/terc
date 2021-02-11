@@ -210,7 +210,7 @@ public:
     }
 
 
-	constexpr trit getTrit(int index)
+	constexpr trit getTrit(int index) const
 	{
 		switch(index)
 		{

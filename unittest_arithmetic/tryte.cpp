@@ -484,3 +484,106 @@ TEST(TryteTest, halfAdder)
 }
 
 
+
+
+TEST(TryteTest, getTrit) 
+{
+    tryte   t0{"000000"};
+
+    EXPECT_THROW(t0.getTrit(-1), std::out_of_range);
+    EXPECT_THROW(t0.getTrit( 6), std::out_of_range);
+
+
+    EXPECT_EQ( t0.getTrit(0), trit{0});
+    EXPECT_EQ( t0.getTrit(1), trit{0});
+    EXPECT_EQ( t0.getTrit(2), trit{0});
+    EXPECT_EQ( t0.getTrit(3), trit{0});
+    EXPECT_EQ( t0.getTrit(4), trit{0});
+    EXPECT_EQ( t0.getTrit(5), trit{0});
+                
+
+    tryte   t9{"000+00"};
+
+    EXPECT_EQ( t9.getTrit(0), trit{0});
+    EXPECT_EQ( t9.getTrit(1), trit{0});
+    EXPECT_EQ( t9.getTrit(2), trit{1});
+    EXPECT_EQ( t9.getTrit(3), trit{0});
+    EXPECT_EQ( t9.getTrit(4), trit{0});
+    EXPECT_EQ( t9.getTrit(5), trit{0});
+
+
+    tryte   tn81{"00-000"};
+
+    EXPECT_EQ( tn81.getTrit(0), trit{0});
+    EXPECT_EQ( tn81.getTrit(1), trit{0});
+    EXPECT_EQ( tn81.getTrit(2), trit{0});
+    EXPECT_EQ( tn81.getTrit(3), trit{-1});
+    EXPECT_EQ( tn81.getTrit(4), trit{0});
+    EXPECT_EQ( tn81.getTrit(5), trit{0});
+}
+
+
+
+TEST(TryteTest, setTrit) 
+{
+    tryte           t{};
+
+    const tryte     t0{"00000+"};
+    const tryte     t1{"0000++"};
+    const tryte     t2{"000+++"};
+    const tryte     t3{"00++++"};
+    const tryte     t4{"0+++++"};
+    const tryte     t5{"++++++"};
+
+    EXPECT_THROW(t.setTrit(-1,trit{0}), std::out_of_range);
+    EXPECT_THROW(t.setTrit( 6,trit{0}), std::out_of_range);
+
+
+    t.setTrit(0,trit{1});
+    EXPECT_EQ(t,t0);
+
+    t.setTrit(1,trit{1});
+    EXPECT_EQ(t,t1);
+    
+    t.setTrit(2,trit{1});
+    EXPECT_EQ(t,t2);
+
+    t.setTrit(3,trit{1});
+    EXPECT_EQ(t,t3);
+
+    t.setTrit(4,trit{1});
+    EXPECT_EQ(t,t4);
+
+    t.setTrit(5,trit{1});
+    EXPECT_EQ(t,t5);
+
+
+
+    const tryte     tn5{"-+++++"};
+    const tryte     tn4{"--++++"};
+    const tryte     tn3{"---+++"};
+    const tryte     tn2{"----++"};
+    const tryte     tn1{"-----+"};
+    const tryte     tn0{"------"};
+
+    t.setTrit(5,trit{-1});
+    EXPECT_EQ(t,tn5);
+
+    t.setTrit(4,trit{-1});
+    EXPECT_EQ(t,tn4);
+
+    t.setTrit(3,trit{-1});
+    EXPECT_EQ(t,tn3);
+
+    t.setTrit(2,trit{-1});
+    EXPECT_EQ(t,tn2);
+
+    t.setTrit(1,trit{-1});
+    EXPECT_EQ(t,tn1);
+
+    t.setTrit(0,trit{-1});
+    EXPECT_EQ(t,tn0);
+
+}
+
+

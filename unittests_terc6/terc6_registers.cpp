@@ -410,3 +410,31 @@ TEST_F(CPUTest, StackUnderflow)
     EXPECT_EQ( cpu.reg(Register::R0),   42 );
     EXPECT_EQ( cpu.reg(rsp), 0 );
 }
+
+
+
+TEST_F(CPUTest, Flags)
+{
+    ASSERT_EQ( cpu.reg(Register::RFlags), 0);
+
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),        trit{0});
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Conditional), trit{0});
+
+    cpu.setFlag(Architecture::Flag::Sign, trit{1});
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),        trit{1});
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Conditional), trit{0});
+
+
+    cpu.setFlag(Architecture::Flag::Sign, trit{0});
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),        trit{0});
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Conditional), trit{0});
+
+    cpu.setFlag(Architecture::Flag::Conditional, trit{-1});
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),        trit{0});
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Conditional), trit{-1});
+
+    cpu.setFlag(Architecture::Flag::Conditional, trit{0});
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),        trit{0});
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Conditional), trit{0});
+}
+

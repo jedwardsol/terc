@@ -196,6 +196,22 @@ public:
 #pragma warning(pop)
 
 
+    trit getFlag(Flag flag) const
+    {
+        return reg(Register::RFlags).getTrit(static_cast<int>(flag));
+    }
+
+    void setFlag(Flag flag,   trit value) 
+    {
+        auto flags = reg(Register::RFlags);
+        
+        flags.setTrit(static_cast<int>(flag), value);
+
+        setReg(Register::RFlags, flags,  ByPassRegisterChecks::yes);
+    }
+
+
+
 
     void    execute();
     void    executeRegisterInstructions(tryte  operation, tryte operand);
