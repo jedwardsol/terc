@@ -75,7 +75,7 @@ protected:
 
     Architecture::sixTrit::CPU          cpu  {code,data,*this};
 
-    void Assemble(Architecture::sixTrit::OpCode   opcode,
+    void assemble(Architecture::sixTrit::OpCode   opcode,
                   Architecture::sixTrit::Register reg,
                   int                             operand)
     {
@@ -86,11 +86,10 @@ protected:
         code[PC++] = second;
     }
 
-    void Assemble(Architecture::sixTrit::OpCode   opcode,
-                  Architecture::CpuControl        control)
+    void assemble(Architecture::CpuControl        control)
     {
-        tryte   first  { trybble{static_cast<int>(opcode)} , trybble{0}};
-        tryte   second { trybble{static_cast<int>(control)}, trybble{0}};
+        tryte   first  { trybble{static_cast<int>(Architecture::sixTrit::OpCode::CpuControl)} , trybble{0}};
+        tryte   second { trybble{static_cast<int>(control)},                                    trybble{0}};
 
         code[PC++]   = first;
         code[PC++] = second;
@@ -98,7 +97,7 @@ protected:
 
 
 
-    void Assemble(Architecture::sixTrit::OpCode   opcode,
+    void assemble(Architecture::sixTrit::OpCode   opcode,
                   Architecture::sixTrit::Register reg,
                   trybble                         operandLow,
                   trybble                         operandHigh)

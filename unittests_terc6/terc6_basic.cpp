@@ -43,7 +43,7 @@ TEST_F(CPUTest, RanOffEnd)
 
 TEST_F(CPUTest, Invalid)
 {
-    Assemble(Architecture::sixTrit::OpCode::CpuControl,Architecture::CpuControl::Invalid);
+    assemble(Architecture::CpuControl::Invalid);
 
 
     cpu.execute();
@@ -58,8 +58,8 @@ TEST_F(CPUTest, Invalid)
 
 TEST_F(CPUTest, DoubleFault)
 {
-    Assemble(Architecture::sixTrit::OpCode::CpuControl,Architecture::CpuControl::Invalid);
-    Assemble(Architecture::sixTrit::OpCode::CpuControl,Architecture::CpuControl::Invalid);
+    assemble(Architecture::CpuControl::Invalid);
+    assemble(Architecture::CpuControl::Invalid);
 
 
     cpu.execute();
@@ -79,7 +79,7 @@ TEST_F(CPUTest, DoubleFault)
 
 TEST_F(CPUTest, Nop)
 {
-    Assemble(Architecture::sixTrit::OpCode::CpuControl,Architecture::CpuControl::Nop);
+    assemble(Architecture::CpuControl::Nop);
 
     cpu.execute();
 
@@ -90,8 +90,8 @@ TEST_F(CPUTest, Nop)
 
 TEST_F(CPUTest, NopNop)
 {
-    Assemble(Architecture::sixTrit::OpCode::CpuControl,Architecture::CpuControl::Nop);
-    Assemble(Architecture::sixTrit::OpCode::CpuControl,Architecture::CpuControl::Nop);
+    assemble(Architecture::CpuControl::Nop);
+    assemble(Architecture::CpuControl::Nop);
 
     cpu.execute();
     cpu.execute();

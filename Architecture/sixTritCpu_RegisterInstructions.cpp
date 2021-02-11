@@ -25,6 +25,7 @@ void CPU::executeRegisterInstructions(tryte  operation, tryte operand)
     case OpCode::LoadImmediate:
 
         setReg(opreg, operand, ByPassRegisterChecks::no);
+        updateSignFlag(opreg) ;
         break;
 
 
@@ -33,6 +34,7 @@ void CPU::executeRegisterInstructions(tryte  operation, tryte operand)
         {
             auto srcreg  = static_cast<Register>(static_cast<int>(operand.trybbles().first));
             setReg(opreg, reg(srcreg), ByPassRegisterChecks::no);
+            updateSignFlag(opreg) ;
         }
         break;
 
@@ -64,6 +66,7 @@ void CPU::executeRegisterInstructions(tryte  operation, tryte operand)
             else
             {
                 setReg(opreg,value);
+                updateSignFlag(opreg) ;
             }
 
         }
@@ -110,6 +113,7 @@ void CPU::load (sixTrit::Register   destReg,
         try
         {
             setReg(destReg,  data[address.value()]);
+            updateSignFlag(destReg) ;
         }
         catch(const std::out_of_range &)
         {
@@ -196,6 +200,7 @@ void CPU::pop  (Architecture::sixTrit::Register   destReg)
             try
             {
                 setReg(destReg,        data[currentAddress]);
+                updateSignFlag(destReg) ;
                 setReg(Register::RSP,  newAddress.value());
             }
             catch(const std::out_of_range &)

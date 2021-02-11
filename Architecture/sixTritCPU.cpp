@@ -14,6 +14,55 @@
 namespace Architecture::sixTrit
 {
 
+void CPU::execute()
+{
+    if(!checkPC())
+    {
+        return;
+    }
+
+
+    auto  operation      = code[reg(Register::RPC)];
+    auto  operand        = code[reg(Register::RPC)+1];
+
+    auto opcode = static_cast<OpCode>  (static_cast<int>(operation.trybbles().first));
+
+
+    switch(opcode)
+    {
+    case OpCode::LoadImmediate:
+    case OpCode::Copy:
+    case OpCode::Out:
+    case OpCode::In:
+    case OpCode::Load:
+    case OpCode::Store:
+    case OpCode::Push:
+    case OpCode::Pop:
+        executeRegisterInstructions(operation, operand);
+        break;
+
+    case OpCode::CallI:
+    case OpCode::CallR:
+    case OpCode::JmpI:
+    case OpCode::JmpR:
+    case OpCode::CpuControl:
+
+        executeConditionalInstructions(operation, operand);
+        break;
+ 
+    default:
+        raiseException(Exception::InvalidOpCode, reg(Register::RPC));
+        break;
+    }
+
+
+    updatePC();
+
+}
+
+
+
+
 void CPU::raiseException(Exception code, tryte PC)
 {
     static auto exceptionPort = tryte{ static_cast<int>( KnownIOPorts::ExceptionOut)};
@@ -83,51 +132,6 @@ bool    CPU::updatePC()
 }
 
 
-void CPU::execute()
-{
-    if(!checkPC())
-    {
-        return;
-    }
-
-
-    auto  operation      = code[reg(Register::RPC)];
-    auto  operand        = code[reg(Register::RPC)+1];
-
-    auto opcode = static_cast<OpCode>  (static_cast<int>(operation.trybbles().first));
-
-
-    switch(opcode)
-    {
-    case OpCode::LoadImmediate:
-    case OpCode::Copy:
-    case OpCode::Out:
-    case OpCode::In:
-    case OpCode::Load:
-    case OpCode::Store:
-    case OpCode::Push:
-    case OpCode::Pop:
-        executeRegisterInstructions(operation, operand);
-        break;
-
-    case OpCode::CallI:
-    case OpCode::CallR:
-    case OpCode::JmpI:
-    case OpCode::JmpR:
-    case OpCode::CpuControl:
-
-        executeConditionalInstructions(operation, operand);
-        break;
- 
-    default:
-        raiseException(Exception::InvalidOpCode, reg(Register::RPC));
-        break;
-    }
-
-
-    updatePC();
-
-}
 
 void CPU::CpuControl(tryte  operand)
 {

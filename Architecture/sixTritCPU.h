@@ -193,6 +193,29 @@ public:
         registers.at(static_cast<int>(r) + registerOffset) = value;
     }
 
+
+
+    void updateSignFlag(Register  r) 
+    {
+        const auto value = reg(r);
+
+        if(value < tryte{0})
+        {
+            setFlag(Flag::Sign, trit{-1});    
+        }
+        else if(value == tryte{0})
+        {
+            setFlag(Flag::Sign, trit{0});    
+        }
+        else 
+        {
+            setFlag(Flag::Sign, trit{1});    
+        }
+    }
+
+
+
+
 #pragma warning(pop)
 
 
@@ -250,7 +273,7 @@ private:
     Architecture::MemoryBlock                      &data;
     Architecture::IOPorts                          &ioPorts;
 
-    std::array<tryte,numRegisters>                  registers{};
+    std::array<tryte,numRegisters>                  registers{};    // only to be touched in setReg and getReg.  Here for debugability
 
     bool                                            instructionChangedRPC{};      // TODO : move to flag
 };
