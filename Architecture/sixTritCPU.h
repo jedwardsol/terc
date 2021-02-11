@@ -9,6 +9,7 @@
 #include "Arithmetic/trit.h"
 
 
+#include "Architecture/exception.h"
 #include "MemoryBlock.h"
 #include "IOPorts.h"
 
@@ -75,7 +76,7 @@ Each instruction is 2 trytes
 
     first tryte
         low trybble     :   opcode
-        high trybble    :   register
+        high trybble    :   register, condition, misc
     second tryte        :   arbitrary argument
  
 */
@@ -84,10 +85,10 @@ Each instruction is 2 trytes
 
 enum  OpCode        // -13 to 13
 {
- // Opcode                  // register         operand                                                             exceptions
+ // Opcode                  // condition        operand                                                             exceptions
                                                                    
-    Invalid = -13,          // unused           unused                                                              InvalidOpCode
-    Nop,                    // unused           break                                                               InvalidOpCode
+    In13=13,                // unused           unused                                                              InvalidOpCode
+    In12,                   // unused           break                                                               InvalidOpCode
     In11,                   // unused           unused                                                              InvalidOpCode
     In10,                   // unused           unused                                                              InvalidOpCode
     In9,                    // unused           unused                                                              InvalidOpCode
@@ -100,7 +101,14 @@ enum  OpCode        // -13 to 13
     In2,                    // unused           unused                                                              InvalidOpCode
     In1,                    // unused           unused                                                              InvalidOpCode
                                                                    
-    Halt    =   0,          // unused           unused                                                              Halted
+ // Opcode                  // misc             operand                                                             exceptions
+
+
+    CpuControl =   0,       // CpuControl       unused                                                              Halted
+
+
+ // Opcode                  // register         operand                                                             exceptions
+
                                                                    
     LoadImmediate,          // destination      immediate                           dest = immediate                InvalidRegister if destination = REXC, REXA
     Copy,                   // destination      low:source                          destination = source            InvalidRegister if destination = REXC, REXA     

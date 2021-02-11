@@ -5,6 +5,16 @@
 namespace Architecture
 {
 
+enum  CpuControl  
+{
+    Nop         = -1,
+    Halt        =  0,
+    Breakpoint  =  1,
+    Invalid     =  2
+};
+
+
+
 enum  Exception         // min to max
 {
 // negative exceptions are not-fatal

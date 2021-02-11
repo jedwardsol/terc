@@ -172,21 +172,38 @@ void CPU::execute()
 
 
 
-    case OpCode::Halt:
-        raiseException(Exception::Halted, reg(Register::RPC));
-        setReg(Register::RPC, reg(Register::RPC), ByPassRegisterChecks::no);
-        break;
+    case OpCode::CpuControl:
 
-    case OpCode::Nop:
-
-        if(operand != 0)
         {
-            if(::IsDebuggerPresent()) __debugbreak();
+            auto cpuControl = static_cast<Architecture::CpuControl>(static_cast<int>(operation.trybbles().second));
+
+            switch(cpuControl)
+            {
+            case Architecture::CpuControl::Halt:
+                raiseException(Exception::Halted, reg(Register::RPC));
+                setReg(Register::RPC, reg(Register::RPC), ByPassRegisterChecks::no);
+                break;
+
+            case Architecture::CpuControl::Nop:
+                break;
+
+            case Architecture::CpuControl::Breakpoint:
+
+                if(operand != 0)
+                {
+                    if(::IsDebuggerPresent()) __debugbreak();
+                }
+                break;
+
+            default:
+                raiseException(Exception::InvalidOpCode, reg(Register::RPC));
+                break;
+            }
         }
-
         break;
+   
 
-    case OpCode::Invalid:
+
     default:
         raiseException(Exception::InvalidOpCode, reg(Register::RPC));
         break;

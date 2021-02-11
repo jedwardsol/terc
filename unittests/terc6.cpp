@@ -70,6 +70,17 @@ protected:
         code[PC++] = second;
     }
 
+    void Assemble(Architecture::sixTrit::OpCode   opcode,
+                  Architecture::CpuControl        control)
+    {
+        tryte   first  { trybble{static_cast<int>(opcode)}, trybble{static_cast<int>(control)}};
+        tryte   second { 0 };
+
+        code[PC++]   = first;
+        code[PC++] = second;
+    }
+
+
 
     void Assemble(Architecture::sixTrit::OpCode   opcode,
                   Architecture::sixTrit::Register reg,
@@ -129,9 +140,8 @@ TEST_F(CPUTest, RanOffEnd)
 
 TEST_F(CPUTest, Invalid)
 {
-    Assemble(Architecture::sixTrit::OpCode::Invalid,
-             Architecture::sixTrit::Register::R0,
-             0);
+    Assemble(Architecture::sixTrit::OpCode::CpuControl,
+             Architecture::CpuControl::Invalid);
 
 
     cpu.execute();
@@ -146,13 +156,9 @@ TEST_F(CPUTest, Invalid)
 
 TEST_F(CPUTest, DoubleFault)
 {
-    Assemble(Architecture::sixTrit::OpCode::Invalid,
-             Architecture::sixTrit::Register::R0,
-             0);
+    Assemble(Architecture::sixTrit::OpCode::CpuControl,Architecture::CpuControl::Invalid);
+    Assemble(Architecture::sixTrit::OpCode::CpuControl,Architecture::CpuControl::Invalid);
 
-    Assemble(Architecture::sixTrit::OpCode::Invalid,
-             Architecture::sixTrit::Register::R0,
-             0);
 
     cpu.execute();
 
@@ -171,10 +177,7 @@ TEST_F(CPUTest, DoubleFault)
 
 TEST_F(CPUTest, Nop)
 {
-    Assemble(Architecture::sixTrit::OpCode::Nop,
-             Architecture::sixTrit::Register::R0,
-             0);
-
+    Assemble(Architecture::sixTrit::OpCode::CpuControl,Architecture::CpuControl::Nop);
 
     cpu.execute();
 
@@ -185,8 +188,8 @@ TEST_F(CPUTest, Nop)
 
 TEST_F(CPUTest, NopNop)
 {
-    Assemble(Architecture::sixTrit::OpCode::Nop, Architecture::sixTrit::Register::R0, 0);
-    Assemble(Architecture::sixTrit::OpCode::Nop, Architecture::sixTrit::Register::R0, 0);
+    Assemble(Architecture::sixTrit::OpCode::CpuControl,Architecture::CpuControl::Nop);
+    Assemble(Architecture::sixTrit::OpCode::CpuControl,Architecture::CpuControl::Nop);
 
     cpu.execute();
     cpu.execute();
@@ -237,7 +240,7 @@ TEST_F(CPUTest, AbsoluteJump)
     Assemble(Architecture::sixTrit::OpCode::Out,            Architecture::sixTrit::Register::R0, static_cast<int>(Architecture::KnownIOPorts::ASCIIOut));
     Assemble(Architecture::sixTrit::OpCode::Out,            Architecture::sixTrit::Register::R0, static_cast<int>(Architecture::KnownIOPorts::ASCIIOut));
 
-    Assemble(Architecture::sixTrit::OpCode::Halt,           Architecture::sixTrit::Register::R0, 0);
+    Assemble(Architecture::sixTrit::OpCode::CpuControl,     Architecture::CpuControl::Halt);
 
 
 
@@ -586,7 +589,7 @@ TEST_F(CPUTest, StackUnderflow)
         Assemble(Architecture::sixTrit::OpCode::Pop,           Architecture::sixTrit::Register::R0, 0 );
     }
 
-    Assemble(Architecture::sixTrit::OpCode::Nop,            Architecture::sixTrit::Register::R0,  1);                            // break
+    Assemble(Architecture::sixTrit::OpCode::CpuControl,     Architecture::CpuControl::Breakpoint);
     Assemble(Architecture::sixTrit::OpCode::Pop,           Architecture::sixTrit::Register::R0, 0 );
 
     do
