@@ -191,6 +191,8 @@ public:
 
 
     void    execute();
+    void    executeRegisterInstructions(tryte  operation, tryte operand);
+    void    executeCpuControlInstruction(tryte  operation);
 
 private:
 

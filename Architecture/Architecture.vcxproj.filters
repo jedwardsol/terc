@@ -32,5 +32,8 @@
     <ClCompile Include="sixTritCPU.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="sixTritCpu_RegisterInstructions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
