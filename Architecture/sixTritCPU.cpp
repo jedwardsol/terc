@@ -6,6 +6,7 @@
 #include "Arithmetic/trit.h"
 #include "Arithmetic/tryte.h"
 
+#include "Architecture.h"
 #include "MemoryBlock.h"
 #include "sixTritCPU.h"
 
@@ -69,7 +70,7 @@ bool    CPU::updatePC()
 
         auto newPC =  halfAdder(reg(Register::RPC),tryte{2},carry);
     
-        if(carry != 0)
+        if(carry)
         {
             raiseException(Exception::BadPC, reg(Register::RPC));
             return false;
@@ -147,8 +148,8 @@ void CPU::CpuControl(tryte  operand)
         raiseException(Exception::Breakpoint, reg(Register::RPC));
         break;
 
-    case Architecture::CpuControl::Ping:
-        raiseException(Exception::Breakpoint, reg(Register::RPC));
+    case Architecture::CpuControl::Trace:
+        raiseException(Exception::Trace, reg(Register::RPC));
         break;
 
     default:

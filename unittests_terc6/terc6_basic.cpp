@@ -1,17 +1,103 @@
-#define NOMINMAX
-#include <Windows.h>
-#include <gtest/gtest.h>
-#include <string>
-using namespace std::literals;
-#include <sstream>
+#include "googletest/gtest.h"
 
 #include <iostream>
+#include <string>
+#include <sstream>
+using namespace std::literals;
 
-#include "Arithmetic/Arithmetic.h"
-#include "Arithmetic/Arithmetic_std.h"
-#include "Arithmetic/tryte.h"
+#include "CPUTest.h"
 
-#include "Architecture/MemoryBlock.h"
-#include "Architecture/sixTritCPU.h"
-#include "Architecture/exception.h"
-#include "Architecture/IOPorts.h"
+
+TEST_F(CPUTest, InitialState)
+{
+    EXPECT_EQ(code[0],  tryte{0});
+    EXPECT_EQ(data[0],  tryte{0});
+    EXPECT_EQ(data[-1], tryte{0});
+
+    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::R0),   tryte{0});
+    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::RPC),  tryte{0});
+    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::RSP),  tryte{0});
+    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXC), tryte{Architecture::Exception::Okay});
+}
+
+TEST_F(CPUTest, DefaultInstructionIsHalt)
+{
+    cpu.execute();
+
+    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::RPC),  tryte{0});    // halt doesn't update RPC 
+    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXC), tryte{Architecture::Exception::Halted});
+    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXA), tryte{0});
+}
+
+
+TEST_F(CPUTest, RanOffEnd)
+{
+    cpu.setReg(Architecture::sixTrit::Register::RPC,  tryte{code.positiveSize() - 1} );
+
+    cpu.execute();
+
+    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::RPC),  tryte{code.positiveSize() - 1});
+    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXC), tryte{Architecture::Exception::BadPC});
+}
+
+
+TEST_F(CPUTest, Invalid)
+{
+    Assemble(Architecture::sixTrit::OpCode::CpuControl,Architecture::CpuControl::Invalid);
+
+
+    cpu.execute();
+
+    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::RPC),  tryte{2});
+    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXC), tryte{Architecture::Exception::InvalidOpCode});
+    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXA), tryte{0});
+}
+
+
+
+
+TEST_F(CPUTest, DoubleFault)
+{
+    Assemble(Architecture::sixTrit::OpCode::CpuControl,Architecture::CpuControl::Invalid);
+    Assemble(Architecture::sixTrit::OpCode::CpuControl,Architecture::CpuControl::Invalid);
+
+
+    cpu.execute();
+
+    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::RPC),  tryte{2});
+    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXC), tryte{Architecture::Exception::InvalidOpCode});
+    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXA), tryte{0});
+
+
+    cpu.execute();
+
+    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::RPC),  tryte{2});
+    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXC), tryte{Architecture::Exception::DoubleFault});
+    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXA), tryte{0});
+}
+
+
+TEST_F(CPUTest, Nop)
+{
+    Assemble(Architecture::sixTrit::OpCode::CpuControl,Architecture::CpuControl::Nop);
+
+    cpu.execute();
+
+    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::RPC),  tryte{2});
+    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXC), tryte{Architecture::Exception::Okay});
+    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXA), tryte{0});
+}
+
+TEST_F(CPUTest, NopNop)
+{
+    Assemble(Architecture::sixTrit::OpCode::CpuControl,Architecture::CpuControl::Nop);
+    Assemble(Architecture::sixTrit::OpCode::CpuControl,Architecture::CpuControl::Nop);
+
+    cpu.execute();
+    cpu.execute();
+
+    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::RPC),  tryte{4});
+    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXC), tryte{Architecture::Exception::Okay});
+    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXA), tryte{0});
+}
+

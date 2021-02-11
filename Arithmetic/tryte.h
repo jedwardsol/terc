@@ -134,8 +134,6 @@ public:
 	}
 
 
-
-
     tryte(const tryte&)             noexcept = default;
     tryte(      tryte&&)            noexcept = default;
     tryte &operator=(const tryte&)  noexcept = default;
@@ -210,6 +208,41 @@ public:
 
 		return *this;
     }
+
+
+	constexpr trit getTrit(int index)
+	{
+		switch(index)
+		{
+		case 0:  return trit{t0};
+		case 1:  return trit{t1};
+		case 2:  return trit{t2};
+		case 3:  return trit{t3};
+		case 4:  return trit{t4};
+		case 5:  return trit{t5};
+		default: throw std::out_of_range("tryte getTrit bad index "s + std::to_string(index));
+		}
+	}
+
+	constexpr void setTrit(int index, trit newTrit)
+	{
+		auto newBits = static_cast<int16_t>(newTrit); 
+
+		switch(index)
+		{
+		case 0:  t0 = newBits; break;
+		case 1:  t1 = newBits; break;
+		case 2:  t2 = newBits; break;
+		case 3:  t3 = newBits; break;
+		case 4:  t4 = newBits; break;
+		case 5:  t5 = newBits; break;
+		default: throw std::out_of_range("tryte setTrit bad index "s + std::to_string(index));
+		}
+	}
+
+
+
+
 };
 
 static_assert(sizeof(tryte)==2);
@@ -254,12 +287,12 @@ constexpr inline tryte  halfAdder(const tryte &lhs, const tryte &rhs,  trit &car
 	trit	partialCarry;    
 	tryte	result;	
 
-	result.t0 = halfAdder(trit{lhs.t0}, trit{rhs.t0}, partialCarry);
-	result.t1 = fullAdder(trit{lhs.t1}, trit{rhs.t1}, partialCarry);
-	result.t2 = fullAdder(trit{lhs.t2}, trit{rhs.t2}, partialCarry);
-	result.t3 = fullAdder(trit{lhs.t3}, trit{rhs.t3}, partialCarry);
-	result.t4 = fullAdder(trit{lhs.t4}, trit{rhs.t4}, partialCarry);
-	result.t5 = fullAdder(trit{lhs.t5}, trit{rhs.t5}, partialCarry);
+	result.setTrit(0, halfAdder(trit{lhs.t0}, trit{rhs.t0}, partialCarry));
+	result.setTrit(1, fullAdder(trit{lhs.t1}, trit{rhs.t1}, partialCarry));
+	result.setTrit(2, fullAdder(trit{lhs.t2}, trit{rhs.t2}, partialCarry));
+	result.setTrit(3, fullAdder(trit{lhs.t3}, trit{rhs.t3}, partialCarry));
+	result.setTrit(4, fullAdder(trit{lhs.t4}, trit{rhs.t4}, partialCarry));
+	result.setTrit(5, fullAdder(trit{lhs.t5}, trit{rhs.t5}, partialCarry));
 
 	carry = partialCarry;
 

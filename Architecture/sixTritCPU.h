@@ -8,7 +8,7 @@
 #include "Arithmetic/tryte.h"
 #include "Arithmetic/trit.h"
 
-
+#include <Architecture/Architecture.h>
 #include "Architecture/exception.h"
 #include "MemoryBlock.h"
 #include "IOPorts.h"
@@ -146,6 +146,9 @@ public:
                                                       ioPorts{ioPorts}
     {}
 
+#pragma warning(push)
+#pragma warning(disable: 26451)    // overflow in indexing operation
+
     const tryte &reg(Register  r) const
     {
         constexpr int     registerOffset    {maxValue(3)};
@@ -190,6 +193,7 @@ public:
         registers.at(static_cast<int>(r) + registerOffset) = value;
     }
 
+#pragma warning(pop)
 
 
 
@@ -232,7 +236,7 @@ private:
 
     std::array<tryte,numRegisters>                  registers{};
 
-    bool                                            instructionChangedRPC;      // TODO : move to flag
+    bool                                            instructionChangedRPC{};      // TODO : move to flag
 };
 
 

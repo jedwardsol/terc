@@ -5,17 +5,6 @@
 namespace Architecture
 {
 
-enum  class CpuControl  
-{
-    Nop         = -1,         // do nothing
-    Halt        =  0,         // do halt
-    Breakpoint,               // send breakpoint exception to exception port
-    Ping,                     // send ping exception to exception port
-    Invalid
-};
-
-
-
 enum  Exception         // min to max
 {
 // negative exceptions are not-fatal
@@ -23,7 +12,7 @@ enum  Exception         // min to max
     InvalidData = std::numeric_limits<tryte>::min(),
     InvalidPort,
     Breakpoint,
-    Ping,
+    Trace,
 
     Okay        =  0,
 

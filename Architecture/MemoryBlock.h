@@ -33,6 +33,9 @@ public:
         return totalSize - zeroOffset;
     }
 
+#pragma warning(push)
+#pragma warning(disable: 26451)    // overflow in indexing operation
+
     tryte &operator[](int index)
     {
         return memory.at(index+zeroOffset);
@@ -42,6 +45,8 @@ public:
     {
         return memory.at(index+zeroOffset);
     }
+
+#pragma warning(pop)
 
 public:
 

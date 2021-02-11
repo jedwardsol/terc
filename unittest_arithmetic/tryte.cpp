@@ -1,4 +1,5 @@
-#include <gtest/gtest.h>
+#include "googletest/gtest.h"
+
 #include <string>
 using namespace std::literals;
 #include <sstream>
@@ -131,7 +132,7 @@ TEST(TryteTest, IntConstruct)
         {max,   1, 1, 1, 1, 1, 1},
     };
 
-    for(auto test : tests)
+    for(const auto &test : tests)
     {
         tryte t{ test.i};
         tryte n{-test.i};

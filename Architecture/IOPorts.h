@@ -23,12 +23,12 @@ struct DummyIOPorts : IOPorts
 
     Exception  out(const tryte    port,  const tryte    data) override
     {
-        return static_cast<Exception>(0);
+        return Exception::Okay;
     }
 
     Exception  in (const tryte    port,        tryte   &result)
     {
-        return static_cast<Exception>(0);
+        return Exception::Okay;
     }
 };
 

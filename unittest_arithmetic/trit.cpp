@@ -1,4 +1,5 @@
-#include <gtest/gtest.h>
+#include "googletest/gtest.h"
+
 #include <string>
 using namespace std::literals;
 #include <sstream>
@@ -77,6 +78,30 @@ TEST(TritTest, int)
     EXPECT_EQ(static_cast<int>(t1), 1);
     EXPECT_EQ(static_cast<int>(tn),-1);
 }
+
+
+TEST(TritTest, int16_t) 
+{
+    trit    t0{ 0};
+    trit    t1{ 1};
+    trit    tn{-1};
+
+    EXPECT_EQ(static_cast<int16_t>(t0), 0);
+    EXPECT_EQ(static_cast<int16_t>(t1), 1);
+    EXPECT_EQ(static_cast<int16_t>(tn),-1);
+}
+
+TEST(TritTest, bool) 
+{
+    trit    tn{-1};
+    trit    t0{ 0};
+    trit    t1{ 1};
+
+    EXPECT_TRUE (tn);
+    EXPECT_FALSE(t0);
+    EXPECT_TRUE (t1);
+}
+
 
 
 TEST(TritTest, to_string) 

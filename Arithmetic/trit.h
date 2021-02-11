@@ -36,9 +36,19 @@ public:
     constexpr trit &operator=(const trit&)  noexcept = default;
     constexpr trit &operator=(      trit&&) noexcept = default;
 
-    constexpr operator    int() const
+    constexpr explicit operator    int() const
     {
         return t;
+    }
+
+    constexpr explicit operator    int16_t() const
+    {
+        return t;
+    }
+
+    constexpr operator bool() const noexcept
+    {
+        return t!=0;
     }
 
     constexpr trit operator-() const noexcept

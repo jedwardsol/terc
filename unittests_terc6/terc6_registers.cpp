@@ -1,220 +1,14 @@
-#define NOMINMAX
-#include <Windows.h>
-#include <gtest/gtest.h>
-#include <string>
-using namespace std::literals;
-#include <sstream>
+
+#include "googletest/gtest.h"
 
 #include <iostream>
+#include <string>
+#include <sstream>
+using namespace std::literals;
 
-#include "Arithmetic/Arithmetic.h"
-#include "Arithmetic/Arithmetic_std.h"
-#include "Arithmetic/tryte.h"
-
-#include "Architecture/MemoryBlock.h"
-#include "Architecture/sixTritCPU.h"
-#include "Architecture/exception.h"
-#include "Architecture/IOPorts.h"
+#include "CPUTest.h"
 
 
-#pragma comment(lib,"Architecture")
-
-
-using namespace Architecture::sixTrit;
-
-class CPUTest : public ::testing::Test , public Architecture::IOPorts
-{
-protected:
-
-    virtual void SetUp()
-    {      
-    }
-
-    virtual void TearDown()
-    {
-    }
-
-    virtual Architecture::Exception  out(const tryte    ioPort,  const tryte    data)
-    {
-        auto port = static_cast<Architecture::KnownIOPorts>(static_cast<int>(ioPort)) ;
-
-        if(port == Architecture::KnownIOPorts::ExceptionOut)
-        {
-            auto exception = static_cast<Architecture::Exception>(static_cast<int>(data));
-
-            switch(exception)
-            {
-            case Architecture::Exception::Ping:
-                pingCounter++;
-                break;
-
-            case Architecture::Exception::Breakpoint:
-                if(IsDebuggerPresent()) {__debugbreak();}
-                break;
-            }
-
-
-            if(data > 1)
-            {
-                std::cout << "                 Exception " << data << " raised at address " << cpu.reg(Architecture::sixTrit::Register::REXA) << "\n";
-            }
-        }
-
-        outs.emplace_back(ioPort,data);
-        return Architecture::Exception::Okay;
-    }
-
-    virtual Architecture::Exception  in (const tryte    port,        tryte   &result)
-    {
-        ins.emplace_back(port);
-        result=tryte{ static_cast<int>(ins.size()) };
-        return Architecture::Exception::Okay;
-    }
-
-    Architecture::MemoryBlock           code {0,Architecture::sixTrit::recCodeSize};    
-    Architecture::MemoryBlock           data {Architecture::sixTrit::recStackSize,
-                                              Architecture::sixTrit::recDataSize};    
-
-    Architecture::sixTrit::CPU          cpu  {code,data,*this};
-
-    void Assemble(Architecture::sixTrit::OpCode   opcode,
-                  Architecture::sixTrit::Register reg,
-                  int                             operand)
-    {
-        tryte   first  { trybble{static_cast<int>(opcode)}, trybble{static_cast<int>(reg)}};
-        tryte   second { operand };
-
-        code[PC++]   = first;
-        code[PC++] = second;
-    }
-
-    void Assemble(Architecture::sixTrit::OpCode   opcode,
-                  Architecture::CpuControl        control)
-    {
-        tryte   first  { trybble{static_cast<int>(opcode)} , trybble{0}};
-        tryte   second { trybble{static_cast<int>(control)}, trybble{0}};
-
-        code[PC++]   = first;
-        code[PC++] = second;
-    }
-
-
-
-    void Assemble(Architecture::sixTrit::OpCode   opcode,
-                  Architecture::sixTrit::Register reg,
-                  trybble                         operandLow,
-                  trybble                         operandHigh)
-    {
-        tryte   first  { trybble{static_cast<int>(opcode)}, trybble{static_cast<int>(reg)}};
-        tryte   second { operandLow, operandHigh};
-
-        code[PC++]   = first;
-        code[PC++] = second;
-    }
-
-
-
-    int PC{0};
-
-    std::vector<std::pair<tryte,tryte>> outs;
-    std::vector<tryte>                  ins;
-    int                                 pingCounter{};
-};
-
-
-
-TEST_F(CPUTest, InitialState)
-{
-    EXPECT_EQ(code[0],  tryte{0});
-    EXPECT_EQ(data[0],  tryte{0});
-    EXPECT_EQ(data[-1], tryte{0});
-
-    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::R0),   tryte{0});
-    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::RPC),  tryte{0});
-    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::RSP),  tryte{0});
-    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXC), tryte{Architecture::Exception::Okay});
-}
-
-TEST_F(CPUTest, DefaultInstructionIsHalt)
-{
-    cpu.execute();
-
-    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::RPC),  tryte{0});    // halt doesn't update RPC 
-    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXC), tryte{Architecture::Exception::Halted});
-    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXA), tryte{0});
-}
-
-
-TEST_F(CPUTest, RanOffEnd)
-{
-    cpu.setReg(Architecture::sixTrit::Register::RPC,  tryte{code.positiveSize() - 1} );
-
-    cpu.execute();
-
-    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::RPC),  tryte{code.positiveSize() - 1});
-    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXC), tryte{Architecture::Exception::BadPC});
-}
-
-
-TEST_F(CPUTest, Invalid)
-{
-    Assemble(Architecture::sixTrit::OpCode::CpuControl,Architecture::CpuControl::Invalid);
-
-
-    cpu.execute();
-
-    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::RPC),  tryte{2});
-    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXC), tryte{Architecture::Exception::InvalidOpCode});
-    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXA), tryte{0});
-}
-
-
-
-
-TEST_F(CPUTest, DoubleFault)
-{
-    Assemble(Architecture::sixTrit::OpCode::CpuControl,Architecture::CpuControl::Invalid);
-    Assemble(Architecture::sixTrit::OpCode::CpuControl,Architecture::CpuControl::Invalid);
-
-
-    cpu.execute();
-
-    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::RPC),  tryte{2});
-    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXC), tryte{Architecture::Exception::InvalidOpCode});
-    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXA), tryte{0});
-
-
-    cpu.execute();
-
-    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::RPC),  tryte{2});
-    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXC), tryte{Architecture::Exception::DoubleFault});
-    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXA), tryte{0});
-}
-
-
-TEST_F(CPUTest, Nop)
-{
-    Assemble(Architecture::sixTrit::OpCode::CpuControl,Architecture::CpuControl::Nop);
-
-    cpu.execute();
-
-    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::RPC),  tryte{2});
-    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXC), tryte{Architecture::Exception::Okay});
-    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXA), tryte{0});
-}
-
-TEST_F(CPUTest, NopNop)
-{
-    Assemble(Architecture::sixTrit::OpCode::CpuControl,Architecture::CpuControl::Nop);
-    Assemble(Architecture::sixTrit::OpCode::CpuControl,Architecture::CpuControl::Nop);
-
-    cpu.execute();
-    cpu.execute();
-
-    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::RPC),  tryte{4});
-    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXC), tryte{Architecture::Exception::Okay});
-    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXA), tryte{0});
-}
 
 
 TEST_F(CPUTest, LoadImmediate)
@@ -260,8 +54,6 @@ TEST_F(CPUTest, AbsoluteJump)
     Assemble(Architecture::sixTrit::OpCode::CpuControl,     Architecture::CpuControl::Halt);
 
 
-
-
     cpu.execute();
     cpu.execute();
 
@@ -270,8 +62,6 @@ TEST_F(CPUTest, AbsoluteJump)
     ASSERT_EQ(outs.size(), 1);
     EXPECT_EQ(outs[0].first,  static_cast<int>(Architecture::KnownIOPorts::ExceptionOut));
     EXPECT_EQ(outs[0].second, Architecture::Exception::Halted);
-
-
 }
 
 

@@ -1,17 +1,14 @@
-#include <gtest/gtest.h>
-
-#if defined _DEBUG
-#pragma comment(lib,"gtestd")
-#else
-#pragma comment(lib,"gtest")
-#endif
-
-#include "Arithmetic/Arithmetic.h"
-#pragma comment(lib,"arithmetic")
-
+#include <cstdlib>
+#include <filesystem>
+namespace fs=std::filesystem;
 
 int main(int argc, char *argv[]) 
 {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+    fs::path    me{argv[0]};
+
+    fs::path    arithmetic = me.parent_path() / "unittest_arithmetic.exe";
+    fs::path    terc6      = me.parent_path() / "unittests_terc6.exe";
+
+    system(arithmetic.string().c_str());
+    system(terc6.string().c_str());
 }
