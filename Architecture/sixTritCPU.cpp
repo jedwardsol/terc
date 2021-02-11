@@ -57,9 +57,7 @@ void CPU::execute()
         break;
     }
 
-
     updatePC();
-
 }
 
 

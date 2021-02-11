@@ -440,7 +440,7 @@ TEST_F(CPUTest, Flags)
 
 
 
-TEST_F(CPUTest, SignFlags)
+TEST_F(CPUTest, SignFlag)
 {
 // UpdateSignFlag :  LoadImmediate, Copy, In, load, pop
     ASSERT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{0});
@@ -504,6 +504,93 @@ TEST_F(CPUTest, SignFlags)
     assemble(Architecture::sixTrit::OpCode::Pop,   Architecture::sixTrit::Register::R1,0);    
     cpu.execute();                                                                         
     EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{-1}) << "Push -";
+}
+
+
+
+
+
+TEST_F(CPUTest, CompareImmediate)
+{
+
+    ASSERT_EQ( cpu.getFlag(Architecture::Flag::Comparison),    trit{0});
+
+
+    assemble(Architecture::sixTrit::OpCode::LoadImmediate, Architecture::sixTrit::Register::R1, -42);
+    assemble(Architecture::sixTrit::OpCode::LoadImmediate, Architecture::sixTrit::Register::R2,  99);
+
+    cpu.execute();
+    cpu.execute();
+
+
+
+    assemble(Architecture::sixTrit::OpCode::CmpI, Architecture::sixTrit::Register::R1,   -100);
+    cpu.execute();
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Comparison),    trit{1})  << "-42 > -100";;
+
+    assemble(Architecture::sixTrit::OpCode::CmpI, Architecture::sixTrit::Register::R1,   -1);
+    cpu.execute();
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Comparison),    trit{-1})  << "-42 < -1";;
+
+    assemble(Architecture::sixTrit::OpCode::CmpI, Architecture::sixTrit::Register::R1,   11);
+    cpu.execute();
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Comparison),    trit{-1})  << "-42 < 11";;
+
+    assemble(Architecture::sixTrit::OpCode::CmpI, Architecture::sixTrit::Register::R1,   -42);
+    cpu.execute();
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Comparison),    trit{0})  << "-42 == 42";;
+
+
+
+    assemble(Architecture::sixTrit::OpCode::CmpI, Architecture::sixTrit::Register::R2,   -50);
+    cpu.execute();
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Comparison),    trit{1})  << "99  > -50";
+
+    assemble(Architecture::sixTrit::OpCode::CmpI, Architecture::sixTrit::Register::R2,   98);
+    cpu.execute();
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Comparison),    trit{1})  << "99 > 98";
+
+    assemble(Architecture::sixTrit::OpCode::CmpI, Architecture::sixTrit::Register::R2,   110);
+    cpu.execute();
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Comparison),    trit{-1})  << "99 < 110";;
+
+    assemble(Architecture::sixTrit::OpCode::CmpI, Architecture::sixTrit::Register::R2,   99);
+    cpu.execute();
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Comparison),    trit{0})  << "99 == 99";;
+}
+
+
+
+TEST_F(CPUTest, CompareRegister)
+{
+
+    ASSERT_EQ( cpu.getFlag(Architecture::Flag::Comparison),    trit{0});
+
+
+    assemble(Architecture::sixTrit::OpCode::LoadImmediate, Architecture::sixTrit::Register::R1, -42);
+    assemble(Architecture::sixTrit::OpCode::LoadImmediate, Architecture::sixTrit::Register::R2,  99);
+
+    cpu.execute();
+    cpu.execute();
+
+
+
+    assemble(Architecture::sixTrit::OpCode::CmpR, Architecture::sixTrit::Register::R1,   static_cast<int>(Register::R2));
+    cpu.execute();
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Comparison),    trit{-1})  << "R1 < R2";
+
+    assemble(Architecture::sixTrit::OpCode::CmpR, Architecture::sixTrit::Register::R2,   static_cast<int>(Register::R1));
+    cpu.execute();
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Comparison),    trit{ 1})  << "R2 > R1";
+
+    assemble(Architecture::sixTrit::OpCode::CmpR, Architecture::sixTrit::Register::R1,   static_cast<int>(Register::R1));
+    cpu.execute();
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Comparison),    trit{ 0})  << "R1 == R1";
+
+    assemble(Architecture::sixTrit::OpCode::CmpR, Architecture::sixTrit::Register::R2,   static_cast<int>(Register::R2));
+    cpu.execute();
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Comparison),    trit{ 0})  << "R2 == R2";
+
 }
 
 
