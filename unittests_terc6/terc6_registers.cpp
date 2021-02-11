@@ -396,7 +396,7 @@ TEST_F(CPUTest, StackUnderflow)
         assemble(Architecture::sixTrit::OpCode::Pop,        Architecture::sixTrit::Register::R0, 0 );
     }
 
-    assemble(Architecture::CpuControl::Breakpoint);
+//  assemble(Architecture::CpuControl::Breakpoint);
     assemble(Architecture::sixTrit::OpCode::Pop,           Architecture::sixTrit::Register::R0, 0 );
 
     do
@@ -418,24 +418,24 @@ TEST_F(CPUTest, Flags)
     ASSERT_EQ( cpu.reg(Register::RFlags), 0);
 
     EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),        trit{0});
-    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Conditional), trit{0});
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::ExecutedConditional), trit{0});
 
     cpu.setFlag(Architecture::Flag::Sign, trit{1});
     EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),        trit{1});
-    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Conditional), trit{0});
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::ExecutedConditional), trit{0});
 
 
     cpu.setFlag(Architecture::Flag::Sign, trit{0});
     EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),        trit{0});
-    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Conditional), trit{0});
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::ExecutedConditional), trit{0});
 
-    cpu.setFlag(Architecture::Flag::Conditional, trit{-1});
+    cpu.setFlag(Architecture::Flag::ExecutedConditional, trit{-1});
     EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),        trit{0});
-    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Conditional), trit{-1});
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::ExecutedConditional), trit{-1});
 
-    cpu.setFlag(Architecture::Flag::Conditional, trit{0});
+    cpu.setFlag(Architecture::Flag::ExecutedConditional, trit{0});
     EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),        trit{0});
-    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Conditional), trit{0});
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::ExecutedConditional), trit{0});
 }
 
 
@@ -448,32 +448,62 @@ TEST_F(CPUTest, SignFlags)
 
     assemble(Architecture::sixTrit::OpCode::LoadImmediate, Architecture::sixTrit::Register::Rn1,  -9);
     cpu.execute();
-    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{-1});
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{-1}) << "Load -";
 
     assemble(Architecture::sixTrit::OpCode::LoadImmediate, Architecture::sixTrit::Register::R0,   0);
     cpu.execute();
-    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{0});
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{0})  << "Load 0";;
 
     assemble(Architecture::sixTrit::OpCode::LoadImmediate, Architecture::sixTrit::Register::R1,   123);
     cpu.execute();
-    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{1});
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{1})  << "Load +";;
 
 
 // 
 
     assemble(Architecture::sixTrit::OpCode::Copy,   Architecture::sixTrit::Register::R2,  static_cast<int>(Architecture::sixTrit::Register::Rn1));
     cpu.execute();
-    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{-1});
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{-1})  << "Copy -";;
 
     assemble(Architecture::sixTrit::OpCode::Copy,   Architecture::sixTrit::Register::R2,  static_cast<int>(Architecture::sixTrit::Register::R0));
     cpu.execute();
-    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{0});
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{0})  << "Copy 0";
 
     assemble(Architecture::sixTrit::OpCode::Copy,   Architecture::sixTrit::Register::R2,  static_cast<int>(Architecture::sixTrit::Register::R1));
     cpu.execute();
-    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{1});
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{1})  << "Copy +";
 
 
+
+//  pushes - flag doesn't change
+
+    assemble(Architecture::sixTrit::OpCode::Push,   Architecture::sixTrit::Register::Rn1 ,0);
+    cpu.execute();
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{1}) << "Push -";
+
+    assemble(Architecture::sixTrit::OpCode::Push,   Architecture::sixTrit::Register::R0 ,0);
+    cpu.execute();
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{1}) << "Push 0";
+
+    assemble(Architecture::sixTrit::OpCode::Push,   Architecture::sixTrit::Register::R1,0);    
+    cpu.execute();                                                                         
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{1}) << "Push +";
+
+
+//  pops
+
+
+    assemble(Architecture::sixTrit::OpCode::Pop,   Architecture::sixTrit::Register::R2 ,0);
+    cpu.execute();
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{1}) << "Pop +";
+
+    assemble(Architecture::sixTrit::OpCode::Pop,   Architecture::sixTrit::Register::R2 ,0);
+    cpu.execute();
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{0}) << "Pop 0";
+
+    assemble(Architecture::sixTrit::OpCode::Pop,   Architecture::sixTrit::Register::R1,0);    
+    cpu.execute();                                                                         
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{-1}) << "Push -";
 }
 
 

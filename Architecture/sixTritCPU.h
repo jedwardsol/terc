@@ -76,7 +76,7 @@ Each instruction is 2 trytes
 
     first tryte
         low trybble     :   opcode
-        high trybble    :   register, condition, misc
+        high trybble    :   register or condition
     second tryte        :   arbitrary argument
  
 */
@@ -85,52 +85,46 @@ Each instruction is 2 trytes
 
 enum  OpCode        // -13 to 13
 {
- // Opcode                  // condition        operand                                                             exceptions
-                                                                   
-    In13=-13,               // unused           unused                                                              InvalidOpCode
-    In12,                   // unused           break                                                               InvalidOpCode
-    In11,                   // unused           unused                                                              InvalidOpCode
-    In10,                   // unused           unused                                                              InvalidOpCode
-    In9,                    // unused           unused                                                              InvalidOpCode
-    In8,                    // unused           unused                                                              InvalidOpCode
-    In7,                    // unused           unused                                                              InvalidOpCode
-    In6,                    // unused           unused                                                              InvalidOpCode
-    In5,                    // unused           unused                                                              InvalidOpCode
-
- // Opcode                  // condition        operand                                                             exceptions
-
-    CallI,                  // condition        immediate destination                                                              
-    CallR,                  // condition        low: register destination 
-    JmpI,                   // condition        immediate destination                                                               
-    JmpR,                   // condition        low: register destination                                                           
-                                                                   
-
-
-    CpuControl =   0,       // condition        CpuControl                                                          Halted, InvalidOpCode, Breakpoint (TODO)
-
-
- // Opcode                  // register         operand                                                             exceptions
-
-                                                                   
-    LoadImmediate,          // destination      immediate                           dest = immediate                InvalidRegister if destination is readonly
-    Copy,                   // destination      low:source                          destination = source            InvalidRegister if destination is readonly
-    Out,                    // source           low:port                            write source to port            InvalidPort,  InvalidData
-    In,                     // destination      low:port                            read port to destination        InvalidPort,  InvalidData
-                                                                   
-    Load,                   // destination      low:regsource      high:offset      dest = [source+offset]          AccessViolation is address is out of range.  InvalidRegister if destination is readonly
-    Store,                  // source           low:regdest        high:offset      [dest+offset] = source          AccessViolation is address is out of range.  
-                                                                   
-    Push,                   // source           unused                              SP-- stack[SP]=src              StackOverflow if stack is full
-    Pop,                    // destination      unused                              dest=stack[SP] SP++             StackOverflow if stack is empty      InvalidRegister if destination is readonly
-
-    I9,                     // unused           unused                                                              InvalidOpCode
-    I10,                    // unused           unused                                                              InvalidOpCode
-    I11,                    // unused           unused                                                              InvalidOpCode
-    I12,                    // unused           unused                                                              InvalidOpCode
-    I13,                    // unused           unused                                                              InvalidOpCode
-
+ // Opcode                  // condition        operand                                                             flags           exceptions
+                                                                                                                         
+    In13=-13,               // unused           unused                                                                              InvalidOpCode
+    In12,                   // unused           break                                                                               InvalidOpCode
+    In11,                   // unused           unused                                                                              InvalidOpCode
+    In10,                   // unused           unused                                                                              InvalidOpCode
+    In9,                    // unused           unused                                                                              InvalidOpCode
+    In8,                    // unused           unused                                                                              InvalidOpCode
+    In7,                    // unused           unused                                                                              InvalidOpCode
+    In6,                    // unused           unused                                                                              InvalidOpCode
+    In5,                    // unused           unused                                                                              InvalidOpCode
+                                                                                                                         
+ // Opcode                  // condition        operand                                                                             exceptions
+                                                                                                                         
+    CallI,                  // condition        immediate destination                                               E                         
+    CallR,                  // condition        low: register destination                                           E     
+    JmpI,                   // condition        immediate destination                                               E                          
+    JmpR,                   // condition        low: register destination                                           E                          
+                                                                                                                         
+                                                                                                                         
+                                                                                                                         
+    CpuControl =   0,       // condition        CpuControl                                                          E              Halted, InvalidOpCode, Breakpoint Trace
+                                                                                                                         
+                                                                                                                         
+ // Opcode                  // register         operand                                                                             exceptions
+                                                                                                                         
+    LoadImmediate,          // destination      immediate                           dest = immediate                E S            InvalidRegister if destination is readonly
+    Copy,                   // destination      low:source                          destination = source            E S            InvalidRegister if destination is readonly
+    Out,                    // source           low:port                            write source to port            E              InvalidPort,  InvalidData
+    In,                     // destination      low:port                            read port to destination        E S            InvalidPort,  InvalidData
+    Load,                   // destination      low:regsource      high:offset      dest = [source+offset]          E S            AccessViolation is address is out of range.  InvalidRegister if destination is readonly
+    Store,                  // source           low:regdest        high:offset      [dest+offset] = source          E              AccessViolation is address is out of range.  
+    Push,                   // source           unused                              SP-- stack[SP]=src              E              StackOverflow if stack is full
+    Pop,                    // destination      unused                              dest=stack[SP] SP++             E S            StackOverflow if stack is empty      InvalidRegister if destination is readonly
+    CmpI,                   // Reg X            immediate                                                           E C         
+    CmpR,                   // Reg X            low:: Reg Y                                                         E C         
+    I11,                    // unused           unused                                                                              InvalidOpCode
+    I12,                    // unused           unused                                                                              InvalidOpCode
+    I13,                    // unused           unused                                                                              InvalidOpCode
 };
-
 
 
 

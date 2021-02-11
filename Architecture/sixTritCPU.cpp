@@ -38,6 +38,8 @@ void CPU::execute()
     case OpCode::Store:
     case OpCode::Push:
     case OpCode::Pop:
+    case OpCode::CmpI:
+    case OpCode::CmpR:
         executeRegisterInstructions(operation, operand);
         break;
 

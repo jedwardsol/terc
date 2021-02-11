@@ -21,16 +21,13 @@ void CPU::executeRegisterInstructions(tryte  operation, tryte operand)
 
     switch(opcode)
     {
-
     case OpCode::LoadImmediate:
 
         setReg(opreg, operand, ByPassRegisterChecks::no);
         updateSignFlag(opreg) ;
         break;
 
-
     case OpCode::Copy:
-
         {
             auto srcreg  = static_cast<Register>(static_cast<int>(operand.trybbles().first));
             setReg(opreg, reg(srcreg), ByPassRegisterChecks::no);
@@ -38,10 +35,7 @@ void CPU::executeRegisterInstructions(tryte  operation, tryte operand)
         }
         break;
 
-
-
     case OpCode::Out:
-
         {
             auto exception = ioPorts.out(operand.trybbles().first, reg(opreg));
 
@@ -53,7 +47,6 @@ void CPU::executeRegisterInstructions(tryte  operation, tryte operand)
         break;
 
     case OpCode::In:
-
         {
             tryte value;
 
@@ -68,10 +61,8 @@ void CPU::executeRegisterInstructions(tryte  operation, tryte operand)
                 setReg(opreg,value);
                 updateSignFlag(opreg) ;
             }
-
         }
         break;
-
 
     case OpCode::Load:
         load(opreg,
@@ -95,9 +86,54 @@ void CPU::executeRegisterInstructions(tryte  operation, tryte operand)
         pop(opreg);
         break;
 
+    case OpCode::CmpI:
+        {
+            auto X  =   reg(opreg);
+            auto Y  =   operand;
+
+            if(X < Y)
+            {
+                setFlag(Flag::Comparison, trit{-1});
+            }
+            else if(X==Y)
+            {
+                setFlag(Flag::Comparison, trit{ 0});
+            }
+            else
+            {
+                setFlag(Flag::Comparison, trit{ 1});
+            }
+        }
+        break;
+
+        case OpCode::CmpR:
+        {
+            auto X  =   reg(opreg);
+            auto rY = static_cast<Register>(static_cast<int>(operand.trybbles().first));
+            auto Y  =   reg(rY);
+
+            if(X < Y)
+            {
+                setFlag(Flag::Comparison, trit{-1});
+            }
+            else if(X==Y)
+            {
+                setFlag(Flag::Comparison, trit{ 0});
+            }
+            else
+            {
+                setFlag(Flag::Comparison, trit{ 1});
+            }
+   
+        }
+        break;
+
+
     default:
         assert(false);
     }
+
+    setFlag(Flag::ExecutedConditional, trit{0});        // instruction wasn't conditional
 }
 
  
