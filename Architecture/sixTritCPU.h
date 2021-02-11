@@ -136,13 +136,42 @@ public:
                                                       ioPorts{ioPorts}
     {}
 
-    tryte &reg(Register  r)
+    const tryte &reg(Register  r) const
     {
         constexpr int     registerOffset    {maxValue(3)};
 
         return registers.at(static_cast<int>(r) + registerOffset);
     }
-    // todo : replace with get/set & validation
+
+    enum class ByPassRegisterChecks
+    {
+        no, yes
+    };
+
+    void setReg(Register  r,   tryte  value,  ByPassRegisterChecks byPassRegisterChecks= ByPassRegisterChecks::no) 
+    {
+        constexpr int     registerOffset    {maxValue(3)};
+
+        if(byPassRegisterChecks == ByPassRegisterChecks::no)
+        {
+            if(r == Register::RPC)
+            {
+                std::cout << "RPC changed\n";
+            }
+            else if(   r == Register::REXA
+                    || r == Register::REXC)
+            {
+                // write to read-only register!
+                raiseException(Exception::InvalidRegister, reg(Register::RPC));
+                return;
+            }
+        }
+
+        registers.at(static_cast<int>(r) + registerOffset) = value;
+    }
+
+
+
 
     void    execute();
 

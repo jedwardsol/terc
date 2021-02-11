@@ -118,7 +118,7 @@ TEST_F(CPUTest, DefaultInstructionIsHalt)
 
 TEST_F(CPUTest, RanOffEnd)
 {
-    cpu.reg(Architecture::sixTrit::Register::RPC) = tryte{code.positiveSize() - 1};
+    cpu.setReg(Architecture::sixTrit::Register::RPC,  tryte{code.positiveSize() - 1} );
 
     cpu.execute();
 

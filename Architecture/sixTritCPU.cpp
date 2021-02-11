@@ -20,8 +20,8 @@ void CPU::raiseException(Exception code, tryte PC)
     static auto exceptionPort = tryte{ static_cast<int>( KnownIOPorts::ExceptionOut)};
            auto exceptionCode = tryte{ static_cast<int>( code)};
 
-    reg(Register::REXC) = exceptionCode;
-    reg(Register::REXA) = PC;
+    setReg(Register::REXC, exceptionCode, ByPassRegisterChecks::yes);
+    setReg(Register::REXA, PC,            ByPassRegisterChecks::yes);
 
 
     ioPorts.out( exceptionPort  ,exceptionCode);
@@ -70,7 +70,7 @@ bool    CPU::updatePC()
         return false;
     }
     
-    reg(Register::RPC) = newPC;
+    setReg(Register::RPC, newPC, ByPassRegisterChecks::yes);
 
     return true;
 }
@@ -96,30 +96,15 @@ void CPU::execute()
 
     case OpCode::LoadImmediate:
 
-        if(   opreg == Register::REXC
-           || opreg == Register::REXA)
-        {
-            raiseException(Exception::InvalidRegister, reg(Register::RPC));
-        }
-        else
-        {
-            reg(opreg) = operand;
-        }
+        setReg(opreg, operand, ByPassRegisterChecks::no);
         break;
 
 
     case OpCode::Copy:
 
-        if(   opreg == Register::REXC
-           || opreg == Register::REXA)
-        {
-            raiseException(Exception::InvalidRegister, reg(Register::RPC));
-        }
-        else
         {
             auto srcreg  = static_cast<Register>(static_cast<int>(operand.trybbles().first));
-
-            reg(opreg) = reg(srcreg);
+            setReg(opreg, reg(srcreg), ByPassRegisterChecks::no);
         }
         break;
 
@@ -140,12 +125,19 @@ void CPU::execute()
     case OpCode::In:
 
         {
-            auto exception = ioPorts.in(operand.trybbles().first, reg(opreg));
+            tryte value;
+
+            auto exception = ioPorts.in(operand.trybbles().first, value);
 
             if(exception != Exception::Okay)
             {
                 raiseException(exception, reg(Register::RPC));
             }
+            else
+            {
+                setReg(opreg,value);
+            }
+
         }
         break;
 
@@ -210,7 +202,7 @@ void CPU::load (sixTrit::Register   destReg,
     {
         try
         {
-            reg(destReg) = data[address.value()];
+            setReg(destReg,  data[address.value()]);
         }
         catch(const std::out_of_range &)
         {
@@ -270,7 +262,7 @@ void CPU::push (Architecture::sixTrit::Register   sourceReg)
         {
             try
             {
-                reg(Register::RSP) = address.value();
+                setReg(Register::RSP, address.value());
                 data[address.value()] = reg(sourceReg);
             }
             catch(const std::out_of_range &)
@@ -296,8 +288,8 @@ void CPU::pop  (Architecture::sixTrit::Register   destReg)
         {
             try
             {
-                reg(destReg)       = data[currentAddress] ;
-                reg(Register::RSP) = newAddress.value();
+                setReg(destReg,        data[currentAddress]);
+                setReg(Register::RSP,  newAddress.value());
             }
             catch(const std::out_of_range &)
             {
