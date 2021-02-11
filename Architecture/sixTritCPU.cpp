@@ -1,6 +1,3 @@
-#define NOMINMAX
-#include <Windows.h>
-
 #include <vector>
 #include <array>
 #include <cassert>
@@ -24,9 +21,11 @@ void CPU::raiseException(Exception code, tryte PC)
     setReg(Register::REXC, exceptionCode, ByPassRegisterChecks::yes);
     setReg(Register::REXA, PC,            ByPassRegisterChecks::yes);
 
-
     ioPorts.out( exceptionPort  ,exceptionCode);
 }
+
+
+
 
 bool    CPU::checkPC()
 {
@@ -110,15 +109,15 @@ void CPU::execute()
         executeRegisterInstructions(operation, operand);
         break;
 
-
-
+    case OpCode::CallI:
+    case OpCode::CallR:
+    case OpCode::JmpI:
+    case OpCode::JmpR:
     case OpCode::CpuControl:
 
-        executeCpuControlInstruction(operation);
+        executeConditionalInstructions(operation, operand);
         break;
  
-
-
     default:
         raiseException(Exception::InvalidOpCode, reg(Register::RPC));
         break;
@@ -129,12 +128,10 @@ void CPU::execute()
 
 }
 
-void CPU::executeCpuControlInstruction(tryte  operation)
+void CPU::CpuControl(tryte  operand)
 {
-    auto opcode     = static_cast<OpCode>  (static_cast<int>(operation.trybbles().first));
-    auto cpuControl = static_cast<Architecture::CpuControl>(static_cast<int>(operation.trybbles().second));
+    auto cpuControl = static_cast<Architecture::CpuControl>(static_cast<int>(operand.trybbles().first));
 
-    assert(opcode == OpCode::CpuControl);
 
     switch(cpuControl)
     {
@@ -147,8 +144,11 @@ void CPU::executeCpuControlInstruction(tryte  operation)
         break;
 
     case Architecture::CpuControl::Breakpoint:
+        raiseException(Exception::Breakpoint, reg(Register::RPC));
+        break;
 
-        if(::IsDebuggerPresent()) __debugbreak();
+    case Architecture::CpuControl::Ping:
+        raiseException(Exception::Breakpoint, reg(Register::RPC));
         break;
 
     default:

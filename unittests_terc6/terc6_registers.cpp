@@ -1,3 +1,5 @@
+#define NOMINMAX
+#include <Windows.h>
 #include <gtest/gtest.h>
 #include <string>
 using namespace std::literals;
@@ -32,17 +34,33 @@ protected:
     {
     }
 
-    virtual Architecture::Exception  out(const tryte    port,  const tryte    data)
+    virtual Architecture::Exception  out(const tryte    ioPort,  const tryte    data)
     {
-        if( static_cast<Architecture::KnownIOPorts>(static_cast<int>(port)) == Architecture::KnownIOPorts::ExceptionOut)
+        auto port = static_cast<Architecture::KnownIOPorts>(static_cast<int>(ioPort)) ;
+
+        if(port == Architecture::KnownIOPorts::ExceptionOut)
         {
+            auto exception = static_cast<Architecture::Exception>(static_cast<int>(data));
+
+            switch(exception)
+            {
+            case Architecture::Exception::Ping:
+                pingCounter++;
+                break;
+
+            case Architecture::Exception::Breakpoint:
+                if(IsDebuggerPresent()) {__debugbreak();}
+                break;
+            }
+
+
             if(data > 1)
             {
                 std::cout << "                 Exception " << data << " raised at address " << cpu.reg(Architecture::sixTrit::Register::REXA) << "\n";
             }
         }
 
-        outs.emplace_back(port,data);
+        outs.emplace_back(ioPort,data);
         return Architecture::Exception::Okay;
     }
 
@@ -73,8 +91,8 @@ protected:
     void Assemble(Architecture::sixTrit::OpCode   opcode,
                   Architecture::CpuControl        control)
     {
-        tryte   first  { trybble{static_cast<int>(opcode)}, trybble{static_cast<int>(control)}};
-        tryte   second { 0 };
+        tryte   first  { trybble{static_cast<int>(opcode)} , trybble{0}};
+        tryte   second { trybble{static_cast<int>(control)}, trybble{0}};
 
         code[PC++]   = first;
         code[PC++] = second;
@@ -100,7 +118,7 @@ protected:
 
     std::vector<std::pair<tryte,tryte>> outs;
     std::vector<tryte>                  ins;
-
+    int                                 pingCounter{};
 };
 
 
@@ -140,8 +158,7 @@ TEST_F(CPUTest, RanOffEnd)
 
 TEST_F(CPUTest, Invalid)
 {
-    Assemble(Architecture::sixTrit::OpCode::CpuControl,
-             Architecture::CpuControl::Invalid);
+    Assemble(Architecture::sixTrit::OpCode::CpuControl,Architecture::CpuControl::Invalid);
 
 
     cpu.execute();
@@ -581,12 +598,12 @@ TEST_F(CPUTest, StackUnderflow)
 
     for(int i=0;i<3;i++)
     {
-        Assemble(Architecture::sixTrit::OpCode::Push,           Architecture::sixTrit::Register::R0, i+42 );
+        Assemble(Architecture::sixTrit::OpCode::Push,       Architecture::sixTrit::Register::R0, i+42 );
     }
 
     for(int i=0;i<3;i++)
     {
-        Assemble(Architecture::sixTrit::OpCode::Pop,           Architecture::sixTrit::Register::R0, 0 );
+        Assemble(Architecture::sixTrit::OpCode::Pop,        Architecture::sixTrit::Register::R0, 0 );
     }
 
     Assemble(Architecture::sixTrit::OpCode::CpuControl,     Architecture::CpuControl::Breakpoint);

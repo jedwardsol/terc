@@ -36,12 +36,12 @@ constexpr int     numRegisters              {numValues(3)};
 
 enum class Register     // -13 to 13
 {
-    RPC  = -13,   // program counter        
-    RSP  = -12,   // stack pointer
-    RFL  = -11,   // flags
-    RRA  = -10,   // return address
-    REXC = -9,    // exception code
-    REXA = -8,    // exception address
+    RPC     = -13,   // program counter        
+    RSP     = -12,   // stack pointer
+    RFlags  = -11,   // flags
+    RRA     = -10,   // return address
+    REXC    = -9,    // exception code
+    REXA    = -8,    // exception address
 
     // General purpose registers
 
@@ -87,7 +87,7 @@ enum  OpCode        // -13 to 13
 {
  // Opcode                  // condition        operand                                                             exceptions
                                                                    
-    In13=13,                // unused           unused                                                              InvalidOpCode
+    In13=-13,               // unused           unused                                                              InvalidOpCode
     In12,                   // unused           break                                                               InvalidOpCode
     In11,                   // unused           unused                                                              InvalidOpCode
     In10,                   // unused           unused                                                              InvalidOpCode
@@ -96,30 +96,32 @@ enum  OpCode        // -13 to 13
     In7,                    // unused           unused                                                              InvalidOpCode
     In6,                    // unused           unused                                                              InvalidOpCode
     In5,                    // unused           unused                                                              InvalidOpCode
-    In4,                    // unused           unused                                                              InvalidOpCode
-    In3,                    // unused           unused                                                              InvalidOpCode
-    In2,                    // unused           unused                                                              InvalidOpCode
-    In1,                    // unused           unused                                                              InvalidOpCode
+
+ // Opcode                  // condition        operand                                                             exceptions
+
+    CallI,                  // condition        immediate destination                                                              
+    CallR,                  // condition        low: register destination 
+    JmpI,                   // condition        immediate destination                                                               
+    JmpR,                   // condition        low: register destination                                                           
                                                                    
- // Opcode                  // misc             operand                                                             exceptions
 
 
-    CpuControl =   0,       // CpuControl       unused                                                              Halted
+    CpuControl =   0,       // condition        CpuControl                                                          Halted, InvalidOpCode, Breakpoint (TODO)
 
 
  // Opcode                  // register         operand                                                             exceptions
 
                                                                    
-    LoadImmediate,          // destination      immediate                           dest = immediate                InvalidRegister if destination = REXC, REXA
-    Copy,                   // destination      low:source                          destination = source            InvalidRegister if destination = REXC, REXA     
+    LoadImmediate,          // destination      immediate                           dest = immediate                InvalidRegister if destination is readonly
+    Copy,                   // destination      low:source                          destination = source            InvalidRegister if destination is readonly
     Out,                    // source           low:port                            write source to port            InvalidPort,  InvalidData
     In,                     // destination      low:port                            read port to destination        InvalidPort,  InvalidData
                                                                    
-    Load,                   // destination      low:regsource      high:offset      dest = [source+offset]          AccessViolation is address is out of range.  InvalidRegister if destination = REXC, REXA     
+    Load,                   // destination      low:regsource      high:offset      dest = [source+offset]          AccessViolation is address is out of range.  InvalidRegister if destination is readonly
     Store,                  // source           low:regdest        high:offset      [dest+offset] = source          AccessViolation is address is out of range.  
                                                                    
     Push,                   // source           unused                              SP-- stack[SP]=src              StackOverflow if stack is full
-    Pop,                    // destination      unused                              dest=stack[SP] SP++             StackOverflow if stack is empty
+    Pop,                    // destination      unused                              dest=stack[SP] SP++             StackOverflow if stack is empty      InvalidRegister if destination is readonly
 
     I9,                     // unused           unused                                                              InvalidOpCode
     I10,                    // unused           unused                                                              InvalidOpCode
@@ -167,7 +169,8 @@ public:
                 instructionChangedRPC = true;
             }
             else if(   r == Register::REXA
-                    || r == Register::REXC)
+                    || r == Register::REXC
+                    || r == Register::RFlags)
             {
                 // write to read-only register!
                 raiseException(Exception::InvalidRegister, reg(Register::RPC));
@@ -192,7 +195,7 @@ public:
 
     void    execute();
     void    executeRegisterInstructions(tryte  operation, tryte operand);
-    void    executeCpuControlInstruction(tryte  operation);
+    void    executeConditionalInstructions(tryte  operation, tryte operand);
 
 private:
 
@@ -216,6 +219,9 @@ private:
 
     std::optional<tryte> calculateAddress(Architecture::sixTrit::Register   addressReg, 
                                           trybble                           offset);
+
+
+    void    CpuControl(tryte  operand);
    
 
 private:

@@ -15,27 +15,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MemoryBlock.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="sixTritCPU.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IOPorts.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="exception.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="sixTritCPU.cpp">
+    <ClCompile Include="unittests_terc6.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sixTritCpu_RegisterInstructions.cpp">
+    <ClCompile Include="terc6_registers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sixTritCpu_ConditionalInstructions.cpp">
+    <ClCompile Include="terc6_basic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
