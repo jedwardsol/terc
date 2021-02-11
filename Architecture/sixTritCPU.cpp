@@ -55,22 +55,28 @@ bool    CPU::checkPC()
 
     // TODO : check for odd
 
+
+    instructionChangedRPC = false;
+
     return true;
 }
 
 bool    CPU::updatePC()
 {
-    trit carry{};
-
-    auto newPC =  halfAdder(reg(Register::RPC),tryte{2},carry);
-    
-    if(carry != 0)
+    if(!instructionChangedRPC)
     {
-        raiseException(Exception::BadPC, reg(Register::RPC));
-        return false;
-    }
+        trit carry{};
+
+        auto newPC =  halfAdder(reg(Register::RPC),tryte{2},carry);
     
-    setReg(Register::RPC, newPC, ByPassRegisterChecks::yes);
+        if(carry != 0)
+        {
+            raiseException(Exception::BadPC, reg(Register::RPC));
+            return false;
+        }
+    
+        setReg(Register::RPC, newPC, ByPassRegisterChecks::yes);
+    }
 
     return true;
 }
@@ -168,6 +174,7 @@ void CPU::execute()
 
     case OpCode::Halt:
         raiseException(Exception::Halted, reg(Register::RPC));
+        setReg(Register::RPC, reg(Register::RPC), ByPassRegisterChecks::no);
         break;
 
     case OpCode::Nop:

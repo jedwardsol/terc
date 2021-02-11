@@ -156,7 +156,7 @@ public:
         {
             if(r == Register::RPC)
             {
-                std::cout << "RPC changed\n";
+                instructionChangedRPC = true;
             }
             else if(   r == Register::REXA
                     || r == Register::REXC)
@@ -164,6 +164,15 @@ public:
                 // write to read-only register!
                 raiseException(Exception::InvalidRegister, reg(Register::RPC));
                 return;
+            }
+            else if(   r == Register::RSP)
+            {
+                if(value > 0)
+                {
+                    // RSP can't be in data zone
+                    raiseException(Exception::AccessViolation, reg(Register::RPC));
+                    return;
+                }
             }
         }
 
@@ -201,12 +210,13 @@ private:
 
 private:
 
-    Architecture::MemoryBlock const                   &code;
-    Architecture::MemoryBlock                         &data;
-    Architecture::IOPorts                             &ioPorts;
+    Architecture::MemoryBlock const                &code;
+    Architecture::MemoryBlock                      &data;
+    Architecture::IOPorts                          &ioPorts;
 
-    std::array<tryte,numRegisters>                     registers{};
+    std::array<tryte,numRegisters>                  registers{};
 
+    bool                                            instructionChangedRPC;      // TODO : move to flag
 };
 
 

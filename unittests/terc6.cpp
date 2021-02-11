@@ -110,7 +110,7 @@ TEST_F(CPUTest, DefaultInstructionIsHalt)
 {
     cpu.execute();
 
-    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::RPC),  tryte{2});
+    EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::RPC),  tryte{0});    // halt doesn't update RPC 
     EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXC), tryte{Architecture::Exception::Halted});
     EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXA), tryte{0});
 }
@@ -227,6 +227,35 @@ TEST_F(CPUTest, LoadImmediate)
     cpu.execute();
     EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::R5),  tryte{15});
 }
+
+
+TEST_F(CPUTest, AbsoluteJump)
+{
+    Assemble(Architecture::sixTrit::OpCode::LoadImmediate, Architecture::sixTrit::Register::RPC,  8);
+
+    Assemble(Architecture::sixTrit::OpCode::Out,            Architecture::sixTrit::Register::R0, static_cast<int>(Architecture::KnownIOPorts::ASCIIOut));
+    Assemble(Architecture::sixTrit::OpCode::Out,            Architecture::sixTrit::Register::R0, static_cast<int>(Architecture::KnownIOPorts::ASCIIOut));
+    Assemble(Architecture::sixTrit::OpCode::Out,            Architecture::sixTrit::Register::R0, static_cast<int>(Architecture::KnownIOPorts::ASCIIOut));
+
+    Assemble(Architecture::sixTrit::OpCode::Halt,           Architecture::sixTrit::Register::R0, 0);
+
+
+
+
+    cpu.execute();
+    cpu.execute();
+
+    EXPECT_EQ(cpu.reg(Register::RPC),   8);
+    EXPECT_EQ(cpu.reg(Register::REXC),  Architecture::Exception::Halted);
+    ASSERT_EQ(outs.size(), 1);
+    EXPECT_EQ(outs[0].first,  static_cast<int>(Architecture::KnownIOPorts::ExceptionOut));
+    EXPECT_EQ(outs[0].second, Architecture::Exception::Halted);
+
+
+}
+
+
+
 
 
 TEST_F(CPUTest, MovIrBad)
