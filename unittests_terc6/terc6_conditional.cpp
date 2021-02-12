@@ -247,8 +247,6 @@ TEST_F(CPUTest, CallImmediate)
     ASSERT_EQ(outs.size(),2);
     EXPECT_EQ(outs[0].first, 1);
     EXPECT_EQ(outs[1].first, 2);
-
-
 }
 
 
