@@ -104,9 +104,22 @@ void CPU::executeConditionalInstructions(tryte  operation, tryte operand)
 
 
     case OpCode::CallI:
+        saveReturnAddress();
+        jumpImmediate(operand);
+        break;
+
     case OpCode::CallR:
+        saveReturnAddress();
+        jumpRegister(operand);
+        break;
+
     case OpCode::JmpI:
+        jumpImmediate(operand);
+        break;
     case OpCode::JmpR:
+        jumpRegister(operand);
+        break;
+
     default:
         assert(false);
 
@@ -114,5 +127,21 @@ void CPU::executeConditionalInstructions(tryte  operation, tryte operand)
 
     setFlag(Flag::ExecutedConditional, trit{1});        // instruction did execute
 }
+
+
+
+void CPU::jumpImmediate(tryte operand)
+{
+    setReg(Register::RPC,operand,CPU::ByPassRegisterChecks::no);
+}
+
+void CPU::jumpRegister (tryte operand)
+{
+    auto jumpReg  = static_cast<Register>(static_cast<int>(operand.trybbles().first));
+    auto jumpDest = reg(jumpReg);
+    jumpImmediate(jumpDest);
+}
+
+
 
 }

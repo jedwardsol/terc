@@ -264,6 +264,26 @@ private:
     void    CpuControl(tryte  operand);
    
 
+    void    jumpImmediate(tryte operand);
+    void    jumpRegister (tryte operand);
+
+    void    saveReturnAddress()
+    {
+        trit carry{};
+
+        auto returnAddress = halfAdder(reg(Register::RPC),tryte{2}, carry);
+
+        if(carry)
+        {
+            raiseException(Exception::BadPC, reg(Register::RPC));
+        }
+        else
+        {
+            setReg(Register::RRA, returnAddress, CPU::ByPassRegisterChecks::no);
+        }
+    }
+
+
 private:
 
     Architecture::MemoryBlock const                &code;
