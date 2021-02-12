@@ -1,5 +1,5 @@
 #include "sourceLine.h"
-
+#include <charconv>
 
 [[nodiscard]] std::string_view  SourceLine::removeComment(const std::string_view  &line)
 {
@@ -74,15 +74,14 @@
 
 std::optional<tryte> SourceLine::asTryte(int index) const noexcept
 {
-    auto string = asString(index);
-
-    if(!string)
     {
-        return std::nullopt;
-    }
+        auto string = asString(index);
 
-    if(string.value().size() == 6)
-    {
+        if(!string)
+        {
+            return std::nullopt;
+        }
+
         try
         {
             tryte   t{string.value()};
@@ -93,9 +92,60 @@ std::optional<tryte> SourceLine::asTryte(int index) const noexcept
         {
         }
     }
+    {
+        auto number = asDecimal(index);
 
-    TODO
+        if(!number)
+        {
+            return std::nullopt;
+        }
+
+        try
+        {
+            tryte   t{number.value()};
+                
+            return t;
+        }
+        catch(...)
+        {
+        }
+    }
+
 
     return std::nullopt;
 
+}
+
+
+
+std::optional<int> SourceLine::asDecimal(int index) const noexcept
+{
+    auto string = asString(index);
+
+    if(!string)
+    {
+        return std::nullopt;
+    }
+
+    try
+    {
+        int  value{} ;
+        
+        auto start = string.value().data();
+        auto end   = start + string.value().size();
+        
+        
+        const auto result = std::from_chars(start, end, value);
+
+        if(    result.ec  == std::errc{}
+           &&  result.ptr == end)
+        {
+            return value;
+        }
+    }
+    catch(...)
+    {
+    }
+
+    return std::nullopt;
 }

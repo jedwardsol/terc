@@ -35,6 +35,10 @@ public:
 
 private:
 
+    std::optional<int>            asDecimal(int index) const noexcept;
+
+private:
+
     const static inline std::string_view    delimiters{", \t"};
 
     [[nodiscard]] static std::string_view              removeComment(const std::string_view  &line);

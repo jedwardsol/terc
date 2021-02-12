@@ -1,5 +1,8 @@
 #include "googletest/gtest.h"
 
+#include <optional>
+#include <tuple>
+
 #include "sourceLine/sourceLine.h"
 
 
@@ -16,6 +19,13 @@ inline void PrintTo(const std::string_view &string, ::std::ostream *os)
     *os << string;
 }
 }
+
+inline void PrintTo(const tryte &t, ::std::ostream *os)
+{
+    *os << t;
+}
+
+
 
 
 class SplitEmptyP :public ::testing::TestWithParam<std::string_view> 
@@ -61,6 +71,7 @@ TEST_P(SplitBasic1P, SplitBasic1)
 
     EXPECT_EQ(source.tokens().size(), 1);
     EXPECT_EQ(source.tokens().at(0),  ".Begin");
+    EXPECT_EQ(source.asString(0),  ".Begin");
 }
 
 INSTANTIATE_TEST_SUITE_P
@@ -95,6 +106,11 @@ TEST_P(SplitBasic2P, SplitBasic2)
     EXPECT_EQ(source.tokens().size(), 2);
     EXPECT_EQ(source.tokens().at(0),  ".Stack");
     EXPECT_EQ(source.tokens().at(1),  "100");
+
+    EXPECT_EQ(source.asString(0),  ".Stack");
+    EXPECT_EQ(source.asString(1),  "100");
+
+
 }
 
 INSTANTIATE_TEST_SUITE_P
@@ -112,4 +128,54 @@ INSTANTIATE_TEST_SUITE_P
         " ,,.Stack ,, 100,,    ; stack size"
     )
 );
+
+
+
+
+class AsTryteP :public ::testing::TestWithParam< std::pair<std::string_view, std::optional<tryte>>>
+{
+};
+
+
+TEST_P(AsTryteP, AsTryte) 
+{
+    const SourceLine source{GetParam().first};
+
+    EXPECT_EQ(source.tokens().size(), 1);
+    EXPECT_EQ(source.asTryte(0),  GetParam().second);
+}
+
+INSTANTIATE_TEST_SUITE_P
+(
+    SourceLineTests,
+    AsTryteP,
+    ::testing::Values
+    (
+        std::make_pair("100",       tryte{100}),
+        std::make_pair("-100",      tryte{-100}),
+        std::make_pair("0",         tryte{0}),
+        std::make_pair("00000+",    tryte{1}),
+        std::make_pair("00000+",    tryte{"00000+"}),
+        std::make_pair("00000-",    tryte{-1}),
+        std::make_pair("00000-",    tryte{"00000-"}) ,
+        std::make_pair("364",       tryte{ 364}),
+        std::make_pair("++++++",    tryte{ 364}),
+        std::make_pair("-364",      tryte{-364}),
+        std::make_pair("------",    tryte{-364}),
+
+        std::make_pair("a",         std::nullopt),
+        std::make_pair("1a",        std::nullopt),
+        std::make_pair("1.2",       std::nullopt),
+        std::make_pair("+++++",     std::nullopt),   // short
+        std::make_pair("+++++++",   std::nullopt),   // long
+
+        std::make_pair("365",       std::nullopt),
+        std::make_pair("-365",      std::nullopt)
+
+    )
+);
+
+
+
+
 
