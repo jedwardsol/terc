@@ -139,7 +139,9 @@ class AsTryteP :public ::testing::TestWithParam< std::pair<std::string_view, std
 
 TEST_P(AsTryteP, AsTryte) 
 {
-    const SourceLine source{GetParam().first};
+    const auto &string = GetParam().first;
+
+    const SourceLine source{string};
 
     EXPECT_EQ(source.tokens().size(), 1);
     EXPECT_EQ(source.asTryte(0),  GetParam().second);
@@ -154,6 +156,8 @@ INSTANTIATE_TEST_SUITE_P
         std::make_pair("100",       tryte{100}),
         std::make_pair("-100",      tryte{-100}),
         std::make_pair("0",         tryte{0}),
+        std::make_pair("000000",    tryte{0}),
+        std::make_pair("000002",    tryte{2}),
         std::make_pair("00000+",    tryte{1}),
         std::make_pair("00000+",    tryte{"00000+"}),
         std::make_pair("00000-",    tryte{-1}),
@@ -163,14 +167,19 @@ INSTANTIATE_TEST_SUITE_P
         std::make_pair("-364",      tryte{-364}),
         std::make_pair("------",    tryte{-364}),
 
+        std::make_pair("0x10",      std::nullopt),
+        std::make_pair("-0x10",     std::nullopt),
+        std::make_pair("+100",      std::nullopt),  // leading + 
         std::make_pair("a",         std::nullopt),
         std::make_pair("1a",        std::nullopt),
         std::make_pair("1.2",       std::nullopt),
-        std::make_pair("+++++",     std::nullopt),   // short
-        std::make_pair("+++++++",   std::nullopt),   // long
+        std::make_pair("-----1",    std::nullopt),
+        std::make_pair("+++++1",    std::nullopt),
+        std::make_pair("+++++",     std::nullopt),  // too short 
+        std::make_pair("+++++++",   std::nullopt),  // too long
 
-        std::make_pair("365",       std::nullopt),
-        std::make_pair("-365",      std::nullopt)
+        std::make_pair("365",       std::nullopt),  // too big
+        std::make_pair("-365",      std::nullopt)   // too small
 
     )
 );

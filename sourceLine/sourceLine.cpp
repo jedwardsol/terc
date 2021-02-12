@@ -134,8 +134,7 @@ std::optional<int> SourceLine::asDecimal(int index) const noexcept
         auto start = string.value().data();
         auto end   = start + string.value().size();
         
-        
-        const auto result = std::from_chars(start, end, value);
+        const auto result = std::from_chars(start, end, value, 10);
 
         if(    result.ec  == std::errc{}
            &&  result.ptr == end)
