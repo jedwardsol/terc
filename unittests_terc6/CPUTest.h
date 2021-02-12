@@ -75,6 +75,9 @@ protected:
 
     Architecture::sixTrit::CPU          cpu  {code,data,*this};
 
+
+
+
     void assemble(Architecture::sixTrit::OpCode   opcode,
                   Architecture::sixTrit::Register reg,
                   int                             operand)
@@ -85,6 +88,43 @@ protected:
         code[PC++]   = first;
         code[PC++] = second;
     }
+
+    void assemble(Architecture::sixTrit::OpCode   opcode,
+                  Architecture::sixTrit::Register reg,
+                  trybble                         operandLow,
+                  trybble                         operandHigh)
+    {
+        tryte   first  { trybble{static_cast<int>(opcode)}, trybble{static_cast<int>(reg)}};
+        tryte   second { operandLow, operandHigh};
+
+        code[PC++]   = first;
+        code[PC++] = second;
+    }
+
+
+    void assemble(Architecture::sixTrit::OpCode    opcode,
+                  Architecture::Condition          condition,
+                  tryte                            operand)
+    {
+        tryte   first  { trybble{static_cast<int>(opcode)}, trybble{static_cast<int>(condition)}};
+        tryte   second { operand };
+
+        code[PC++]   = first;
+        code[PC++] = second;
+    }
+
+    void assemble(Architecture::sixTrit::OpCode    opcode,
+                  Architecture::Condition          condition,
+                  Architecture::sixTrit::Register  reg)
+    {
+        tryte   first  { trybble{static_cast<int>(opcode)}, trybble{static_cast<int>(condition)}};
+        tryte   second { trybble{static_cast<int>(reg)}, trybble{0}};
+
+        code[PC++]   = first;
+        code[PC++] = second;
+    }
+
+
 
     void assembleCopy(Architecture::sixTrit::Register dest,
                       Architecture::sixTrit::Register src)
@@ -126,17 +166,6 @@ protected:
 
 
 
-    void assemble(Architecture::sixTrit::OpCode   opcode,
-                  Architecture::sixTrit::Register reg,
-                  trybble                         operandLow,
-                  trybble                         operandHigh)
-    {
-        tryte   first  { trybble{static_cast<int>(opcode)}, trybble{static_cast<int>(reg)}};
-        tryte   second { operandLow, operandHigh};
-
-        code[PC++]   = first;
-        code[PC++] = second;
-    }
 
 
 

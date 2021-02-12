@@ -161,3 +161,44 @@ TEST_F(CPUTest, ConditionalOnComparison)
     // TODO : table driven tests?
 
 }
+
+
+
+
+TEST_F(CPUTest, JumpImmediate)
+{
+    assemble(OpCode::JmpI, Architecture::Condition::AlwaysTrue, tryte{10});                     // 0
+    assembleCpuControl(Architecture::Condition::AlwaysTrue, Architecture::CpuControl::Halt);    // 2
+    assembleCpuControl(Architecture::Condition::AlwaysTrue, Architecture::CpuControl::Halt);    // 4
+    assembleCpuControl(Architecture::Condition::AlwaysTrue, Architecture::CpuControl::Halt);    // 6
+    assembleCpuControl(Architecture::Condition::AlwaysTrue, Architecture::CpuControl::Halt);    // 8
+
+    assembleCpuControl(Architecture::Condition::AlwaysTrue, Architecture::CpuControl::Trace);   // 10
+
+    ASSERT_EQ(traceCounter,0);
+    cpu.execute();
+    EXPECT_EQ(cpu.reg(Register::RPC),tryte{10});
+    cpu.execute();
+    EXPECT_EQ(traceCounter,1);
+}
+
+
+TEST_F(CPUTest, JumpRegister)
+{
+    assembleLoadImm(Register::R10, tryte{12});
+    cpu.execute();
+    assemble(OpCode::JmpR, Architecture::Condition::AlwaysTrue, Register::R10);                 // 2
+    assembleCpuControl(Architecture::Condition::AlwaysTrue, Architecture::CpuControl::Halt);    // 4
+    assembleCpuControl(Architecture::Condition::AlwaysTrue, Architecture::CpuControl::Halt);    // 6
+    assembleCpuControl(Architecture::Condition::AlwaysTrue, Architecture::CpuControl::Halt);    // 8
+    assembleCpuControl(Architecture::Condition::AlwaysTrue, Architecture::CpuControl::Halt);    // 10
+
+    assembleCpuControl(Architecture::Condition::AlwaysTrue, Architecture::CpuControl::Trace);   // 12
+
+    ASSERT_EQ(traceCounter,0);
+    cpu.execute();
+    EXPECT_EQ(cpu.reg(Register::RPC),tryte{12});
+    EXPECT_EQ(cpu.reg(Register::RRA),tryte{ 0});    // unchanged
+    cpu.execute();
+    EXPECT_EQ(traceCounter,1);
+}

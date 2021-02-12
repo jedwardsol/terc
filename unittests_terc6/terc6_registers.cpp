@@ -279,7 +279,7 @@ TEST_F(CPUTest, AccessViolation)
     auto addressReg = trybble{static_cast<int>(Architecture::sixTrit::Register::RSP)};
     int  address    = -100;  // stack is 81
 
-    assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::RSP, address);
+    assembleLoadImm(Architecture::sixTrit::Register::RSP, tryte{address});
     assemble(Architecture::sixTrit::OpCode::Load,           Architecture::sixTrit::Register::R5, addressReg, trybble{ 0});      // read from stack[-100]
 
     cpu.execute();
@@ -299,7 +299,7 @@ TEST_F(CPUTest, PushPop)
     ASSERT_EQ( data[-2] , 0 );
     ASSERT_EQ( data[-3] , 0 );
 
-    assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::R0, 42);
+    assembleLoadImm(Architecture::sixTrit::Register::R0, tryte{42});
     cpu.execute();
 
 
@@ -348,7 +348,7 @@ TEST_F(CPUTest, StackOverflow)
 
     ASSERT_EQ( cpu.reg(rsp), 0 );
 
-    assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::R0, 42);
+    assembleLoadImm(Architecture::sixTrit::Register::R0, tryte{42});
 
     auto stackSize = -data.negativeSize();
 
@@ -383,7 +383,7 @@ TEST_F(CPUTest, StackUnderflow)
 
     ASSERT_EQ( cpu.reg(rsp), 0 );
 
-    assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::R0, 42);
+    assembleLoadImm(Architecture::sixTrit::Register::R0, tryte{42});
 
     for(int i=0;i<3;i++)
     {
@@ -445,15 +445,15 @@ TEST_F(CPUTest, SignFlag)
     ASSERT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{0});
 
 
-    assemble(Architecture::sixTrit::OpCode::LoadImmediate, Architecture::sixTrit::Register::Rn1,  -9);
+    assembleLoadImm(Architecture::sixTrit::Register::Rn1,  tryte{-9});
     cpu.execute();
     EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{-1}) << "Load -";
 
-    assemble(Architecture::sixTrit::OpCode::LoadImmediate, Architecture::sixTrit::Register::R0,   0);
+    assembleLoadImm(Architecture::sixTrit::Register::R0,   tryte{0});
     cpu.execute();
     EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{0})  << "Load 0";;
 
-    assemble(Architecture::sixTrit::OpCode::LoadImmediate, Architecture::sixTrit::Register::R1,   123);
+    assembleLoadImm(Architecture::sixTrit::Register::R1,   tryte{123});
     cpu.execute();
     EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{1})  << "Load +";;
 
@@ -515,8 +515,8 @@ TEST_F(CPUTest, CompareImmediate)
     ASSERT_EQ( cpu.getFlag(Architecture::Flag::Comparison),    trit{0});
 
 
-    assemble(Architecture::sixTrit::OpCode::LoadImmediate, Architecture::sixTrit::Register::R1, -42);
-    assemble(Architecture::sixTrit::OpCode::LoadImmediate, Architecture::sixTrit::Register::R2,  99);
+    assembleLoadImm(Architecture::sixTrit::Register::R1, tryte{-42});
+    assembleLoadImm(Architecture::sixTrit::Register::R2, tryte{ 99});
 
     cpu.execute();
     cpu.execute();
@@ -566,8 +566,8 @@ TEST_F(CPUTest, CompareRegister)
     ASSERT_EQ( cpu.getFlag(Architecture::Flag::Comparison),    trit{0});
 
 
-    assemble(Architecture::sixTrit::OpCode::LoadImmediate, Architecture::sixTrit::Register::R1, -42);
-    assemble(Architecture::sixTrit::OpCode::LoadImmediate, Architecture::sixTrit::Register::R2,  99);
+    assembleLoadImm(Architecture::sixTrit::Register::R1, tryte{-42});
+    assembleLoadImm(Architecture::sixTrit::Register::R2, tryte{ 99});
 
     cpu.execute();
     cpu.execute();
