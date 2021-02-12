@@ -90,7 +90,7 @@ bool    CPU::checkPC()
         return false;
     }
 
-
+// let instruction fetch fault instead
     if( reg(Register::RPC) < tryte{ 0 })            // TODO : allow negative code.  good place for standard library?
     {
         raiseException(Exception::BadPC, reg(Register::RPC));
@@ -103,7 +103,12 @@ bool    CPU::checkPC()
         return false;
     }
 
-    // TODO : check for odd
+    if( reg(Register::RPC) % 2 == 1)
+    {
+        raiseException(Exception::BadPC, reg(Register::RPC));
+        return false;
+    }
+    
 
 
     instructionChangedRPC = false;
@@ -136,7 +141,6 @@ bool    CPU::updatePC()
 void CPU::CpuControl(tryte  operand)
 {
     auto cpuControl = static_cast<Architecture::CpuControl>(static_cast<int>(operand.trybbles().first));
-
 
     switch(cpuControl)
     {
