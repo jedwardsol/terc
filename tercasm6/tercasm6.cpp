@@ -8,13 +8,37 @@
 #include <system_error>
 #include <stdexcept>
 
-
 #include "Arithmetic/Arithmetic.h"
 #include "Arithmetic/Arithmetic_std.h"
 
-
 #include "Architecture/MemoryBlock.h"
 #include "Architecture/sixTritCPU.h"
+
+#include "sourceLine/sourceLine.h"
+
+
+/*
+
+Comments
+
+    ; everything after a ; is a comment
+
+
+Number formats
+
+    42                      : decimal                                -364 to    364
+    0+---0                  : 6 balanced ternary trits   range is  ------ to ++++++
+
+Directives:
+
+    .StackSize  N           :   mandatory before .Begin
+
+    .Begin                  :   mandatory
+
+
+    .End                    :   mandatory
+
+*/
 
 
 
@@ -30,22 +54,34 @@ public:
         }
     }
 
-    void assemble()
+    void parseFile()
     {
+        std::string  line;
 
+        while(std::getline(source,line))
+        {
+            const SourceLine  source{line};
+
+            if(source.tokens().empty())
+            {
+                continue;
+            }
+        }
     }
 
+    void assemble()
+    {
+    }
 
 private:
 
-    std::ifstream   source;
+    std::ifstream                           source;
+    int                                     lineNumber        {1};
 
-    int             lineNumber        {1};
-    int             currentInstruction{0};
-    int             currentDataTryte  {0};
+private:
 
     Architecture::MemoryBlock     code {0,                                  Architecture::sixTrit::recCodeSize,  ".code" };        
-    Architecture::MemoryBlock     data {Architecture::sixTrit::recStackSize,Architecture::sixTrit::recDataSize,  ".data" };        
+//    Architecture::MemoryBlock     data {Architecture::sixTrit::recStackSize,Architecture::sixTrit::recDataSize,  ".data" };        
 };
 
 
@@ -62,8 +98,9 @@ try
 
     Assembler assembler{args[0]};
     
-    assembler.assemble();
+    assembler.parseFile();
 
+    assembler.assemble();
 
 
 }
