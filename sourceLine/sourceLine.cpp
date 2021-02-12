@@ -150,6 +150,48 @@ std::optional<int> SourceLine::asDecimal(int index) const noexcept
 
 
 
+std::optional<Architecture::sixTrit::OpCode> SourceLine::asOpCode(int index) const noexcept
+{
+    auto string = asString(index);
+
+    if(!string)
+    {
+        return std::nullopt;
+    }
+
+    const static std::map<std::string_view,Architecture::sixTrit::OpCode> opCodes
+    {
+        {"CallI",       Architecture::sixTrit::OpCode::CallI},        
+        {"CallR",       Architecture::sixTrit::OpCode::CallR},        
+        {"JmpI",        Architecture::sixTrit::OpCode::JmpI},         
+        {"JmpR",        Architecture::sixTrit::OpCode::JmpR},         
+        {"CpuControl",  Architecture::sixTrit::OpCode::CpuControl},
+        {"LoadI",       Architecture::sixTrit::OpCode::LoadImmediate},
+        {"Copy",        Architecture::sixTrit::OpCode::Copy},         
+        {"Out",         Architecture::sixTrit::OpCode::Out},          
+        {"In",          Architecture::sixTrit::OpCode::In},           
+        {"Load",        Architecture::sixTrit::OpCode::Load},         
+        {"Store",       Architecture::sixTrit::OpCode::Store},        
+        {"Push",        Architecture::sixTrit::OpCode::Push},         
+        {"Pop",         Architecture::sixTrit::OpCode::Pop},          
+        {"CmpI",        Architecture::sixTrit::OpCode::CmpI},         
+        {"CmpR",        Architecture::sixTrit::OpCode::CmpR},         
+    };
+
+
+    auto opCode = opCodes.find(string.value());
+
+    if(opCode != opCodes.end())
+    {
+        return opCode->second;
+    }
+    
+    return std::nullopt;           
+
+
+    return std::optional<Architecture::sixTrit::OpCode>();
+}
+
 std::optional<Architecture::sixTrit::Register> SourceLine::asRegister(int index) const noexcept
 {
     auto string = asString(index);
@@ -190,11 +232,11 @@ std::optional<Architecture::sixTrit::Register> SourceLine::asRegister(int index)
         {"R13",   Architecture::sixTrit::Register::R13},
     };
 
-    auto found = registers.find(string.value());
+    auto reg = registers.find(string.value());
 
-    if(found != registers.end())
+    if(reg != registers.end())
     {
-        return found->second;
+        return reg->second;
     }
     
     return std::nullopt;           
@@ -240,11 +282,11 @@ std::optional<Architecture::Condition> SourceLine::asCondition(int index) const 
         {">=",      Architecture::Condition::GreaterOrEqual},     
     };
 
-    auto found = conditions.find(string.value());
+    auto condition = conditions.find(string.value());
 
-    if(found != conditions.end())
+    if(condition != conditions.end())
     {
-        return found->second;
+        return condition->second;
     }
     
     return std::nullopt;           
@@ -260,7 +302,7 @@ std::optional<Architecture::CpuControl> SourceLine::asCpuControl(int index) cons
         return std::nullopt;
     }
 
-    const static std::map<std::string_view,Architecture::CpuControl> conditions
+    const static std::map<std::string_view,Architecture::CpuControl> cpuControls
     {
         {"Nop",         Architecture::CpuControl::Nop},        
         {"Halt",        Architecture::CpuControl::Halt},              
@@ -269,11 +311,11 @@ std::optional<Architecture::CpuControl> SourceLine::asCpuControl(int index) cons
         {"Invalid",     Architecture::CpuControl::Invalid},     
     };
 
-    auto found = conditions.find(string.value());
+    auto cpuControl = cpuControls.find(string.value());
 
-    if(found != conditions.end())
+    if(cpuControl != cpuControls.end())
     {
-        return found->second;
+        return cpuControl->second;
     }
     
     return std::nullopt;           

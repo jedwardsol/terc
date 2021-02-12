@@ -338,3 +338,50 @@ INSTANTIATE_TEST_SUITE_P
 );
 
 
+
+class AsOpCodeP :public ::testing::TestWithParam< std::pair<std::string_view, std::optional<Architecture::sixTrit::OpCode>>>
+{
+};
+
+
+TEST_P(AsOpCodeP, AsOpCode) 
+{
+    const auto &string = GetParam().first;
+
+    const SourceLine source{string};
+
+    EXPECT_EQ(source.tokens().size(), 1);
+    EXPECT_EQ(source.asOpCode(0),  GetParam().second);
+}
+
+INSTANTIATE_TEST_SUITE_P
+(
+    SourceLineTests,
+    AsOpCodeP,
+    ::testing::Values
+    (
+        std::make_pair("CallI",             Architecture::sixTrit::OpCode::CallI),        
+        std::make_pair("CallR",             Architecture::sixTrit::OpCode::CallR),        
+        std::make_pair("JmpI",              Architecture::sixTrit::OpCode::JmpI),         
+        std::make_pair("JmpR",              Architecture::sixTrit::OpCode::JmpR),         
+        std::make_pair("CpuControl",        Architecture::sixTrit::OpCode::CpuControl),
+        std::make_pair("LoadI",             Architecture::sixTrit::OpCode::LoadImmediate),
+        std::make_pair("Copy",              Architecture::sixTrit::OpCode::Copy),         
+        std::make_pair("Out",               Architecture::sixTrit::OpCode::Out),          
+        std::make_pair("In",                Architecture::sixTrit::OpCode::In),           
+        std::make_pair("Load",              Architecture::sixTrit::OpCode::Load),         
+        std::make_pair("Store",             Architecture::sixTrit::OpCode::Store),        
+        std::make_pair("Push",              Architecture::sixTrit::OpCode::Push),         
+        std::make_pair("Pop",               Architecture::sixTrit::OpCode::Pop),          
+        std::make_pair("CmpI",              Architecture::sixTrit::OpCode::CmpI),         
+        std::make_pair("CmpR",              Architecture::sixTrit::OpCode::CmpR),         
+
+        std::make_pair("Nop",               std::nullopt),
+        std::make_pair("Jmp",               std::nullopt),
+        std::make_pair("Brek",              std::nullopt),
+        std::make_pair("R0",                std::nullopt)
+    )
+);
+
+
+
