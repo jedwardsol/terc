@@ -249,3 +249,32 @@ std::optional<Architecture::Condition> SourceLine::asCondition(int index) const 
     
     return std::nullopt;           
 }
+
+
+std::optional<Architecture::CpuControl> SourceLine::asCpuControl(int index) const noexcept
+{
+    auto string = asString(index);
+
+    if(!string)
+    {
+        return std::nullopt;
+    }
+
+    const static std::map<std::string_view,Architecture::CpuControl> conditions
+    {
+        {"Nop",         Architecture::CpuControl::Nop},        
+        {"Halt",        Architecture::CpuControl::Halt},              
+        {"Breakpoint",  Architecture::CpuControl::Breakpoint},           
+        {"Trace",       Architecture::CpuControl::Trace},    
+        {"Invalid",     Architecture::CpuControl::Invalid},     
+    };
+
+    auto found = conditions.find(string.value());
+
+    if(found != conditions.end())
+    {
+        return found->second;
+    }
+    
+    return std::nullopt;           
+}

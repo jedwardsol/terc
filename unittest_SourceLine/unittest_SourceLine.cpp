@@ -302,3 +302,39 @@ INSTANTIATE_TEST_SUITE_P
 
 
 
+
+class AsCpuControlP :public ::testing::TestWithParam< std::pair<std::string_view, std::optional<Architecture::CpuControl>>>
+{
+};
+
+
+TEST_P(AsCpuControlP, AsCpuControl) 
+{
+    const auto &string = GetParam().first;
+
+    const SourceLine source{string};
+
+    EXPECT_EQ(source.tokens().size(), 1);
+    EXPECT_EQ(source.asCpuControl(0),  GetParam().second);
+}
+
+INSTANTIATE_TEST_SUITE_P
+(
+    SourceLineTests,
+    AsCpuControlP,
+    ::testing::Values
+    (
+        std::make_pair("Nop",       Architecture::CpuControl::Nop),        
+        std::make_pair("Halt",      Architecture::CpuControl::Halt),              
+        std::make_pair("Breakpoint",Architecture::CpuControl::Breakpoint),           
+        std::make_pair("Trace",     Architecture::CpuControl::Trace),    
+        std::make_pair("Invalid",   Architecture::CpuControl::Invalid),           
+
+        std::make_pair("=!",      std::nullopt),
+        std::make_pair("JLE",     std::nullopt),
+        std::make_pair("true",    std::nullopt),
+        std::make_pair("R0",      std::nullopt)
+    )
+);
+
+
