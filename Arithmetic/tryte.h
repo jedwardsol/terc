@@ -80,11 +80,11 @@ public:
 	}
 
 
-    explicit tryte(const std::string &s) : tryte{}
+    explicit tryte(const std::string_view s) : tryte{}
 	{
 		if(s.size() != 6)
 		{
-            throw std::out_of_range("tryte constructor size "s + s);
+            throw std::out_of_range("tryte constructor size "s + std::string{s});
 		}
 
 		auto toTrit = [](char c) 

@@ -18,12 +18,12 @@ inline void PrintTo(const std::string_view &string, ::std::ostream *os)
 }
 
 
-class EmptySourceLineTest :public ::testing::TestWithParam<std::string_view> 
+class SplitEmptyP :public ::testing::TestWithParam<std::string_view> 
 {
 };
 
 
-TEST_P(EmptySourceLineTest, Empty) 
+TEST_P(SplitEmptyP, SplitEmpty) 
 {
     auto line = GetParam();
     const SourceLine source{line};
@@ -32,30 +32,30 @@ TEST_P(EmptySourceLineTest, Empty)
 
 INSTANTIATE_TEST_SUITE_P
 (
-        SourceLineTests,
-        EmptySourceLineTest,
-        ::testing::Values
-        (
-            "",
-            " ",
-            "\t",
-            "  ",
-            ", ,",
-            ";",
-            "; comment",
-            " ; comment",
-            ", ; comment ;"
-            ", ; comment ; another comment"
-        )
+    SourceLineTests,
+    SplitEmptyP,
+    ::testing::Values
+    (
+        "",
+        " ",
+        "\t",
+        "  ",
+        ", ,",
+        ";",
+        "; comment",
+        " ; comment",
+        ", ; comment ;"
+        ", ; comment ; another comment"
+    )
 );
 
 
-class Basic1SourceLineTest :public ::testing::TestWithParam<std::string_view> 
+class SplitBasic1P : public ::testing::TestWithParam<std::string_view> 
 {
 };
 
 
-TEST_P(Basic1SourceLineTest, Basic1) 
+TEST_P(SplitBasic1P, SplitBasic1) 
 {
     const SourceLine source{GetParam()};
 
@@ -66,7 +66,7 @@ TEST_P(Basic1SourceLineTest, Basic1)
 INSTANTIATE_TEST_SUITE_P
 (
     SourceLineTests,
-    Basic1SourceLineTest,
+    SplitBasic1P,
     ::testing::Values
     (
         ".Begin",
@@ -83,12 +83,12 @@ INSTANTIATE_TEST_SUITE_P
 
 
 
-class Basic2SourceLineTest :public ::testing::TestWithParam<std::string_view> 
+class SplitBasic2P :public ::testing::TestWithParam<std::string_view> 
 {
 };
 
 
-TEST_P(Basic2SourceLineTest, Basic2) 
+TEST_P(SplitBasic2P, SplitBasic2) 
 {
     const SourceLine source{GetParam()};
 
@@ -97,12 +97,10 @@ TEST_P(Basic2SourceLineTest, Basic2)
     EXPECT_EQ(source.tokens().at(1),  "100");
 }
 
-
-
 INSTANTIATE_TEST_SUITE_P
 (
     SourceLineTests,
-    Basic2SourceLineTest,
+    SplitBasic2P,
     ::testing::Values
     (
         ".Stack 100",
@@ -114,5 +112,4 @@ INSTANTIATE_TEST_SUITE_P
         " ,,.Stack ,, 100,,    ; stack size"
     )
 );
-
 

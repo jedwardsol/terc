@@ -71,3 +71,31 @@
     return tokens;
 }
 
+
+std::optional<tryte> SourceLine::asTryte(int index) const noexcept
+{
+    auto string = asString(index);
+
+    if(!string)
+    {
+        return std::nullopt;
+    }
+
+    if(string.value().size() == 6)
+    {
+        try
+        {
+            tryte   t{string.value()};
+                
+            return t;
+        }
+        catch(...)
+        {
+        }
+    }
+
+    TODO
+
+    return std::nullopt;
+
+}
