@@ -201,3 +201,51 @@ std::optional<Architecture::sixTrit::Register> SourceLine::asRegister(int index)
 }
 
 
+std::optional<Architecture::Condition> SourceLine::asCondition(int index) const noexcept
+{
+    auto string = asString(index);
+
+    if(!string)
+    {
+        return std::nullopt;
+    }
+
+    const static std::map<std::string_view,Architecture::Condition> conditions
+    {
+        {"False",   Architecture::Condition::AlwaysFalse},
+        {"True",    Architecture::Condition::AlwaysTrue},
+
+        {"CE",      Architecture::Condition::ConditionalExecuted},   
+        {"NCE",     Architecture::Condition::ConditionalNotExecuted },
+
+        {"P",       Architecture::Condition::Positive},      
+        {"Z",       Architecture::Condition::Zero},          
+        {"N",       Architecture::Condition::Negative},      
+        {"NP",      Architecture::Condition::NotPositive},  
+        {"NZ",      Architecture::Condition::NotZero},      
+        {"NN",      Architecture::Condition::NotNegative},  
+
+        {"GT",      Architecture::Condition::GreaterThan},        
+        {"E",       Architecture::Condition::Equal},              
+        {"LT",      Architecture::Condition::LessThan},           
+        {"LE",      Architecture::Condition::LessThanOrEqual},    
+        {"NE",      Architecture::Condition::NotEqual},           
+        {"GE",      Architecture::Condition::GreaterOrEqual},     
+
+        {">",       Architecture::Condition::GreaterThan},        
+        {"==",      Architecture::Condition::Equal},              
+        {"<",       Architecture::Condition::LessThan},           
+        {"<=",      Architecture::Condition::LessThanOrEqual},    
+        {"!=",      Architecture::Condition::NotEqual},           
+        {">=",      Architecture::Condition::GreaterOrEqual},     
+    };
+
+    auto found = conditions.find(string.value());
+
+    if(found != conditions.end())
+    {
+        return found->second;
+    }
+    
+    return std::nullopt;           
+}

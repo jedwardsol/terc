@@ -191,7 +191,7 @@ class AsRegP :public ::testing::TestWithParam< std::pair<std::string_view, std::
 };
 
 
-TEST_P(AsRegP, AsTryte) 
+TEST_P(AsRegP, AsReg) 
 {
     const auto &string = GetParam().first;
 
@@ -240,6 +240,63 @@ INSTANTIATE_TEST_SUITE_P
         std::make_pair("R",     std::nullopt),
         std::make_pair("RP",    std::nullopt),
         std::make_pair("RPCC",  std::nullopt)
+    )
+);
+
+
+
+class AsConditionP :public ::testing::TestWithParam< std::pair<std::string_view, std::optional<Architecture::Condition>>>
+{
+};
+
+
+TEST_P(AsConditionP, AsCondition) 
+{
+    const auto &string = GetParam().first;
+
+    const SourceLine source{string};
+
+    EXPECT_EQ(source.tokens().size(), 1);
+    EXPECT_EQ(source.asCondition(0),  GetParam().second);
+}
+
+INSTANTIATE_TEST_SUITE_P
+(
+    SourceLineTests,
+    AsConditionP,
+    ::testing::Values
+    (
+        std::make_pair("False",   Architecture::Condition::AlwaysFalse),
+        std::make_pair("True",    Architecture::Condition::AlwaysTrue),
+
+        std::make_pair("CE",      Architecture::Condition::ConditionalExecuted),   
+        std::make_pair("NCE",     Architecture::Condition::ConditionalNotExecuted),
+
+        std::make_pair("P",       Architecture::Condition::Positive),      
+        std::make_pair("Z",       Architecture::Condition::Zero),          
+        std::make_pair("N",       Architecture::Condition::Negative),      
+        std::make_pair("NP",      Architecture::Condition::NotPositive),  
+        std::make_pair("NZ",      Architecture::Condition::NotZero),      
+        std::make_pair("NN",      Architecture::Condition::NotNegative),  
+
+        std::make_pair("GT",      Architecture::Condition::GreaterThan),        
+        std::make_pair("E",       Architecture::Condition::Equal),              
+        std::make_pair("LT",      Architecture::Condition::LessThan),           
+        std::make_pair("LE",      Architecture::Condition::LessThanOrEqual),    
+        std::make_pair("NE",      Architecture::Condition::NotEqual),           
+        std::make_pair("GE",      Architecture::Condition::GreaterOrEqual),     
+
+        std::make_pair(">",       Architecture::Condition::GreaterThan),        
+        std::make_pair("==",      Architecture::Condition::Equal),              
+        std::make_pair("<",       Architecture::Condition::LessThan),           
+        std::make_pair("<=",      Architecture::Condition::LessThanOrEqual),    
+        std::make_pair("!=",      Architecture::Condition::NotEqual),           
+        std::make_pair(">=",      Architecture::Condition::GreaterOrEqual),     
+
+        std::make_pair("=!",      std::nullopt),
+        std::make_pair("JLE",     std::nullopt),
+        std::make_pair("true",    std::nullopt),
+        std::make_pair("R0",      std::nullopt)
     )
 );
 
