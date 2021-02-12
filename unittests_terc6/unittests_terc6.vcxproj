@@ -154,6 +154,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="terc6_basic.cpp" />
+    <ClCompile Include="terc6_conditional.cpp" />
     <ClCompile Include="terc6_registers.cpp" />
     <ClCompile Include="unittests_terc6.cpp" />
   </ItemGroup>

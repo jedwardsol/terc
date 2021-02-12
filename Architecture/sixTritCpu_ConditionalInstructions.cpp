@@ -44,6 +44,31 @@ bool CPU::validCondition(Condition condition)
     }
 }
 
+bool  CPU::isConditionTrue(Condition condition)
+{
+    switch(condition)
+    {
+    case Condition::AlwaysFalse:                return false;
+    case Condition::AlwaysTrue:                 return true;
+    case Condition::ConditionalExecuted:
+    case Condition::ConditionalNotExecuted:
+    case Condition::Positive:
+    case Condition::Zero:
+    case Condition::Negative:
+    case Condition::NotPositive:
+    case Condition::NotZero:
+    case Condition::NotNegative:
+    case Condition::GreaterThan:
+    case Condition::Equal:
+    case Condition::LessThan:
+    case Condition::LessThanOrEqual:
+    case Condition::NotEqual:
+    case Condition::GreaterOrEqual: return true;
+    }
+
+    return true;
+}
+
 
 
 void CPU::executeConditionalInstructions(tryte  operation, tryte operand)
@@ -57,6 +82,11 @@ void CPU::executeConditionalInstructions(tryte  operation, tryte operand)
         return;
     }
 
+    if(!isConditionTrue(opcondition))
+    {
+        setFlag(Flag::ExecutedConditional, trit{-1});        // instruction didn't execute
+        return;
+    }
 
 
     switch(opcode)
@@ -74,6 +104,8 @@ void CPU::executeConditionalInstructions(tryte  operation, tryte operand)
         assert(false);
 
     }
+
+    setFlag(Flag::ExecutedConditional, trit{1});        // instruction did execute
 }
 
 }

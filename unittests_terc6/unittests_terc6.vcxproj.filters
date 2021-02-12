@@ -18,10 +18,13 @@
     <ClCompile Include="unittests_terc6.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="terc6_registers.cpp">
+    <ClCompile Include="terc6_basic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="terc6_basic.cpp">
+    <ClCompile Include="terc6_conditional.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="terc6_registers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -13,11 +13,11 @@ using namespace std::literals;
 
 TEST_F(CPUTest, LoadImmediate)
 {
-    assemble(Architecture::sixTrit::OpCode::LoadImmediate, Architecture::sixTrit::Register::R1,  11);
-    assemble(Architecture::sixTrit::OpCode::LoadImmediate, Architecture::sixTrit::Register::R2, -12);
-    assemble(Architecture::sixTrit::OpCode::LoadImmediate, Architecture::sixTrit::Register::R3,  13);
-    assemble(Architecture::sixTrit::OpCode::LoadImmediate, Architecture::sixTrit::Register::R4, -14);
-    assemble(Architecture::sixTrit::OpCode::LoadImmediate, Architecture::sixTrit::Register::R5,  15);
+    assembleLoadImm(Architecture::sixTrit::Register::R1, tryte{ 11});
+    assembleLoadImm(Architecture::sixTrit::Register::R2, tryte{-12});
+    assembleLoadImm(Architecture::sixTrit::Register::R3, tryte{ 13});
+    assembleLoadImm(Architecture::sixTrit::Register::R4, tryte{-14});
+    assembleLoadImm(Architecture::sixTrit::Register::R5, tryte{ 15});
 
     EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::R1),  tryte{0});
     EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::R2),  tryte{0});
@@ -45,13 +45,13 @@ TEST_F(CPUTest, LoadImmediate)
 
 TEST_F(CPUTest, AbsoluteJump)
 {
-    assemble(Architecture::sixTrit::OpCode::LoadImmediate, Architecture::sixTrit::Register::RPC,  8);
+    assembleLoadImm(Architecture::sixTrit::Register::RPC,  tryte{8});
 
     assemble(Architecture::sixTrit::OpCode::Out,            Architecture::sixTrit::Register::R0, static_cast<int>(Architecture::KnownIOPorts::ASCIIOut));
     assemble(Architecture::sixTrit::OpCode::Out,            Architecture::sixTrit::Register::R0, static_cast<int>(Architecture::KnownIOPorts::ASCIIOut));
     assemble(Architecture::sixTrit::OpCode::Out,            Architecture::sixTrit::Register::R0, static_cast<int>(Architecture::KnownIOPorts::ASCIIOut));
 
-    assemble(Architecture::CpuControl::Halt);
+    assembleCpuControl(Architecture::CpuControl::Halt);
 
 
     cpu.execute();
@@ -70,7 +70,7 @@ TEST_F(CPUTest, AbsoluteJump)
 
 TEST_F(CPUTest, MovIrBad)
 {
-    assemble(Architecture::sixTrit::OpCode::LoadImmediate, Architecture::sixTrit::Register::REXC, Architecture::Exception::InvalidOpCode);
+    assembleLoadImm(Architecture::sixTrit::Register::REXC, tryte{Architecture::Exception::InvalidOpCode});
 
     EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::REXC),  tryte{Architecture::Exception::Okay});
 
@@ -81,11 +81,11 @@ TEST_F(CPUTest, MovIrBad)
 
 TEST_F(CPUTest, Copy)
 {
-    assemble(Architecture::sixTrit::OpCode::LoadImmediate, Architecture::sixTrit::Register::R1, 111);
-    assemble(Architecture::sixTrit::OpCode::LoadImmediate, Architecture::sixTrit::Register::R2, 112);
-    assemble(Architecture::sixTrit::OpCode::LoadImmediate, Architecture::sixTrit::Register::R3, 113);
-    assemble(Architecture::sixTrit::OpCode::LoadImmediate, Architecture::sixTrit::Register::R4, 114);
-    assemble(Architecture::sixTrit::OpCode::LoadImmediate, Architecture::sixTrit::Register::R5, 115);
+    assembleLoadImm(Architecture::sixTrit::Register::R1, tryte{111});
+    assembleLoadImm(Architecture::sixTrit::Register::R2, tryte{112});
+    assembleLoadImm(Architecture::sixTrit::Register::R3, tryte{113});
+    assembleLoadImm(Architecture::sixTrit::Register::R4, tryte{114});
+    assembleLoadImm(Architecture::sixTrit::Register::R5, tryte{115});
 
     EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::R1),  tryte{0});
     EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::R2),  tryte{0});
@@ -118,11 +118,11 @@ TEST_F(CPUTest, Copy)
     EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::R10), tryte{0});
 
 
-    assemble(Architecture::sixTrit::OpCode::Copy, Architecture::sixTrit::Register::R6,  static_cast<int>(Architecture::sixTrit::Register::R5));
-    assemble(Architecture::sixTrit::OpCode::Copy, Architecture::sixTrit::Register::R7,  static_cast<int>(Architecture::sixTrit::Register::R4));
-    assemble(Architecture::sixTrit::OpCode::Copy, Architecture::sixTrit::Register::R8,  static_cast<int>(Architecture::sixTrit::Register::R3));
-    assemble(Architecture::sixTrit::OpCode::Copy, Architecture::sixTrit::Register::R9,  static_cast<int>(Architecture::sixTrit::Register::R2));
-    assemble(Architecture::sixTrit::OpCode::Copy, Architecture::sixTrit::Register::R10, static_cast<int>(Architecture::sixTrit::Register::R1));
+    assembleCopy(Architecture::sixTrit::Register::R6,  Architecture::sixTrit::Register::R5);
+    assembleCopy(Architecture::sixTrit::Register::R7,  Architecture::sixTrit::Register::R4);
+    assembleCopy(Architecture::sixTrit::Register::R8,  Architecture::sixTrit::Register::R3);
+    assembleCopy(Architecture::sixTrit::Register::R9,  Architecture::sixTrit::Register::R2);
+    assembleCopy(Architecture::sixTrit::Register::R10, Architecture::sixTrit::Register::R1);
 
     cpu.execute();
     cpu.execute();
@@ -149,7 +149,7 @@ TEST_F(CPUTest, Copy)
 
 TEST_F(CPUTest, InOut)
 {
-    assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::Rn1, -42);
+    assembleLoadImm(Architecture::sixTrit::Register::Rn1, tryte{-42});
 
     assemble(Architecture::sixTrit::OpCode::Out,            Architecture::sixTrit::Register::Rn1, 1);
     assemble(Architecture::sixTrit::OpCode::Out,            Architecture::sixTrit::Register::Rn1, 2);
@@ -189,18 +189,17 @@ TEST_F(CPUTest, DataLoadAndStore)
     int  value      = 201;
     int  address    = 281;
 
-    assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::R13, address);
+    assembleLoadImm(Architecture::sixTrit::Register::R13, tryte{address});
 
-    assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::Rn1, value-1);
-    assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::R0,  value);
-    assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::R1,  value+1);
+    assembleLoadImm(Architecture::sixTrit::Register::Rn1, tryte{value-1});
+    assembleLoadImm(Architecture::sixTrit::Register::R0,  tryte{value});
+    assembleLoadImm(Architecture::sixTrit::Register::R1,  tryte{value+1});
 
     assemble(Architecture::sixTrit::OpCode::Store,          Architecture::sixTrit::Register::Rn1, addressReg, trybble{-1});      // write 201 to data[280]
     assemble(Architecture::sixTrit::OpCode::Store,          Architecture::sixTrit::Register::R0,  addressReg, trybble{ 0});      // write 202 to data[281]
     assemble(Architecture::sixTrit::OpCode::Store,          Architecture::sixTrit::Register::R1,  addressReg, trybble{+1});      // write 203 to data[282]
 
     assemble(Architecture::sixTrit::OpCode::Load,           Architecture::sixTrit::Register::R4,  addressReg, trybble{-1});      // load from data[280]
-//  assemble(Architecture::CpuControl::Breakpoint);
     assemble(Architecture::sixTrit::OpCode::Load,           Architecture::sixTrit::Register::R5,  addressReg, trybble{ 0});      // load from data[281]
     assemble(Architecture::sixTrit::OpCode::Load,           Architecture::sixTrit::Register::R6,  addressReg, trybble{+1});      // load from data[282]
 
@@ -237,11 +236,11 @@ TEST_F(CPUTest, StackLoadAndStore)
     int  value      = 123;
     int  address    = -30;
 
-    assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::RSP, address);
+    assembleLoadImm( Architecture::sixTrit::Register::RSP, tryte{address});
 
-    assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::Rn1, value-1);
-    assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::R0,  value);
-    assemble(Architecture::sixTrit::OpCode::LoadImmediate,  Architecture::sixTrit::Register::R1,  value+1);
+    assembleLoadImm( Architecture::sixTrit::Register::Rn1, tryte{value-1});
+    assembleLoadImm( Architecture::sixTrit::Register::R0,  tryte{value});
+    assembleLoadImm( Architecture::sixTrit::Register::R1,  tryte{value+1});
 
     assemble(Architecture::sixTrit::OpCode::Store,      Architecture::sixTrit::Register::Rn1, addressReg, trybble{-1});      // write 201 to data[280]
     assemble(Architecture::sixTrit::OpCode::Store,      Architecture::sixTrit::Register::R0,  addressReg, trybble{ 0});      // write 202 to data[281]
@@ -461,15 +460,15 @@ TEST_F(CPUTest, SignFlag)
 
 // 
 
-    assemble(Architecture::sixTrit::OpCode::Copy,   Architecture::sixTrit::Register::R2,  static_cast<int>(Architecture::sixTrit::Register::Rn1));
+    assembleCopy(Architecture::sixTrit::Register::R2,  Architecture::sixTrit::Register::Rn1);
     cpu.execute();
     EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{-1})  << "Copy -";;
 
-    assemble(Architecture::sixTrit::OpCode::Copy,   Architecture::sixTrit::Register::R2,  static_cast<int>(Architecture::sixTrit::Register::R0));
+    assembleCopy(Architecture::sixTrit::Register::R2,  Architecture::sixTrit::Register::R0);
     cpu.execute();
     EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{0})  << "Copy 0";
 
-    assemble(Architecture::sixTrit::OpCode::Copy,   Architecture::sixTrit::Register::R2,  static_cast<int>(Architecture::sixTrit::Register::R1));
+    assembleCopy(Architecture::sixTrit::Register::R2,  Architecture::sixTrit::Register::R1);
     cpu.execute();
     EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{1})  << "Copy +";
 

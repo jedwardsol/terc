@@ -52,7 +52,7 @@ protected:
             }
 
 
-            if(data > 1)
+            if(exception > Architecture::Exception::Halted)
             {
                 std::cout << "                 Exception " << data << " raised at address " << cpu.reg(Architecture::sixTrit::Register::REXA) << "\n";
             }
@@ -86,9 +86,38 @@ protected:
         code[PC++] = second;
     }
 
-    void assemble(Architecture::CpuControl        control)
+    void assembleCopy(Architecture::sixTrit::Register dest,
+                      Architecture::sixTrit::Register src)
     {
-        tryte   first  { trybble{static_cast<int>(Architecture::sixTrit::OpCode::CpuControl)} , trybble{0}};
+        auto opcode = static_cast<int>(Architecture::sixTrit::OpCode::Copy);
+        tryte   first  { trybble{opcode},                trybble{static_cast<int>(dest)}};
+        tryte   second { trybble{static_cast<int>(src)}, trybble{0} };
+
+        code[PC++] = first;
+        code[PC++] = second;
+    }
+
+    void assembleLoadImm(Architecture::sixTrit::Register dest,
+                         tryte                           immediate)
+    {
+        auto opcode = static_cast<int>(Architecture::sixTrit::OpCode::LoadImmediate);
+        tryte   first  { trybble{opcode},                trybble{static_cast<int>(dest)}};
+        tryte   second { immediate };
+
+        code[PC++] = first;
+        code[PC++] = second;
+    }
+
+    void assembleCpuControl(Architecture::CpuControl        control)
+    {
+        assembleCpuControl(Architecture::Condition::AlwaysTrue,control);
+    }
+
+
+    void assembleCpuControl(Architecture::Condition         condition,
+                            Architecture::CpuControl        control)
+    {
+        tryte   first  { trybble{static_cast<int>(Architecture::sixTrit::OpCode::CpuControl)} , trybble{static_cast<int>(condition)}};
         tryte   second { trybble{static_cast<int>(control)},                                    trybble{0}};
 
         code[PC++]   = first;
