@@ -178,6 +178,7 @@ TEST_F(CPUTest, JumpImmediate)
     ASSERT_EQ(traceCounter,0);
     cpu.execute();
     EXPECT_EQ(cpu.reg(Register::RPC),tryte{10});
+    EXPECT_EQ(cpu.reg(Register::RRA),tryte{ 0});    // unchanged
     cpu.execute();
     EXPECT_EQ(traceCounter,1);
 }
@@ -202,3 +203,52 @@ TEST_F(CPUTest, JumpRegister)
     cpu.execute();
     EXPECT_EQ(traceCounter,1);
 }
+
+
+
+
+TEST_F(CPUTest, CallImmediate)
+{
+    assemble(OpCode::CallI, Architecture::Condition::AlwaysTrue, tryte{10});                                                // 0
+    assemble(Architecture::sixTrit::OpCode::Out,            Architecture::sixTrit::Register::R0, static_cast<int>(2));      // 2
+    
+    assembleCpuControl(Architecture::Condition::AlwaysTrue, Architecture::CpuControl::Halt);                                // 4
+    assembleCpuControl(Architecture::Condition::AlwaysTrue, Architecture::CpuControl::Halt);                                // 6
+    assembleCpuControl(Architecture::Condition::AlwaysTrue, Architecture::CpuControl::Halt);                                // 8
+
+    assemble(Architecture::sixTrit::OpCode::Out,            Architecture::sixTrit::Register::R0, static_cast<int>(1));      // 10
+    assembleCopy(Register::RPC, Register::RRA);
+
+
+// call
+    cpu.execute();
+    EXPECT_EQ(cpu.reg(Register::RPC),tryte{10});
+    EXPECT_EQ(cpu.reg(Register::RRA),tryte{ 2});    
+
+   
+// out 1
+
+    cpu.execute();
+    ASSERT_EQ(outs.size(),1);
+    EXPECT_EQ(outs[0].first, 1);
+
+
+// ret
+
+    cpu.execute();
+    EXPECT_EQ(cpu.reg(Register::RPC),tryte{ 2});
+    EXPECT_EQ(cpu.reg(Register::RRA),tryte{ 2});    
+
+
+
+// out 2
+
+    cpu.execute();
+    ASSERT_EQ(outs.size(),2);
+    EXPECT_EQ(outs[0].first, 1);
+    EXPECT_EQ(outs[1].first, 2);
+
+
+}
+
+
