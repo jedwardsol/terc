@@ -93,3 +93,71 @@ TEST_F(CPUTest, ConditionalOnConditional)
     EXPECT_EQ(traceCounter,3);
     EXPECT_EQ(cpu.reg(Register::RFlags).getTrit(static_cast<int>(Architecture::Flag::ExecutedConditional)),trit{1});
 }
+
+
+
+TEST_F(CPUTest, ConditionalOnSign)
+{
+    ASSERT_EQ(traceCounter,0);
+
+    assembleLoadImm(Register::R0, tryte{0});
+    cpu.execute();
+    EXPECT_EQ(cpu.reg(Register::RFlags).getTrit(static_cast<int>(Architecture::Flag::Sign)),trit{0});
+
+
+    assembleCpuControl(Architecture::Condition::Zero,   Architecture::CpuControl::Trace);
+    cpu.execute();
+    EXPECT_EQ(traceCounter,1);  // executed
+
+    assembleCpuControl(Architecture::Condition::NotZero,Architecture::CpuControl::Trace);
+    cpu.execute();
+    EXPECT_EQ(traceCounter,1);  // didn't execute
+
+
+
+    ASSERT_EQ(traceCounter,1);
+
+    assembleLoadImm(Register::R0, tryte{88});
+    cpu.execute();
+    EXPECT_EQ(cpu.reg(Register::RFlags).getTrit(static_cast<int>(Architecture::Flag::Sign)),trit{1});
+
+
+    assembleCpuControl(Architecture::Condition::Positive,   Architecture::CpuControl::Trace);
+    cpu.execute();
+    EXPECT_EQ(traceCounter,2);  // executed
+
+    assembleCpuControl(Architecture::Condition::Negative,   Architecture::CpuControl::Trace);
+    cpu.execute();
+    EXPECT_EQ(traceCounter,2);  // didn't execute
+
+    // TODO : table driven tests?
+
+}
+
+
+
+TEST_F(CPUTest, ConditionalOnComparison)
+{
+    ASSERT_EQ(traceCounter,0);
+
+    assembleLoadImm(Register::R0, tryte{-3});
+    cpu.execute();
+    EXPECT_EQ(cpu.reg(Register::RFlags).getTrit(static_cast<int>(Architecture::Flag::Sign)),trit{-1});
+
+    assemble(Architecture::sixTrit::OpCode::CmpI, Register::R0, -3);                                             
+    cpu.execute();
+    EXPECT_EQ(cpu.reg(Register::RFlags).getTrit(static_cast<int>(Architecture::Flag::Comparison)),trit{0});    // equal
+
+
+    assembleCpuControl(Architecture::Condition::Equal,   Architecture::CpuControl::Trace);
+    cpu.execute();
+    EXPECT_EQ(traceCounter,1);  // executed
+
+    assembleCpuControl(Architecture::Condition::GreaterThan,Architecture::CpuControl::Trace);
+    cpu.execute();
+    EXPECT_EQ(traceCounter,1);  // didn't execute
+
+
+    // TODO : table driven tests?
+
+}

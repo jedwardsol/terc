@@ -58,18 +58,19 @@ bool  CPU::isConditionTrue(Condition condition)
     case Condition::ConditionalExecuted:        return E == trit{1};                        // E        +
     case Condition::ConditionalNotExecuted:     return E == trit{-1};                       // E      -
 
-    case Condition::Positive:
-    case Condition::Zero:
-    case Condition::Negative:
-    case Condition::NotPositive:
-    case Condition::NotZero:
-    case Condition::NotNegative:
-    case Condition::GreaterThan:
-    case Condition::Equal:
-    case Condition::LessThan:
-    case Condition::LessThanOrEqual:
-    case Condition::NotEqual:
-    case Condition::GreaterOrEqual: return true;
+    case Condition::Positive:                   return S == trit{1};
+    case Condition::Zero:                       return S == trit{0};
+    case Condition::Negative:                   return S == trit{-1};
+    case Condition::NotPositive:                return S != trit{1};
+    case Condition::NotZero:                    return S != trit{0};
+    case Condition::NotNegative:                return S != trit{-1};
+
+    case Condition::GreaterThan:                return C == trit{1};
+    case Condition::Equal:                      return C == trit{0};
+    case Condition::LessThan:                   return C == trit{-1};
+    case Condition::LessThanOrEqual:            return C != trit{1};
+    case Condition::NotEqual:                   return C != trit{0};
+    case Condition::GreaterOrEqual:             return C != trit{-1};
     }
 
     return true;
