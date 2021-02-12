@@ -186,8 +186,8 @@ std::optional<Architecture::sixTrit::Register> SourceLine::asRegister(int index)
         {"R9",    Architecture::sixTrit::Register::R9},
         {"R10",   Architecture::sixTrit::Register::R10},
         {"R11",   Architecture::sixTrit::Register::R11},
-        {"R12",   Architecture::sixTrit::Register::R13},
-        {"R12",   Architecture::sixTrit::Register::R13},
+        {"R12",   Architecture::sixTrit::Register::R12},
+        {"R13",   Architecture::sixTrit::Register::R13},
     };
 
     auto found = registers.find(string.value());
