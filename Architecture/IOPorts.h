@@ -17,23 +17,9 @@ struct IOPorts
 };
 
 
-struct DummyIOPorts : IOPorts
-{
-    ~DummyIOPorts() override = default;
-
-    Exception  out(const tryte    port,  const tryte    data) override
-    {
-        return Exception::Okay;
-    }
-
-    Exception  in (const tryte    port,        tryte   &result)
-    {
-        return Exception::Okay;
-    }
-};
 
 
-enum class KnownIOPorts
+enum class KnownIOPorts     // tryte
 {
     ExceptionOut = std::numeric_limits<tryte>::min(),
 

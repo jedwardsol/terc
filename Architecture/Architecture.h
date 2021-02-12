@@ -8,7 +8,7 @@
 namespace Architecture
 {
 
-enum  class CpuControl  
+enum  class CpuControl      // trybble
 {
     Nop         = -1,         // do nothing
     Halt        =  0,         // do halt
@@ -19,7 +19,7 @@ enum  class CpuControl
 
 
 
-enum class Flag
+enum class Flag             // trybble
 {
 //  Flag                    // -1                           0                       +1
 
@@ -34,6 +34,34 @@ enum class Flag
                             // wasn't executed              conditional             was executed
 };
 
+
+
+
+enum class Condition      // // trybble
+{
+    AlwaysFalse=-13,
+
+
+    ConditionalExecuted,
+    ConditionalNotExecuted,
+
+    AlwaysTrue = 0,                 // 0 so empty memory  {"000000"}{"000000"}  decodes to unconditional halt instruction
+
+    Positive,                       // sign      +
+    Zero,                           // sign     0
+    Negative,                       // sign   -
+    NotPositive,                    // sign    -0
+    NotZero,                        // sign    - +
+    NotNegative,                    // sign     0+
+
+    GreaterThan,                    // Compare   +
+    Equal,                          // Compare  0
+    LessThan,                       // Compare -
+    LessThanOrEqual,                // Compare -0
+    NotEqual,                       // Compare - +
+    GreaterOrEqual,                 // Compare  0+
+
+};
 
 }
 

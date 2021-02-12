@@ -574,7 +574,6 @@ TEST_F(CPUTest, CompareRegister)
     cpu.execute();
 
 
-
     assemble(Architecture::sixTrit::OpCode::CmpR, Architecture::sixTrit::Register::R1,   static_cast<int>(Register::R2));
     cpu.execute();
     EXPECT_EQ( cpu.getFlag(Architecture::Flag::Comparison),    trit{-1})  << "R1 < R2";

@@ -91,7 +91,7 @@ bool    CPU::checkPC()
     }
 
 
-    if( reg(Register::RPC) < tryte{ 0 })
+    if( reg(Register::RPC) < tryte{ 0 })            // TODO : allow negative code.  good place for standard library?
     {
         raiseException(Exception::BadPC, reg(Register::RPC));
         return false;

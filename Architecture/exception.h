@@ -5,7 +5,7 @@
 namespace Architecture
 {
 
-enum  Exception         // min to max
+enum  Exception         // tryte
 {
 // negative exceptions are not-fatal
 
@@ -25,6 +25,8 @@ enum  Exception         // min to max
     BadPC,                      // negative, odd,  
     InvalidOpCode,
     InvalidRegister,
+    InvalidCondition,
+
     AccessViolation,            // bad address
     DoubleFault = std::numeric_limits<tryte>::max()     // execution after a fatal fault
 };

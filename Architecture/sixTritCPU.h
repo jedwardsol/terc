@@ -3,7 +3,7 @@
 #include <vector>
 #include <array>
 #include <optional>
-
+#include <cassert>
 #include "Arithmetic/Arithmetic.h"
 #include "Arithmetic/tryte.h"
 #include "Arithmetic/trit.h"
@@ -34,7 +34,7 @@ constexpr int     recStackSize              {81};
 constexpr int     numRegisters              {numValues(3)};
 
 
-enum class Register     // -13 to 13
+enum class Register     // // trybble   -13 to 13
 {
     RPC     = -13,   // program counter        
     RSP     = -12,   // stack pointer
@@ -82,8 +82,7 @@ Each instruction is 2 trytes
 */
 
 
-
-enum  OpCode        // -13 to 13
+enum  OpCode        // // trybble  -13 to 13
 {
  // Opcode                  // condition        operand                                                             flags           exceptions
                                                                                                                          
@@ -99,15 +98,12 @@ enum  OpCode        // -13 to 13
                                                                                                                          
  // Opcode                  // condition        operand                                                                             exceptions
                                                                                                                          
-    CallI,                  // condition        immediate destination                                               E                         
-    CallR,                  // condition        low: register destination                                           E     
+    CallI,                  // condition        immediate destination                                               E                                           Ret is LoadImmediate RPC, RRA,  or pop RPC  if RRA was pushed
+    CallR,                  // condition        low: register destination                                           E                                           Ret is LoadImmediate RPC, RRA,  or pop RPC  if RRA was pushed
     JmpI,                   // condition        immediate destination                                               E                          
     JmpR,                   // condition        low: register destination                                           E                          
                                                                                                                          
-                                                                                                                         
-                                                                                                                         
     CpuControl =   0,       // condition        CpuControl                                                          E              Halted, InvalidOpCode, Breakpoint Trace
-                                                                                                                         
                                                                                                                          
  // Opcode                  // register         operand                                                                             exceptions
                                                                                                                          
@@ -212,7 +208,7 @@ public:
 
 #pragma warning(pop)
 
-
+    // flag isn't under the control of any instruction
     trit getFlag(Flag flag) const
     {
         return reg(Register::RFlags).getTrit(static_cast<int>(flag));
@@ -220,6 +216,10 @@ public:
 
     void setFlag(Flag flag,   trit value) 
     {
+        assert(    flag == Architecture::Flag::Comparison
+               ||  flag == Architecture::Flag::ExecutedConditional
+               ||  flag == Architecture::Flag::Sign);
+
         auto flags = reg(Register::RFlags);
         
         flags.setTrit(static_cast<int>(flag), value);
@@ -233,6 +233,9 @@ public:
     void    execute();
     void    executeRegisterInstructions(tryte  operation, tryte operand);
     void    executeConditionalInstructions(tryte  operation, tryte operand);
+
+    bool    validCondition (Condition condition);
+    bool    isConditionTrue(Condition condition);
 
 private:
 
@@ -269,7 +272,7 @@ private:
 
     std::array<tryte,numRegisters>                  registers{};    // only to be touched in setReg and getReg.  Here for debugability
 
-    bool                                            instructionChangedRPC{};      // TODO : move to flag
+    bool                                            instructionChangedRPC{};      // TODO : move to flag?
 };
 
 
