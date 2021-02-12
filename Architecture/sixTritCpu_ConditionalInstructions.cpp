@@ -46,12 +46,18 @@ bool CPU::validCondition(Condition condition)
 
 bool  CPU::isConditionTrue(Condition condition)
 {
+    auto S = reg(Register::RFlags).getTrit(static_cast<int>(Flag::Sign));
+    auto C = reg(Register::RFlags).getTrit(static_cast<int>(Flag::Comparison));
+    auto E = reg(Register::RFlags).getTrit(static_cast<int>(Flag::ExecutedConditional));
+
     switch(condition)
     {
     case Condition::AlwaysFalse:                return false;
     case Condition::AlwaysTrue:                 return true;
-    case Condition::ConditionalExecuted:
-    case Condition::ConditionalNotExecuted:
+
+    case Condition::ConditionalExecuted:        return E == trit{1};                        // E        +
+    case Condition::ConditionalNotExecuted:     return E == trit{-1};                       // E      -
+
     case Condition::Positive:
     case Condition::Zero:
     case Condition::Negative:

@@ -42,14 +42,14 @@ enum class Condition      // // trybble
     AlwaysFalse=-13,
 
 
-    ConditionalExecuted,
-    ConditionalNotExecuted,
+    ConditionalExecuted,            // EC        +
+    ConditionalNotExecuted,         // EC      -
 
     AlwaysTrue = 0,                 // 0 so empty memory  {"000000"}{"000000"}  decodes to unconditional halt instruction
 
     Positive,                       // sign      +
     Zero,                           // sign     0
-    Negative,                       // sign   -
+    Negative,                       // sign    -
     NotPositive,                    // sign    -0
     NotZero,                        // sign    - +
     NotNegative,                    // sign     0+
