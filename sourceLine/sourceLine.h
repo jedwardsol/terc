@@ -4,6 +4,8 @@
 #include <optional>
 
 #include "Arithmetic/tryte.h"
+#include "Architecture/sixTritCPU.h"
+
 
 
 class SourceLine
@@ -30,7 +32,8 @@ public:
         }
     }
 
-    std::optional<tryte>            asTryte(int index) const noexcept;
+    std::optional<tryte>                                asTryte   (int index) const noexcept;
+    std::optional<Architecture::sixTrit::Register>      asRegister(int index) const noexcept;
     
 
 private:
