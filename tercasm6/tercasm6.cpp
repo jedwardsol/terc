@@ -116,7 +116,10 @@ try
     
     assembler.parseFile();
 
+    assembler.makeMap();
+
     assembler.assemble();
+
 
 
 }

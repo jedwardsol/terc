@@ -77,6 +77,9 @@ public:
     {
     }
 
+    void makeMap();
+
+
 private:
 
     std::ifstream                           sourceFile;
@@ -110,18 +113,20 @@ private:
     };
 
 
+    Architecture::MemoryBlock     code{ maxValue(6), maxValue(6)};
+    Architecture::MemoryBlock     data{ 0,           maxValue(6)};
+
+
     std::map<std::string,Symbol>  dataSymbols;
     std::map<std::string,Symbol>  codeSymbols;
     std::map<tryte,Dependency>    dataDependencies;
     std::map<tryte,Dependency>    codeDependencies;
 
-    Architecture::MemoryBlock     code{ maxValue(6), maxValue(6)};
-    Architecture::MemoryBlock     data{ 0,           maxValue(6)};
 
-    void addDataSymbol(std::string_view symbol);
-    void addCodeSymbol(std::string_view symbol);
-
-
+    void addDataSymbol    (std::string_view symbol);
+    void addCodeSymbol    (std::string_view symbol);
+    void addDataDependency(std::string_view symbol);
+    void addCodeDependency(std::string_view symbol);
 
     void parseDirective(const SourceLine &source);
     void parseCode     (const SourceLine &source) {}
