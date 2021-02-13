@@ -68,6 +68,34 @@ void Assembler::parseDirective(const SourceLine &source)
     {
         mode = Mode::data;
     }
+    else if(directive == ".address")
+    {
+        auto newAddress = source.asTryte(1);
+
+        if(!newAddress)
+        {
+            error(".address directive missing a valid address");
+        }
+
+
+        switch(mode)
+        {
+        case Mode::data:
+            currentDataPosition=static_cast<int>(newAddress.value());
+            maxDataPosition = std::max(maxDataPosition,currentDataPosition);
+            break;
+
+        case Mode::code:
+            currentCodePosition=static_cast<int>(newAddress.value());
+            maxCodePosition = std::max(maxCodePosition,currentCodePosition);
+            break;
+
+        default:
+            error(".address meaningless outside of .code or .data ");
+            break;
+        }
+        
+    }
     else if(directive == ".stack")
     {
         auto newStackSize = source.asTryte(1);
@@ -111,7 +139,6 @@ try
         throw std::runtime_error{"Missing input FileName"};
     }
 
-
     Assembler assembler{args[0]};
     
     assembler.parseFile();
@@ -119,9 +146,6 @@ try
     assembler.makeMap();
 
     assembler.assemble();
-
-
-
 }
 catch(const std::exception &e)
 {

@@ -17,14 +17,14 @@ void Assembler::makeMap()
 
     for(auto symbol : dataSymbols)
     {
-        map << "    " << std::left << std::setw(10) << symbol.first << " : " << symbol.second.address << "\n";
+        map << "    " << std::left << std::setw(16) << symbol.first << " : " << symbol.second.address << "\n";
     }
 
     map << "\nSymbols in code section\n";
 
     for(auto symbol : codeSymbols)
     {
-        map << "    " << std::left << std::setw(10) << symbol.first << " : " << symbol.second.address << "\n";
+        map << "    " << std::left << std::setw(16) << symbol.first << " : " << symbol.second.address << "\n";
     }
 
 
@@ -32,14 +32,14 @@ void Assembler::makeMap()
 
     for(auto dependency : dataDependencies)
     {
-        map << "    " << std::left << std::setw(10) << dependency.first << " : " << dependency.second.symbol << "\n";
+        map << "    " << std::left << std::setw(16) << dependency.first << " : " << dependency.second.symbol << "\n";
     }
 
     map << "\nDependencies in code section\n";
 
     for(auto dependency : codeDependencies)
     {
-        map << "    " << std::left << std::setw(10) << dependency.first << " : " << dependency.second.symbol << "\n";
+        map << "    " << std::left << std::setw(16) << dependency.first << " : " << dependency.second.symbol << "\n";
     }
 
 }

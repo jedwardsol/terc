@@ -1,6 +1,8 @@
 
 #include "Arithmetic_std.h"
-
+#include <string>
+#include <iostream>
+#include <sstream>
 
 std::string  to_string(const trit &t)
 {
@@ -33,6 +35,8 @@ std::ostream &operator<<(std::ostream &out, const trit &t)
 
 std::ostream &operator<<(std::ostream &out, const tryte &t)
 {
-    out << to_string(t) << '(' << static_cast<int>(t) << ')';
-    return out;
+    std::ostringstream str;
+
+    str << to_string(t) << '(' << static_cast<int>(t) << ')';
+    return out << str.str();
 }

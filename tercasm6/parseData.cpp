@@ -49,6 +49,7 @@ void Assembler::parseData(const SourceLine &source)
                 t=value.value();
             }
 
+            // TODO : overflow check                    
             data[currentDataPosition] = t;
             currentDataPosition++;
             maxDataPosition = std::max(maxDataPosition,currentDataPosition);
@@ -57,11 +58,28 @@ void Assembler::parseData(const SourceLine &source)
     }
     else if(first == "string")
     {
+        for(int i=1;i < source.tokens().size(); i++)
+        {
+            auto string = source.asString(i).value();
 
+            for(auto c : string)
+            {
+                // TODO escape sequences
+                // TODO : overflow check                    
+                data[currentDataPosition] = tryte{c};
+                currentDataPosition++;
+                maxDataPosition = std::max(maxDataPosition,currentDataPosition);
+            }
+
+            // nul-terminate
+            // TODO : overflow check                    
+            data[currentDataPosition] = tryte{0};
+            currentDataPosition++;
+            maxDataPosition = std::max(maxDataPosition,currentDataPosition);
+        }
     }
     else
     {
         error("Unrecognised data type");
     }
-
 }
