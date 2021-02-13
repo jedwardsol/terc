@@ -1,6 +1,8 @@
+#pragma once
+
 #include <string>
 #include <string_view>
-#include <vector>
+#include <deque>
 #include <optional>
 
 #include "Arithmetic/tryte.h"
@@ -15,10 +17,16 @@ public:
     SourceLine(const std::string_view &line) : tokenised{splitLine(std::string{removeComment(line)})}
     {}
 
-    const auto &tokens() const noexcept
+    auto &tokens() const noexcept
     {
         return tokenised;
     }
+
+    auto &tokens() noexcept
+    {
+        return tokenised;
+    }
+
 
     std::optional<std::string_view> asString(int index) const noexcept
     {
@@ -46,9 +54,9 @@ private:
 private:
 
     [[nodiscard]] static std::string_view              removeComment(const std::string_view  &line);
-    [[nodiscard]] static std::vector<std::string>      splitLine    (const std::string &text);
+    [[nodiscard]] static std::deque<std::string>       splitLine    (const std::string &text);
 
-    std::vector<std::string>  tokenised;
+    std::deque<std::string>  tokenised;
 };
 
 

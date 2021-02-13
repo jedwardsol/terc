@@ -19,14 +19,14 @@
 }
 
    
-std::vector<std::string>   SourceLine::splitLine(const std::string &text)
+std::deque<std::string>   SourceLine::splitLine(const std::string &text)
 {
  
     boost::escaped_list_separator<char> seperators{"\\"s, " \t,"s,  "\""s};
   
     boost::tokenizer<boost::escaped_list_separator<char>> tokens(text, seperators);
 
-    std::vector<std::string> result;
+    std::deque<std::string> result;
 
     for(const auto &token : tokens)
     {
