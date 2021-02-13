@@ -1,7 +1,5 @@
-.Stack 100
+.stack 100
 
-.Begin
-
+.code
     CpuControl         True     Halt
 
-.End

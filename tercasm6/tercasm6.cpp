@@ -3,6 +3,8 @@
 #include <string>
 #include <string_view>
 #include <iostream>
+#include <iomanip>
+#include <sstream>
 
 #include <exception>
 #include <system_error>
@@ -31,12 +33,9 @@ Number formats
 
 Directives:
 
-    .StackSize  N           :   mandatory before .Begin
-
-    .Begin                  :   mandatory
-
-
-    .End                    :   mandatory
+    .stack  N               :   mandatory somewhere
+    .code                   :   assemble some instructions
+    .data                   :   add some data
 
 */
 
@@ -46,9 +45,9 @@ class Assembler
 {
 public:
 
-    Assembler(const std::string_view &filename) : source{filename}
+    Assembler(const std::string_view &filename) : sourceFile{filename}
     {
-        if(!source)
+        if(!sourceFile)
         {
             throw std::system_error{errno,std::generic_category(),"Error opening source file"};
         }
@@ -56,15 +55,40 @@ public:
 
     void parseFile()
     {
-        std::string  line;
 
-        while(std::getline(source,line))
+        while(   std::getline(sourceFile,currentLine))
         {
-            const SourceLine  source{line};
+            currentLineNumber++;
+
+            const SourceLine  source{currentLine};
 
             if(source.tokens().empty())
             {
                 continue;
+            }
+
+            const auto &token = source.asString(0).value();
+
+            if(token[0] == '.')
+            {
+                parseDirective(source);
+            }
+            else
+            {
+                switch(mode)
+                {
+                case Mode::none:
+                    error("Non-directive seen outside .code or .data");
+                    break;
+
+                case Mode::code:
+                    parseCode(source);
+                    break;
+
+                case Mode::data:
+                    parseData(source);
+                    break;
+                }
             }
         }
     }
@@ -75,14 +99,99 @@ public:
 
 private:
 
-    std::ifstream                           source;
-    int                                     lineNumber        {1};
+    std::ifstream                           sourceFile;
+    std::string                             currentLine;
+   int                                      currentLineNumber{};
+
+    enum class Mode
+    {
+        none, code, data
+    }                                       mode{ Mode::none};
+
+
+    void parseDirective(const SourceLine &source);
+    void parseCode     (const SourceLine &source) {}
+    void parseData     (const SourceLine &source) {}
+
+
+    auto format(const std::string &type, const std::string &message)
+    {
+        std::ostringstream str;
+
+        str << type 
+            << " at line "s 
+            << std::setw(5) << std::to_string(currentLineNumber) 
+            << " : <"s 
+            << message
+            << "> : "s 
+            << currentLine;
+
+        return str.str();
+    }
+
+    void error         (const std::string &error)
+    {
+        throw std::runtime_error(  format("Error",error));
+    }
+
+    void warning        (const std::string &warning)
+    {
+        std::cout << format("Warning", warning) << "\n";
+    }
+
 
 private:
 
-    Architecture::MemoryBlock     code {0,                                  Architecture::sixTrit::recCodeSize,  ".code" };        
-//    Architecture::MemoryBlock     data {Architecture::sixTrit::recStackSize,Architecture::sixTrit::recDataSize,  ".data" };        
+    int                                     stackSize{};
+
 };
+
+void Assembler::parseDirective(const SourceLine &source)
+{
+    auto directive = source.asString(0).value();
+
+    if(directive == ".code")
+    {
+        mode = Mode::code;
+    }
+    else if(directive == ".data")
+    {
+        mode = Mode::data;
+    }
+    else if(directive == ".stack")
+    {
+        auto newStackSize = source.asTryte(1);
+
+        if(!newStackSize)
+        {
+            error(".stack directive missing a valid size");
+        }
+
+        if(!stackSize)
+        {
+            stackSize = newStackSize.value().operator int();
+        }
+        else
+        {
+            if(newStackSize.value().operator int() > stackSize)
+            {
+                stackSize = newStackSize.value().operator int();
+                warning("additional .stack directive.  size increased");
+            }
+            else
+            {
+                warning("additional .stack directive.  size ignored");
+            }
+        }
+
+        mode = Mode::data;
+    }
+
+
+
+}
+
+
 
 
 int main(int argc, const char *argv[])
@@ -106,5 +215,5 @@ try
 }
 catch(const std::exception &e)
 {
-    std::cout << "caught " << e.what() << '\n';
+    std::cout << e.what() << '\n';
 }
