@@ -1,6 +1,8 @@
 #include "sourceLine.h"
 #include <charconv>
 #include <map>
+#include <boost/tokenizer.hpp>
+#include <boost/range/iterator_range.hpp>
 
 [[nodiscard]] std::string_view  SourceLine::removeComment(const std::string_view  &line)
 {
@@ -16,60 +18,25 @@
     return text;
 }
 
-
-[[nodiscard]] std::string_view  SourceLine::trimDelimiters(const std::string_view  &text)
+   
+std::vector<std::string>   SourceLine::splitLine(const std::string &text)
 {
+ 
+    boost::escaped_list_separator<char> seperators{"\\"s, " \t,"s,  "\""s};
+  
+    boost::tokenizer<boost::escaped_list_separator<char>> tokens(text, seperators);
 
-    auto result{text};
+    std::vector<std::string> result;
 
-    auto start = result.find_first_not_of(delimiters);
-
-    if(start != result.npos)
+    for(const auto &token : tokens)
     {
-        result.remove_prefix( start);
-    }
-    else
-    {
-        // it's all delimiters;
-        result = std::string_view{};
-    }
-    auto end = result.find_last_not_of(delimiters);
-
-    if(end != result.npos)
-    {
-        result.remove_suffix( result.size() - (end+1));
+        if(!token.empty())
+        {
+            result.push_back(token);
+        }
     }
 
     return result;
-}
-
-
-[[nodiscard]] std::vector<std::string_view>   SourceLine::splitLine(std::string_view  text)
-{
-    std::vector<std::string_view>   tokens;
-
-    text = trimDelimiters(text);
-
-    while(!text.empty())
-    {
-        auto delimiter = text.find_first_of(delimiters);
-        auto token     = text.substr(0,delimiter);
-
-        if(delimiter == text.npos)
-        {
-            text = std::string_view{};
-        }
-        else
-        {
-            text.remove_prefix(delimiter);
-            text = trimDelimiters(text);
-        }
-
-        tokens.push_back(trimDelimiters(token));                
-
-    }
-
-    return tokens;
 }
 
 

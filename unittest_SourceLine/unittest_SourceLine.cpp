@@ -131,6 +131,31 @@ INSTANTIATE_TEST_SUITE_P
 
 
 
+TEST(SourceLineTests, SplitString)
+{
+    SourceLine  l1{ R"( string "hello world"  )" };
+
+    ASSERT_EQ(l1.tokens().size(), 2);
+    EXPECT_EQ(l1.asString(0).value(), "string");
+    EXPECT_EQ(l1.asString(1).value(), R"(hello world)" );
+
+
+    SourceLine  l2{ R"( string "hello \"world\""  )" };
+
+    ASSERT_EQ(l2.tokens().size(), 2);
+    EXPECT_EQ(l2.asString(0).value(), "string");
+    EXPECT_EQ(l2.asString(1).value(), R"(hello "world")" );
+
+
+    SourceLine  l3{ R"( string he"l"lo \"world\"  )" };
+
+    ASSERT_EQ(l3.tokens().size(), 3);
+    EXPECT_EQ(l3.asString(0).value(), "string");
+    EXPECT_EQ(l3.asString(1).value(), R"(hello)" );
+    EXPECT_EQ(l3.asString(2).value(), R"("world")" );
+}
+
+
 
 class AsTryteP :public ::testing::TestWithParam< std::pair<std::string_view, std::optional<tryte>>>
 {

@@ -36,6 +36,17 @@ Directives:
     .stack  N               :   mandatory somewhere
     .code                   :   assemble some instructions
     .data                   :   add some data
+    .address N              :   change the current code or data position
+
+Labels
+
+    :label                  :   label the next address
+
+
+Data
+
+    N                       :   add a tryte to the data section
+    "string"                :   add a nul terminated ascii string
 
 */
 
@@ -101,7 +112,14 @@ private:
 
     std::ifstream                           sourceFile;
     std::string                             currentLine;
-   int                                      currentLineNumber{};
+    int                                     currentLineNumber{};
+
+    int                                     currentCodePosition{};      
+    int                                     maxCodePosition{};      
+    int                                     minCodePosition{};
+
+    int                                     currentDataPosition{};
+    int                                     maxDataPosition{};
 
     enum class Mode
     {
@@ -186,9 +204,6 @@ void Assembler::parseDirective(const SourceLine &source)
 
         mode = Mode::data;
     }
-
-
-
 }
 
 

@@ -3,3 +3,10 @@
 .code
     CpuControl         True     Halt
 
+.data
+
+:label1
+:label2     tryte 1 2 3
+            tryte 4 5 6
+:label3     string "hello"
+            string "world"

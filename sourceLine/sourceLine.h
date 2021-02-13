@@ -12,7 +12,7 @@ class SourceLine
 {
 public:
 
-    SourceLine(const std::string_view &line) : tokenised{splitLine(removeComment(line))}
+    SourceLine(const std::string_view &line) : tokenised{splitLine(std::string{removeComment(line)})}
     {}
 
     const auto &tokens() const noexcept
@@ -33,7 +33,6 @@ public:
     }
 
     std::optional<tryte>                                asTryte     (int index) const noexcept;
-
     std::optional<Architecture::sixTrit::OpCode>        asOpCode    (int index) const noexcept;
     std::optional<Architecture::sixTrit::Register>      asRegister  (int index) const noexcept;
     std::optional<Architecture::Condition>              asCondition (int index) const noexcept;
@@ -46,14 +45,10 @@ private:
 
 private:
 
-    const static inline std::string_view    delimiters{", \t"};
-
     [[nodiscard]] static std::string_view              removeComment(const std::string_view  &line);
-    [[nodiscard]] static std::string_view              trimDelimiters(const std::string_view  &text);
-    [[nodiscard]] static std::vector<std::string_view> splitLine(std::string_view  text);
+    [[nodiscard]] static std::vector<std::string>      splitLine    (const std::string &text);
 
-
-    std::vector<std::string_view>  tokenised;
+    std::vector<std::string>  tokenised;
 };
 
 
