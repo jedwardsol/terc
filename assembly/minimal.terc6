@@ -1,7 +1,7 @@
 .stack 2
 
 .code
-    CpuControl         True     Halt
+    :start  CpuControl         True     Halt
 
 
 
@@ -26,7 +26,7 @@
 
 ;Data
 ;
-;   tryte       t1  [t2 [t3 [...]]]]
+;   tryte       t1  [t2 [t3 [...]]]]        trytes can be decimal (42)  or 6 balanced ternary trits ( 0+---0 )
 ;   string      s1  [s2 [s3 [...]]]]        strings can be quoted to contain whitespace or commands
 
 

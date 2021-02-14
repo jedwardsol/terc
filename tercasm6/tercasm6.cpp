@@ -22,40 +22,6 @@
 
 #include "assembler.h"
 
-/*
-
-Comments
-
-    ; everything after a ; is a comment
-
-
-Number formats
-
-    42                      : decimal                                -364 to    364
-    0+---0                  : 6 balanced ternary trits   range is  ------ to ++++++
-
-Directives:
-
-    .stack  N               :   set stack size
-    .code                   :   assemble some instructions
-    .data                   :   add some data
-    .address N              :   change the current code or data position
-
-Labels
-
-    :label                  :   label the next address
-
-
-Data
-
-    N                       :   add a tryte to the data section
-    "string"                :   add a nul terminated ascii string
-
-*/
-
-
-
-
 
 
 
