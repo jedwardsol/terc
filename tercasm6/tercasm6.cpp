@@ -19,10 +19,7 @@
 
 #include "sourceLine/sourceLine.h"
 
-
 #include "assembler.h"
-
-
 
 
 
@@ -39,12 +36,37 @@ try
     Assembler assembler{args[0]};
     
     assembler.parseFile();
-
     assembler.makeMap();
-
-    assembler.assemble();
+    assembler.writeSections();
 }
 catch(const std::exception &e)
 {
     std::cout << e.what() << '\n';
+}
+
+
+
+void Assembler::writeSections()
+try
+{
+    auto    codeFileName{sourceFileName};
+    auto    dataFileName{sourceFileName};
+
+    codeFileName.replace_extension(".code");
+    dataFileName.replace_extension(".data");
+
+    Architecture::MemoryBlock   codeFile{ -minCodePosition, maxCodePosition, codeFileName.string()};
+    Architecture::MemoryBlock   dataFile{  stackSize,       maxDataPosition, dataFileName.string()};
+
+    memcpy(&codeFile[minCodePosition],  &code[minCodePosition],  (maxCodePosition-minCodePosition)*sizeof(tryte));
+
+    if(maxDataPosition)
+    {
+        memcpy(&dataFile[0],                &data[0],                (maxDataPosition)*sizeof(tryte));
+    }
+
+}
+catch(const std::exception &e)
+{
+    std::cout << "writeSections : " << e.what() << '\n';
 }

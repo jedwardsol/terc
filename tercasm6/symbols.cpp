@@ -11,37 +11,46 @@ using namespace std::literals;
 
 void Assembler::makeMap()
 {
-    std::ofstream  map{"map"};
+    auto mapName{sourceFileName};
 
-    map << "Symbols in data section\n";
+    mapName.replace_extension(".map");
 
-    for(auto symbol : dataSymbols)
+    std::ofstream  map{mapName};
+
+    if(!map)
     {
-        map << "    " << std::left << std::setw(16) << symbol.first << " : " << symbol.second.address << "\n";
+        std::cout << "Can't open map file\n";
+        return;
     }
 
-    map << "\nSymbols in code section\n";
+    map   <<  "Code Section :   " << tryte{minCodePosition} << " - " << tryte{maxCodePosition} << '\n';
+    map   <<  "Code Section :   " << tryte{0}               << " - " << tryte{maxDataPosition} << '\n';
+    map   <<  "Stack Size   :   " << tryte{stackSize} << '\n';
 
+
+    map << "\nSymbols in code section\n";
     for(auto symbol : codeSymbols)
     {
         map << "    " << std::left << std::setw(16) << symbol.first << " : " << symbol.second.address << "\n";
     }
 
-
-    map << "\nDependencies in data section\n";
-
-    for(auto dependency : dataDependencies)
-    {
-        map << "    " << std::left << std::setw(16) << dependency.first << " : " << dependency.second.symbol << "\n";
-    }
-
     map << "\nDependencies in code section\n";
-
     for(auto dependency : codeDependencies)
     {
         map << "    " << std::left << std::setw(16) << dependency.first << " : " << dependency.second.symbol << "\n";
     }
 
+    map << "\nSymbols in data section\n";
+    for(auto symbol : dataSymbols)
+    {
+        map << "    " << std::left << std::setw(16) << symbol.first << " : " << symbol.second.address << "\n";
+    }
+
+    map << "\nDependencies in data section\n";
+    for(auto dependency : dataDependencies)
+    {
+        map << "    " << std::left << std::setw(16) << dependency.first << " : " << dependency.second.symbol << "\n";
+    }
 }
 
 

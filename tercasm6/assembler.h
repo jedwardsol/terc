@@ -13,6 +13,9 @@
 #include <stdexcept>
 #include <map>
 
+#include <filesystem>
+namespace fs=std::filesystem;
+
 #include "Arithmetic/Arithmetic.h"
 #include "Arithmetic/Arithmetic_std.h"
 
@@ -26,7 +29,7 @@ class Assembler
 {
 public:
 
-    Assembler(const std::string_view &filename) : sourceFile{filename}
+    Assembler(fs::path filename) : sourceFileName{std::move(filename)}, sourceFile{sourceFileName}
     {
         if(!sourceFile)
         {
@@ -73,15 +76,13 @@ public:
         }
     }
 
-    void assemble()
-    {
-    }
-
+    void writeSections();
     void makeMap();
 
 
 private:
 
+    fs::path                                sourceFileName;
     std::ifstream                           sourceFile;
     std::string                             currentLine;
     int                                     currentLineNumber{};
