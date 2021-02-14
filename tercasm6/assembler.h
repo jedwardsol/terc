@@ -152,6 +152,16 @@ private:
     }                                       mode{ Mode::none};
 
 
+    void parseDirective                         (const SourceLine &source);
+    void parseData                              (const SourceLine &source);
+
+
+    void parseCode                              (const SourceLine &source);
+    void parseCode_OpCodeConditionCpuControl    (const SourceLine &source);
+    void addInstruction                         (tryte first, tryte second);
+
+
+
     struct Symbol
     {
         tryte   address;
@@ -180,9 +190,6 @@ private:
     void addDataDependency(std::string_view symbol);
     void addCodeDependency(std::string_view symbol);
 
-    void parseDirective(const SourceLine &source);
-    void parseCode     (const SourceLine &source);
-    void parseData     (const SourceLine &source);
 
     std::string formatMessage(const std::string &type, const std::string &message) const;
 
