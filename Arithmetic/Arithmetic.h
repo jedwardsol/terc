@@ -6,6 +6,8 @@ using namespace std::literals;
 #include <stdexcept>
 
 
+// TODO : namespace this
+
 constexpr int     pow3(int n)
 {
     int result = 1;

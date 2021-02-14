@@ -159,6 +159,17 @@ private:
 
     void parseCode                              (const SourceLine &source);
     void parseCode_OpCodeConditionCpuControl    (const SourceLine &source);
+    void parseCode_OpCodeConditionImmediate     (const SourceLine &source);
+    void parseCode_OpCodeConditionRegister      (const SourceLine &source);
+
+    void parseCode_OpCodeRegister               (const SourceLine &source);
+    void parseCode_OpCodeRegisterImmediate      (const SourceLine &source);
+    void parseCode_OpCodeRegisterRegister       (const SourceLine &source);
+    void parseCode_OpCodeRegisterTrybble        (const SourceLine &source);
+    void parseCode_OpCodeRegisterRegisterTrybble(const SourceLine &source);
+    
+    tryte parseImmediate                        (const SourceLine &source, int index);
+
     void addInstruction                         (tryte first, tryte second);
 
 

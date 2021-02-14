@@ -24,7 +24,7 @@ void Assembler::makeMap()
     }
 
     map   <<  "Code Section :   " << tryte{minCodePosition} << " - " << tryte{maxCodePosition} << '\n';
-    map   <<  "Code Section :   " << tryte{0}               << " - " << tryte{maxDataPosition} << '\n';
+    map   <<  "Data Section :   " << tryte{0}               << " - " << tryte{maxDataPosition} << '\n';
     map   <<  "Stack Size   :   " << tryte{stackSize} << '\n';
 
 
@@ -126,3 +126,38 @@ void Assembler::addCodeDependency(std::string_view symbol)
     codeDependencies[tryte{currentCodePosition}] = { std::string{symbol}, currentLineNumber};
 }
 
+
+tryte Assembler::parseImmediate (const SourceLine &source, int index)
+{
+    auto string = source.asString(index).value();
+
+    tryte t;
+
+    if(    string[0]=='&'
+       ||  string[0]=='$')
+    {
+        t= tryte{0};
+
+        if(mode == Mode::data)
+        {
+            addDataDependency(string);
+        }
+        else
+        {
+            addCodeDependency(string);
+        }
+    }
+    else
+    {
+        auto value = source.asTryte(index);
+
+        if(!value)
+        {
+            error("Unparsable tryte at "s + std::to_string(index));
+        }
+
+        t=value.value();
+    }
+
+    return t;
+}

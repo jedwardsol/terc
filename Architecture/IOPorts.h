@@ -12,16 +12,16 @@ struct IOPorts
 {
     virtual ~IOPorts() = default;
 
-    virtual Exception  out(const tryte    port,  const tryte    data)  =0;
-    virtual Exception  in (const tryte    port,        tryte   &result)=0;
+    virtual Exception  out(const trybble    port,  const tryte    data)  =0;
+    virtual Exception  in (const trybble    port,        tryte   &result)=0;
 };
 
 
 
 
-enum class KnownIOPorts     // tryte
+enum class KnownIOPorts     // trybble
 {
-    ExceptionOut = std::numeric_limits<tryte>::min(),
+    ExceptionOut = -maxValue(3),
 
     ASCIIOut     = 0,
     tryteOut,

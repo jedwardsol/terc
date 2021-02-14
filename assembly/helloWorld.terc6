@@ -1,0 +1,89 @@
+.stack 100
+
+.code
+    :start  
+    LoadI   R0  &helloWorld
+    LoadI   R1  &answer
+
+    Out     R1  1
+
+
+.data
+    :helloWorld string "The answer is"
+    :answer     tryte  42
+
+
+;Directives
+;
+;    .code  .data
+;    .stack
+;    .address
+
+
+;Label
+;
+;    :labelName
+
+
+;Symbols - can be used where an code immediate or data tryte is used
+;
+;    &dataLabel
+;    $codeLabel
+
+
+;Data
+;
+;   tryte       t1  [t2 [t3 [...]]]]        trytes can be decimal (42)  or 6 balanced ternary trits ( 0+---0 )
+;   string      s1  [s2 [s3 [...]]]]        strings can be quoted to contain whitespace or commands
+
+
+;OpCodes
+;
+;    CallI  CallR
+;    JmpI   JmpR
+;    CpuControl
+;    LoadI  Copy
+;    Out    In
+;    Load   Store
+;    Push   Pop
+;    CmpI   CmpR
+
+
+;Registers
+;
+;    RPC
+;    RSP
+;    RFlags
+;    RRA
+;    REXC   REXA
+;           Rn1   Rn2   Rn3   Rn4   Rn5   Rn6   Rn7
+;    R0     R1    R2    R3    R4    R5    R6    R7    R8    R9    R10     R11     R12     R13 
+
+
+;Conditions
+;          
+;    False  True            
+;    
+;    CE     NCE             conditional execution
+;    
+;    P      NP              sign positive
+;    Z      NZ              sign zero
+;    N      NN              sign negative
+;    
+;    GT  >                  comparison...
+;    E   ==
+;    LT  <
+;    LE  <=
+;    NE  !=
+;    GE  >=
+
+
+;CpuControls
+;
+;    Nop    Halt    Breakpoint    Trace    Invalid
+
+; Ports
+;
+;    ExceptionOut  -13
+;    ASCIIOut        0
+;    tryteOut        1    

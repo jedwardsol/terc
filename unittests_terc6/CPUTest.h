@@ -32,7 +32,7 @@ protected:
     {
     }
 
-    virtual Architecture::Exception  out(const tryte    ioPort,  const tryte    data)
+    virtual Architecture::Exception  out(const trybble    ioPort,  const tryte    data)
     {
         auto port = static_cast<Architecture::KnownIOPorts>(static_cast<int>(ioPort)) ;
 
@@ -62,7 +62,7 @@ protected:
         return Architecture::Exception::Okay;
     }
 
-    virtual Architecture::Exception  in (const tryte    port,        tryte   &result)
+    virtual Architecture::Exception  in (const trybble    port,        tryte   &result)
     {
         ins.emplace_back(port);
         result=tryte{ static_cast<int>(ins.size()) };

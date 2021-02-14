@@ -211,6 +211,66 @@ INSTANTIATE_TEST_SUITE_P
 
 
 
+
+
+class AsTrybbleP :public ::testing::TestWithParam< std::pair<std::string_view, std::optional<trybble>>>
+{
+};
+
+
+TEST_P(AsTrybbleP, AsTrybble) 
+{
+    const auto &string = GetParam().first;
+
+    const SourceLine source{string};
+
+    EXPECT_EQ(source.tokens().size(), 1);
+    EXPECT_EQ(source.asTrybble(0),  GetParam().second);
+}
+
+INSTANTIATE_TEST_SUITE_P
+(
+    SourceLineTests,
+    AsTrybbleP,
+    ::testing::Values
+    (
+        std::make_pair("10",        trybble{ 10}),
+        std::make_pair("-10",       trybble{-10}),
+        std::make_pair("0",         trybble{0}),
+        std::make_pair("000",       trybble{0}),
+        std::make_pair("002",       trybble{2}),
+        std::make_pair("00+",       trybble{1}),
+        std::make_pair("00+",       trybble{"00000+"}),
+        std::make_pair("00-",       trybble{-1}),
+        std::make_pair("00-",       trybble{"00000-"}) ,
+        std::make_pair("13",        trybble{ 13}),
+        std::make_pair("+++",       trybble{ 13}),
+        std::make_pair("-13",       trybble{-13}),
+        std::make_pair("---",       trybble{-13}),
+
+        std::make_pair("0x10",      std::nullopt),
+        std::make_pair("-0x10",     std::nullopt),
+        std::make_pair("+100",      std::nullopt),  // leading + 
+        std::make_pair("a",         std::nullopt),
+        std::make_pair("1a",        std::nullopt),
+        std::make_pair("1.2",       std::nullopt),
+        std::make_pair("-----1",    std::nullopt),
+        std::make_pair("00000+",    std::nullopt),
+        std::make_pair("+++++1",    std::nullopt),
+        std::make_pair("++",        std::nullopt),  // too short 
+        std::make_pair("++++",      std::nullopt),  // too long
+
+        std::make_pair("14",        std::nullopt),  // too big
+        std::make_pair("-14",       std::nullopt)   // too small
+
+    )
+);
+
+
+
+
+
+
 class AsRegP :public ::testing::TestWithParam< std::pair<std::string_view, std::optional<Architecture::sixTrit::Register>>>
 {
 };

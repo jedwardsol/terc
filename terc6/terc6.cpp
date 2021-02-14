@@ -15,17 +15,23 @@ namespace fs=std::filesystem;
 #pragma comment(lib,"Architecture")
 
 
-struct DummyIOPorts : Architecture::IOPorts
+struct PrintingIOPorts : Architecture::IOPorts
 {
-    ~DummyIOPorts() override = default;
+    ~PrintingIOPorts() override = default;
 
-    Architecture::Exception  out(const tryte    port,  const tryte    data) override
+    Architecture::Exception  out(const trybble    port,  const tryte    data) override
     {
+        std::cout << "Port " << port << " -> " << data << '\n';
+
         return Architecture::Exception::Okay;
     }
 
-    Architecture::Exception  in (const tryte    port,        tryte   &result)
+    Architecture::Exception  in (const trybble    port,        tryte   &result)
     {
+        std::cout << "Port " << port << " <- " << 0 << '\n';
+
+        result = tryte{0};
+        
         return Architecture::Exception::Okay;
     }
 };
@@ -52,7 +58,7 @@ try
     const Architecture::MemoryBlock     code {codeFileName.string() };        
           Architecture::MemoryBlock     data {dataFileName.string() , 
                                               finaldataFileName.string()};        
-    DummyIOPorts                        ioPorts;
+    PrintingIOPorts                        ioPorts;
 
     Architecture::sixTrit::CPU    cpu{code,data,ioPorts};
 
@@ -73,8 +79,6 @@ try
                   << cpu.reg(Architecture::sixTrit::Register::REXA) 
                   << "\n";
     }
-
-
 }
 catch(const std::exception &e)
 {

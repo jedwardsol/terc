@@ -83,6 +83,60 @@ std::optional<tryte> SourceLine::asTryte(int index) const noexcept
 }
 
 
+std::optional<tryte> SourceLine::asTrybble(int index) const noexcept
+{
+    {
+        auto string = asString(index);
+
+        if(!string)
+        {
+            return std::nullopt;
+        }
+
+        try
+        {
+            std::string  expanded = "000"s + std::string(string.value());
+
+            tryte   t{expanded};
+                
+            return t;
+        }
+        catch(...)
+        {
+        }
+    }
+    {
+        auto number = asDecimal(index);
+
+        if(!number)
+        {
+            return std::nullopt;
+        }
+
+        try
+        {
+            if(    number.value() >  maxValue(3)
+               ||  number.value() < -maxValue(3))
+            {
+                return std::nullopt;
+            }
+
+            tryte   t{number.value()};
+
+                    
+                
+            return t;
+        }
+        catch(...)
+        {
+        }
+    }
+
+    return std::nullopt;
+}
+
+
+
 
 std::optional<int> SourceLine::asDecimal(int index) const noexcept
 {

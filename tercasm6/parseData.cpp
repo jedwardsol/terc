@@ -26,28 +26,7 @@ void Assembler::parseData(const SourceLine &source)
     {
         for(int i=1;i < source.tokens().size(); i++)
         {
-            tryte  t{};
-
-            auto string = source.asString(i).value();
-
-            if(    string[0]=='&'
-               ||  string[0]=='$')
-            {
-                t= tryte{0};
-
-                addDataDependency(string);
-            }
-            else
-            {
-                auto value = source.asTryte(i);
-
-                if(!value)
-                {
-                    error("Unparsable tryte at "s + std::to_string(i));
-                }
-
-                t=value.value();
-            }
+            tryte  t = parseImmediate(source,i);
 
             data[currentDataPosition] = t;
             incrementDataPosition();
