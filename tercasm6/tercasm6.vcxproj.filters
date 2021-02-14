@@ -27,6 +27,12 @@
     <ClCompile Include="symbols.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="parseDirective.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="parseCode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="assembler.h">

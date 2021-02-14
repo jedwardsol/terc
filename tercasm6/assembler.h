@@ -94,6 +94,58 @@ private:
     int                                     maxDataPosition{};
     int                                     stackSize{};
 
+
+
+    void setDataPosition(int i)
+    {
+        if(i > std::numeric_limits<tryte>::max())
+        {
+            error("Data position overflow");
+        }
+
+        if(i < 0)
+        {
+            error("Data position underflow");
+        }
+
+
+        currentDataPosition=i;
+        maxDataPosition = std::max(maxDataPosition,currentDataPosition);
+//      minDataPosition = std::min(minDataPosition,currentDataPosition);
+    }
+
+    void incrementDataPosition()
+    {
+        setDataPosition(currentDataPosition+1);
+    }
+    
+    void setCodePosition(int i)
+    {
+        if(i > std::numeric_limits<tryte>::max())
+        {
+            error("Code position overflow");
+        }
+
+        if(i < std::numeric_limits<tryte>::min())
+        {
+            error("Code position underflow");
+        }
+
+        // TODO : check for odd
+
+        currentCodePosition=i;
+        maxCodePosition = std::max(maxDataPosition,currentCodePosition);
+        minCodePosition = std::min(minCodePosition,currentCodePosition);
+    }
+
+    void incrementCodePosition()
+    {
+        setCodePosition(currentDataPosition+2);
+    }
+
+
+
+
     enum class Mode
     {
         none, code, data
@@ -129,8 +181,8 @@ private:
     void addCodeDependency(std::string_view symbol);
 
     void parseDirective(const SourceLine &source);
-    void parseCode     (const SourceLine &source) {}
-    void parseData     (const SourceLine &source) ;
+    void parseCode     (const SourceLine &source);
+    void parseData     (const SourceLine &source);
 
     std::string formatMessage(const std::string &type, const std::string &message) const;
 

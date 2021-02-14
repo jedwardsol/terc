@@ -154,7 +154,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="error.cpp" />
+    <ClCompile Include="parseCode.cpp" />
     <ClCompile Include="parseData.cpp" />
+    <ClCompile Include="parseDirective.cpp" />
     <ClCompile Include="symbols.cpp" />
     <ClCompile Include="tercasm6.cpp" />
   </ItemGroup>

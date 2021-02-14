@@ -49,12 +49,9 @@ void Assembler::parseData(const SourceLine &source)
                 t=value.value();
             }
 
-            // TODO : overflow check                    
             data[currentDataPosition] = t;
-            currentDataPosition++;
-            maxDataPosition = std::max(maxDataPosition,currentDataPosition);
+            incrementDataPosition();
         }
-
     }
     else if(first == "string")
     {
@@ -65,17 +62,13 @@ void Assembler::parseData(const SourceLine &source)
             for(auto c : string)
             {
                 // TODO escape sequences
-                // TODO : overflow check                    
                 data[currentDataPosition] = tryte{c};
-                currentDataPosition++;
-                maxDataPosition = std::max(maxDataPosition,currentDataPosition);
+                incrementDataPosition();
             }
 
             // nul-terminate
-            // TODO : overflow check                    
             data[currentDataPosition] = tryte{0};
-            currentDataPosition++;
-            maxDataPosition = std::max(maxDataPosition,currentDataPosition);
+            incrementDataPosition();
         }
     }
     else
