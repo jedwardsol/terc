@@ -114,7 +114,7 @@ public:
             throw std::system_error{errno,std::generic_category(),"Reading "s + loadFilename};
         }
 
-        if(file.gcount() != fileSize)
+        if(file.gcount() != memory.size() * sizeof(tryte))
         {
             throw std::runtime_error{"read the wrong number of bytes from "s + loadFilename};
         }
