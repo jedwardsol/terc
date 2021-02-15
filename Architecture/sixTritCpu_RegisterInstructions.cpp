@@ -21,7 +21,7 @@ void CPU::executeRegisterInstructions(tryte  operation, tryte operand)
 
     switch(opcode)
     {
-    case OpCode::LoadImmediate:
+    case OpCode::Assign:
 
         setReg(opreg, operand, ByPassRegisterChecks::no);
         updateSignFlag(opreg) ;

@@ -10,7 +10,7 @@ using namespace std::literals;
 
 TEST_F(CPUTest, UnConditionalInstructionFlag)
 {
-    assembleLoadImm(Register::R0,tryte{0});
+    assembleAssign(Register::R0,tryte{0});
 
     ASSERT_EQ(traceCounter,0);
     cpu.execute();
@@ -29,7 +29,7 @@ TEST_F(CPUTest, ConditionalInstructionExecutes)
     EXPECT_EQ(cpu.reg(Register::RFlags).getTrit(static_cast<int>(Architecture::Flag::ExecutedConditional)),trit{1});
 
 
-    assembleLoadImm(Register::R0,tryte{0});
+    assembleAssign(Register::R0,tryte{0});
 
     cpu.execute();
     EXPECT_EQ(cpu.reg(Register::RFlags).getTrit(static_cast<int>(Architecture::Flag::ExecutedConditional)),trit{0});    // reset to 0
@@ -100,7 +100,7 @@ TEST_F(CPUTest, ConditionalOnSign)
 {
     ASSERT_EQ(traceCounter,0);
 
-    assembleLoadImm(Register::R0, tryte{0});
+    assembleAssign(Register::R0, tryte{0});
     cpu.execute();
     EXPECT_EQ(cpu.reg(Register::RFlags).getTrit(static_cast<int>(Architecture::Flag::Sign)),trit{0});
 
@@ -117,7 +117,7 @@ TEST_F(CPUTest, ConditionalOnSign)
 
     ASSERT_EQ(traceCounter,1);
 
-    assembleLoadImm(Register::R0, tryte{88});
+    assembleAssign(Register::R0, tryte{88});
     cpu.execute();
     EXPECT_EQ(cpu.reg(Register::RFlags).getTrit(static_cast<int>(Architecture::Flag::Sign)),trit{1});
 
@@ -140,7 +140,7 @@ TEST_F(CPUTest, ConditionalOnComparison)
 {
     ASSERT_EQ(traceCounter,0);
 
-    assembleLoadImm(Register::R0, tryte{-3});
+    assembleAssign(Register::R0, tryte{-3});
     cpu.execute();
     EXPECT_EQ(cpu.reg(Register::RFlags).getTrit(static_cast<int>(Architecture::Flag::Sign)),trit{-1});
 
@@ -186,7 +186,7 @@ TEST_F(CPUTest, JumpImmediate)
 
 TEST_F(CPUTest, JumpRegister)
 {
-    assembleLoadImm(Register::R10, tryte{12});
+    assembleAssign(Register::R10, tryte{12});
     cpu.execute();
     assemble(OpCode::JmpR, Architecture::Condition::AlwaysTrue, Register::R10);                 // 2
     assembleCpuControl(Architecture::Condition::AlwaysTrue, Architecture::CpuControl::Halt);    // 4
@@ -254,7 +254,7 @@ TEST_F(CPUTest, CallImmediate)
 
 TEST_F(CPUTest, CallRegister)
 {
-    assembleLoadImm(Register::R10,tryte{200});                                                                              // 0
+    assembleAssign(Register::R10,tryte{200});                                                                              // 0
     assemble(OpCode::CallR, Architecture::Condition::AlwaysTrue, Register::R10);                                            // 2
     assemble(Architecture::sixTrit::OpCode::Out,            Architecture::sixTrit::Register::R0, static_cast<int>(2));      // 4
     assembleCpuControl(Architecture::Condition::AlwaysTrue, Architecture::CpuControl::Halt);                                // 6

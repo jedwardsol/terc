@@ -30,7 +30,7 @@ void CPU::execute()
 
     switch(opcode)
     {
-    case OpCode::LoadImmediate:
+    case OpCode::Assign:
     case OpCode::Copy:
     case OpCode::Out:
     case OpCode::In:

@@ -65,7 +65,7 @@ void Assembler::parseCode     (const SourceLine &source)
             parseCode_OpCodeRegister(source);
             break;
 
-        case Architecture::sixTrit::OpCode::LoadImmediate:          // destination      immediate                           dest = immediate           
+        case Architecture::sixTrit::OpCode::Assign:                 // destination      immediate                           dest = immediate           
         case Architecture::sixTrit::OpCode::CmpI:                   // Reg X            immediate                                                      
             parseCode_OpCodeRegisterImmediate(source);
             break;

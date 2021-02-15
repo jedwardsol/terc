@@ -137,10 +137,10 @@ protected:
         code[PC++] = second;
     }
 
-    void assembleLoadImm(Architecture::sixTrit::Register dest,
+    void assembleAssign(Architecture::sixTrit::Register dest,
                          tryte                           immediate)
     {
-        auto opcode = static_cast<int>(Architecture::sixTrit::OpCode::LoadImmediate);
+        auto opcode = static_cast<int>(Architecture::sixTrit::OpCode::Assign);
         tryte   first  { trybble{opcode},                trybble{static_cast<int>(dest)}};
         tryte   second { immediate };
 

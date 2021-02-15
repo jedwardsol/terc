@@ -187,7 +187,7 @@ std::optional<Architecture::sixTrit::OpCode> SourceLine::asOpCode(int index) con
         {"JmpI",        Architecture::sixTrit::OpCode::JmpI},         
         {"JmpR",        Architecture::sixTrit::OpCode::JmpR},         
         {"CpuControl",  Architecture::sixTrit::OpCode::CpuControl},
-        {"LoadI",       Architecture::sixTrit::OpCode::LoadImmediate},
+        {"Assign",      Architecture::sixTrit::OpCode::Assign},
         {"Copy",        Architecture::sixTrit::OpCode::Copy},         
         {"Out",         Architecture::sixTrit::OpCode::Out},          
         {"In",          Architecture::sixTrit::OpCode::In},           

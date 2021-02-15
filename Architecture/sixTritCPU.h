@@ -107,7 +107,7 @@ enum  OpCode        // // trybble  -13 to 13
                                                                                                                          
  // Opcode                  // register         operand                                                                             exceptions
                                                                                                                          
-    LoadImmediate,          // destination      immediate                           dest = immediate                E S            InvalidRegister if destination is readonly
+    Assign,                 // destination      immediate                           dest = immediate                E S            InvalidRegister if destination is readonly
     Copy,                   // destination      low:source                          destination = source            E S            InvalidRegister if destination is readonly
     Out,                    // source           low:port                            write source to port            E              InvalidPort,  InvalidData
     In,                     // destination      low:port                            read port to destination        E S            InvalidPort,  InvalidData

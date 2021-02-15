@@ -450,7 +450,7 @@ INSTANTIATE_TEST_SUITE_P
         std::make_pair("JmpI",              Architecture::sixTrit::OpCode::JmpI),         
         std::make_pair("JmpR",              Architecture::sixTrit::OpCode::JmpR),         
         std::make_pair("CpuControl",        Architecture::sixTrit::OpCode::CpuControl),
-        std::make_pair("LoadI",             Architecture::sixTrit::OpCode::LoadImmediate),
+        std::make_pair("Assign",            Architecture::sixTrit::OpCode::Assign),
         std::make_pair("Copy",              Architecture::sixTrit::OpCode::Copy),         
         std::make_pair("Out",               Architecture::sixTrit::OpCode::Out),          
         std::make_pair("In",                Architecture::sixTrit::OpCode::In),           
