@@ -27,6 +27,18 @@ void CPU::executeRegisterInstructions(tryte  operation, tryte operand)
         updateSignFlag(opreg) ;
         break;
 
+    case OpCode::Neg:
+
+        {
+            auto t = reg(opreg);
+            t=-t;
+
+            setReg(opreg, t, ByPassRegisterChecks::no);
+            updateSignFlag(opreg) ;
+        }
+        break;
+
+
     case OpCode::Copy:
         {
             auto srcreg  = static_cast<Register>(static_cast<int>(operand.trybbles().first));

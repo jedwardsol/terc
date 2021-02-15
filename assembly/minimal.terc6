@@ -35,12 +35,12 @@
 ;    CallI  CallR
 ;    JmpI   JmpR
 ;    CpuControl
-;    LoadI  Copy
+;    Assign Copy
 ;    Out    In
 ;    Load   Store
 ;    Push   Pop
 ;    CmpI   CmpR
-
+;    Neg
 
 ;Registers
 ;

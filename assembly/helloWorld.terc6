@@ -2,11 +2,11 @@
 
 .code
 :start  
-    LoadI       R0      &helloWorld
+    Assign      R0      &helloWorld
 
     CallI       True    $printString
 
-    LoadI       R1      &answer
+    Assign      R1      &answer
     Load        R1      R1 0
     Out         R1      1
 
@@ -57,12 +57,12 @@
 ;    CallI  CallR
 ;    JmpI   JmpR
 ;    CpuControl
-;    LoadI  Copy
+;    Assign Copy
 ;    Out    In
 ;    Load   Store
 ;    Push   Pop
 ;    CmpI   CmpR
-
+;    Neg
 
 ;Registers
 ;

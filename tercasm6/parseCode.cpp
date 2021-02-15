@@ -60,6 +60,7 @@ void Assembler::parseCode     (const SourceLine &source)
 // register
 
 
+        case Architecture::sixTrit::OpCode::Neg:                    // reg              unused                              reg = -reg
         case Architecture::sixTrit::OpCode::Push:                   // source           unused                              SP-- stack[SP]=src         
         case Architecture::sixTrit::OpCode::Pop:                    // destination      unused                              dest=stack[SP] SP++        
             parseCode_OpCodeRegister(source);

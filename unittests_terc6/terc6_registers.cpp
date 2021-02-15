@@ -559,7 +559,6 @@ TEST_F(CPUTest, CompareImmediate)
 }
 
 
-
 TEST_F(CPUTest, CompareRegister)
 {
 
@@ -589,6 +588,44 @@ TEST_F(CPUTest, CompareRegister)
     cpu.execute();
     EXPECT_EQ( cpu.getFlag(Architecture::Flag::Comparison),    trit{ 0})  << "R2 == R2";
 
+}
+
+
+
+TEST_F(CPUTest, Neg)
+{
+    assembleAssign(Architecture::sixTrit::Register::R0, tryte{ 0});
+    assembleAssign(Architecture::sixTrit::Register::R1, tryte{"+-+-+-"});
+    assembleAssign(Architecture::sixTrit::Register::R2, tryte{-42});
+
+    assemble(Architecture::sixTrit::Neg, Architecture::sixTrit::Register::R0, tryte{0});
+    assemble(Architecture::sixTrit::Neg, Architecture::sixTrit::Register::R1, tryte{0});
+    assemble(Architecture::sixTrit::Neg, Architecture::sixTrit::Register::R2, tryte{0});
+
+    cpu.execute();
+    cpu.execute();
+    cpu.execute();
+
+    ASSERT_EQ( cpu.reg(Register::R0),    tryte{0})  ;
+    ASSERT_EQ( cpu.reg(Register::R1),    tryte{"+-+-+-"})  ;
+    ASSERT_EQ( cpu.reg(Register::R2),    tryte{-42})  ;
+
+
+///
+
+
+    cpu.execute();
+    EXPECT_EQ( cpu.reg(Register::R0),    tryte{0}) ;
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{0})  ;
+
+
+    cpu.execute();
+    EXPECT_EQ( cpu.reg(Register::R1),    tryte{"-+-+-+"}) ;
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{-1})  ;
+
+    cpu.execute();
+    EXPECT_EQ( cpu.reg(Register::R2),    tryte{42}) ;
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{1})  ;
 }
 
 

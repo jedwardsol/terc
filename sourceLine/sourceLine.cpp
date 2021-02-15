@@ -197,6 +197,7 @@ std::optional<Architecture::sixTrit::OpCode> SourceLine::asOpCode(int index) con
         {"Pop",         Architecture::sixTrit::OpCode::Pop},          
         {"CmpI",        Architecture::sixTrit::OpCode::CmpI},         
         {"CmpR",        Architecture::sixTrit::OpCode::CmpR},         
+        {"Neg",         Architecture::sixTrit::OpCode::Neg},         
     };
 
 

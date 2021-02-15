@@ -40,6 +40,7 @@ void CPU::execute()
     case OpCode::Pop:
     case OpCode::CmpI:
     case OpCode::CmpR:
+    case OpCode::Neg:
         executeRegisterInstructions(operation, operand);
         break;
 
