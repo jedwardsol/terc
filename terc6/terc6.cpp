@@ -19,9 +19,29 @@ struct PrintingIOPorts : Architecture::IOPorts
 {
     ~PrintingIOPorts() override = default;
 
-    Architecture::Exception  out(const trybble    port,  const tryte    data) override
+    Architecture::Exception  out(const trybble    portNumber,  const tryte    data) override
     {
-        std::cout << "Port " << port << " -> " << data << '\n';
+        auto port = static_cast<Architecture::KnownIOPorts>(static_cast<int>(portNumber));
+
+        if(port == Architecture::KnownIOPorts::tryteOut)
+        {
+            std::cout << data;
+        }
+        else if(port == Architecture::KnownIOPorts::ASCIIOut)
+        {
+            std::cout << static_cast<char>(data);
+        }
+        else if(port == Architecture::KnownIOPorts::ExceptionOut)
+        {
+            if(data != Architecture::Exception::Halted)
+            {
+                std::cout << "\nException " << data << '\n';
+            }
+        }
+        else 
+        {
+            std::cout << "\nPort " << portNumber << " -> " << data << '\n';
+        }
 
         return Architecture::Exception::Okay;
     }
@@ -66,6 +86,8 @@ try
     {
         cpu.execute();
     } while(cpu.reg(Architecture::sixTrit::Register::REXC) <= 0);
+
+    std::cout << "\n";
 
     if(cpu.reg(Architecture::sixTrit::Register::REXC) == Architecture::Exception::Halted)
     {

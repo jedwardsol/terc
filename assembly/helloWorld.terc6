@@ -1,15 +1,30 @@
 .stack 100
 
 .code
-    :start  
-    LoadI   R0  &helloWorld
-    LoadI   R1  &answer
+:start  
+    LoadI       R0      &helloWorld
 
-    Out     R1  1
+    CallI       True    $printString
+
+    LoadI       R1      &answer
+    Load        R1      R1 0
+    Out         R1      1
+
+:end
+
+    CpuControl  True    Halt
+
+
+.address 100
+
+:printString
+
+    Copy        RPC     RRA             ; ret
+
 
 
 .data
-    :helloWorld string "The answer is"
+    :helloWorld string "The answer is "
     :answer     tryte  42
 
 

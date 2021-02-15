@@ -36,7 +36,8 @@ try
     Assembler assembler{args[0]};
     
     assembler.parseFile();
-    assembler.makeMap();
+    assembler.resolveDependencies();
+    assembler.writeMap();
     assembler.writeSections();
 }
 catch(const std::exception &e)

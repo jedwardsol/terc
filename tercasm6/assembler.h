@@ -39,7 +39,7 @@ public:
 
     void parseFile()
     {
-        while(   std::getline(sourceFile,currentLine))
+        while(std::getline(sourceFile,currentLine))
         {
             currentLineNumber++;
 
@@ -76,8 +76,9 @@ public:
         }
     }
 
+    void resolveDependencies();
+    void writeMap();
     void writeSections();
-    void makeMap();
 
 
 private:
@@ -112,7 +113,6 @@ private:
 
         currentDataPosition=i;
         maxDataPosition = std::max(maxDataPosition,currentDataPosition);
-//      minDataPosition = std::min(minDataPosition,currentDataPosition);
     }
 
     void incrementDataPosition()
@@ -141,7 +141,7 @@ private:
 
     void incrementCodePosition()
     {
-        setCodePosition(currentDataPosition+2);
+        setCodePosition(currentCodePosition+2);
     }
 
 
@@ -178,6 +178,7 @@ private:
     {
         tryte   address;
         int     lineWhereDefined;
+        int     numReferences;
     };
 
     struct Dependency
@@ -201,6 +202,9 @@ private:
     void addCodeSymbol    (std::string_view symbol);
     void addDataDependency(std::string_view symbol);
     void addCodeDependency(std::string_view symbol);
+
+
+    Symbol  *findSymbol(const std::string &symbol);
 
 
     std::string formatMessage(const std::string &type, const std::string &message) const;
