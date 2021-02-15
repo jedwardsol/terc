@@ -1,6 +1,7 @@
 #include <vector>
 #include <array>
 #include <cassert>
+#include <stdexcept>
 
 #include "Arithmetic/Arithmetic.h"
 #include "Arithmetic/trit.h"
@@ -37,6 +38,12 @@ bool CPU::validCondition(Condition condition)
     case Condition::LessThanOrEqual:
     case Condition::NotEqual:
     case Condition::GreaterOrEqual:
+
+    case Condition::Overflow:
+    case Condition::OverflowPositive:
+    case Condition::OverflowNegative:
+    case Condition::NotOverflow:
+
         return true;
 
     default:    
@@ -49,6 +56,7 @@ bool  CPU::isConditionTrue(Condition condition)
     auto S = reg(Register::RFlags).getTrit(static_cast<int>(Flag::Sign));
     auto C = reg(Register::RFlags).getTrit(static_cast<int>(Flag::Comparison));
     auto E = reg(Register::RFlags).getTrit(static_cast<int>(Flag::ExecutedConditional));
+    auto O = reg(Register::RFlags).getTrit(static_cast<int>(Flag::Overflow));
 
     switch(condition)
     {
@@ -71,6 +79,11 @@ bool  CPU::isConditionTrue(Condition condition)
     case Condition::LessThanOrEqual:            return C != trit{1};
     case Condition::NotEqual:                   return C != trit{0};
     case Condition::GreaterOrEqual:             return C != trit{-1};
+
+    case Condition::Overflow:                   return O != trit {0};
+    case Condition::NotOverflow:                return O == trit {0};
+    case Condition::OverflowPositive:           return O == trit {1};
+    case Condition::OverflowNegative:           return O == trit {-1};
     }
 
     return true;
@@ -121,7 +134,7 @@ void CPU::executeConditionalInstructions(tryte  operation, tryte operand)
         break;
 
     default:
-        assert(false);
+        throw std::logic_error("Unhandled instruction");
 
     }
 

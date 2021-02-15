@@ -199,6 +199,8 @@ std::optional<Architecture::sixTrit::OpCode> SourceLine::asOpCode(int index) con
         {"CmpR",        Architecture::sixTrit::OpCode::CmpR},
         {"Neg",         Architecture::sixTrit::OpCode::Neg},
         {"Shift",       Architecture::sixTrit::OpCode::Shift},
+        {"AddI",        Architecture::sixTrit::OpCode::AddI},
+        {"AddR",        Architecture::sixTrit::OpCode::AddR},
     };
 
 
@@ -302,7 +304,13 @@ std::optional<Architecture::Condition> SourceLine::asCondition(int index) const 
         {"<",       Architecture::Condition::LessThan},           
         {"<=",      Architecture::Condition::LessThanOrEqual},    
         {"!=",      Architecture::Condition::NotEqual},           
-        {">=",      Architecture::Condition::GreaterOrEqual},     
+        {">=",      Architecture::Condition::GreaterOrEqual},   
+        
+        {"O",       Architecture::Condition::Overflow},        
+        {"OP",      Architecture::Condition::OverflowPositive},              
+        {"ON",      Architecture::Condition::OverflowNegative},           
+        {"NO",      Architecture::Condition::NotOverflow},    
+
     };
 
     auto condition = conditions.find(string.value());

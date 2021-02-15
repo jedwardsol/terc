@@ -42,6 +42,8 @@ void CPU::execute()
     case OpCode::CmpR:
     case OpCode::Neg:
     case OpCode::Shift:
+    case OpCode::AddI:
+    case OpCode::AddR:
         executeRegisterInstructions(operation, operand);
         break;
 

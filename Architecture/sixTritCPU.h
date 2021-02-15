@@ -87,8 +87,8 @@ enum  OpCode        // // trybble  -13 to 13
  // Opcode                  // condition        operand                                                             flags           exceptions
                                                                                                                          
     In13=-13,               // unused           unused                                                                              InvalidOpCode
-    In12,                   // unused           break                                                                               InvalidOpCode
-    In11,                   // unused           unused                                                                              InvalidOpCode
+    Out,                    // source           low:port                            write source to port            E              InvalidPort,  InvalidData
+    In,                     // destination      low:port                            read port to destination        E S            InvalidPort,  InvalidData
     In10,                   // unused           unused                                                                              InvalidOpCode
     In9,                    // unused           unused                                                                              InvalidOpCode
     In8,                    // unused           unused                                                                              InvalidOpCode
@@ -109,8 +109,6 @@ enum  OpCode        // // trybble  -13 to 13
                                                                                                                          
     Assign,                 // destination      immediate                           dest = immediate                E S            InvalidRegister if destination is readonly
     Copy,                   // destination      low:source                          destination = source            E S            InvalidRegister if destination is readonly
-    Out,                    // source           low:port                            write source to port            E              InvalidPort,  InvalidData
-    In,                     // destination      low:port                            read port to destination        E S            InvalidPort,  InvalidData
     Load,                   // destination      low:regsource      high:offset      dest = [source+offset]          E S            AccessViolation is address is out of range.  InvalidRegister if destination is readonly
     Store,                  // source           low:regdest        high:offset      [dest+offset] = source          E              AccessViolation is address is out of range.  
     Push,                   // source           unused                              SP-- stack[SP]=src              E              StackOverflow if stack is full
@@ -119,6 +117,8 @@ enum  OpCode        // // trybble  -13 to 13
     CmpR,                   // Reg X            low:: Reg Y                                                         E C         
     Neg,                    // reg              unused                              reg = -reg                      E S                         
     Shift,                  // reg              low:N                               reg<<=N or reg >>=N             E S                
+    AddI,                   // reg              immediate                           reg += I                        E S O            
+    AddR,                   // reg              low:reg2   high:direction           reg += reg2 or reg -= reg2      E S O           
     I13,                    // unused           unused                                                                              InvalidOpCode
 };
 
@@ -218,6 +218,7 @@ public:
     {
         assert(    flag == Architecture::Flag::Comparison
                ||  flag == Architecture::Flag::ExecutedConditional
+               ||  flag == Architecture::Flag::Overflow
                ||  flag == Architecture::Flag::Sign);
 
         auto flags = reg(Register::RFlags);

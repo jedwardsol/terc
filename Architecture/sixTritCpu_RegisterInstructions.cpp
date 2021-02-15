@@ -162,8 +162,23 @@ void CPU::executeRegisterInstructions(tryte  operation, tryte operand)
         break;
 
 
+    case OpCode::AddI:
+        {
+            auto t  =   reg(opreg);
+            auto Y  =   operand;
+
+            trit carry;
+            t = halfAdder(t,Y,carry);
+
+            setReg(opreg,t);
+            setFlag(Flag::Overflow, carry);
+            updateSignFlag(opreg) ;
+        }
+        break;
+
     default:
-        assert(false);
+        throw std::logic_error("Unhandled instruction");
+
     }
 
     setFlag(Flag::ExecutedConditional, trit{0});        // instruction wasn't conditional

@@ -26,6 +26,9 @@ enum class Flag             // trybble
     Sign,                   // dest register                dest register           dest register
                             // is negative                  is zero                 is positive
 
+    Overflow,               // result is too                no overflow             result is too
+                            // negative                                             positive
+
     Comparison,             // X is smaller than            X is equal to           X is larger than
                             // Y or immediate               Y or immediate          Y or immediate
 
@@ -44,6 +47,14 @@ enum class Condition      // // trybble
 
     ConditionalExecuted,            // EC        +
     ConditionalNotExecuted,         // EC      -
+
+    // TODO : test
+    // TODO : assember
+    Overflow,                       // O    - +
+    OverflowPositive,               // O      +
+    OverflowNegative,               // O    -
+    NotOverflow,                    // O     0
+
 
     AlwaysTrue = 0,                 // 0 so empty memory  {"000000"}{"000000"}  decodes to unconditional halt instruction
 

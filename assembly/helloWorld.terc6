@@ -77,7 +77,7 @@
 
 ;Conditions
 ;          
-;    False  True            
+;    True   False            
 ;    
 ;    CE     NCE             conditional execution
 ;    
@@ -91,6 +91,10 @@
 ;    LE  <=
 ;    NE  !=
 ;    GE  >=
+;
+;    O      NO              Overflow
+;    OP                     OverflowPositive
+;    ON                     OverflowNegative,           
 
 
 ;CpuControls

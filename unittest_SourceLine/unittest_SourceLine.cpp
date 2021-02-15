@@ -378,6 +378,11 @@ INSTANTIATE_TEST_SUITE_P
         std::make_pair("!=",      Architecture::Condition::NotEqual),           
         std::make_pair(">=",      Architecture::Condition::GreaterOrEqual),     
 
+        std::make_pair("O",       Architecture::Condition::Overflow),        
+        std::make_pair("OP",      Architecture::Condition::OverflowPositive),              
+        std::make_pair("ON",      Architecture::Condition::OverflowNegative),           
+        std::make_pair("NO",      Architecture::Condition::NotOverflow),    
+
         std::make_pair("=!",      std::nullopt),
         std::make_pair("JLE",     std::nullopt),
         std::make_pair("true",    std::nullopt),
@@ -453,6 +458,8 @@ INSTANTIATE_TEST_SUITE_P
         std::make_pair("Assign",            Architecture::sixTrit::OpCode::Assign),
         std::make_pair("Neg",               Architecture::sixTrit::OpCode::Neg),
         std::make_pair("Shift",             Architecture::sixTrit::OpCode::Shift),
+        std::make_pair("AddI",              Architecture::sixTrit::OpCode::AddI),
+        std::make_pair("AddR",              Architecture::sixTrit::OpCode::AddR),
         std::make_pair("Copy",              Architecture::sixTrit::OpCode::Copy),         
         std::make_pair("Out",               Architecture::sixTrit::OpCode::Out),          
         std::make_pair("In",                Architecture::sixTrit::OpCode::In),           
