@@ -78,6 +78,7 @@ void Assembler::parseCode     (const SourceLine &source)
 
         case Architecture::sixTrit::OpCode::Out:                    // source           low:port                            write source to port       
         case Architecture::sixTrit::OpCode::In:                     // destination      low:port                            read port to destination   
+        case Architecture::sixTrit::OpCode::Shift:                  // reg              low:N                               reg<<=N or reg >>=N
             parseCode_OpCodeRegisterTrybble(source);
             break;
         }

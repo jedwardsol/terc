@@ -630,7 +630,105 @@ TEST_F(CPUTest, Neg)
 
 
 
+TEST_F(CPUTest, Shift0)
+{
+    assembleAssign(Architecture::sixTrit::Register::Rn1, tryte{"0000-0"});
+    assembleAssign(Architecture::sixTrit::Register::R0,  tryte{"000000"});
+    assembleAssign(Architecture::sixTrit::Register::R1,  tryte{"000+00"});
+
+    cpu.execute();
+    cpu.execute();
+    cpu.execute();
+
+    ASSERT_EQ( cpu.reg(Register::Rn1),   tryte{"0000-0"});
+    ASSERT_EQ( cpu.reg(Register::R0),    tryte{"000000"});
+    ASSERT_EQ( cpu.reg(Register::R1),    tryte{"000+00"});
 
 
+    assemble(Architecture::sixTrit::Shift, Architecture::sixTrit::Register::Rn1, trybble{0});
+    assemble(Architecture::sixTrit::Shift, Architecture::sixTrit::Register::R0,  trybble{0});
+    assemble(Architecture::sixTrit::Shift, Architecture::sixTrit::Register::R1,  trybble{0});
+
+///
+    cpu.execute();
+    EXPECT_EQ( cpu.reg(Register::Rn1),    tryte{"0000-0"}) ;
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{-1})  ;
+
+    cpu.execute();
+    EXPECT_EQ( cpu.reg(Register::R0),    tryte{"000000"}) ;
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{0})  ;
+
+    cpu.execute();
+    EXPECT_EQ( cpu.reg(Register::R1),    tryte{"000+00"}) ;
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{1})  ;
+}
+
+
+TEST_F(CPUTest, Shift2)
+{
+    assembleAssign(Architecture::sixTrit::Register::Rn1, tryte{"0000-0"});
+    assembleAssign(Architecture::sixTrit::Register::R0,  tryte{"000000"});
+    assembleAssign(Architecture::sixTrit::Register::R1,  tryte{"000+00"});
+
+    cpu.execute();
+    cpu.execute();
+    cpu.execute();
+
+    ASSERT_EQ( cpu.reg(Register::Rn1),   tryte{"0000-0"});
+    ASSERT_EQ( cpu.reg(Register::R0),    tryte{"000000"});
+    ASSERT_EQ( cpu.reg(Register::R1),    tryte{"000+00"});
+
+
+    assemble(Architecture::sixTrit::Shift, Architecture::sixTrit::Register::Rn1, trybble{2});
+    assemble(Architecture::sixTrit::Shift, Architecture::sixTrit::Register::R0,  trybble{2});
+    assemble(Architecture::sixTrit::Shift, Architecture::sixTrit::Register::R1,  trybble{2});
+
+///
+    cpu.execute();
+    EXPECT_EQ( cpu.reg(Register::Rn1),    tryte{"00-000"}) ;
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{-1})  ;
+
+    cpu.execute();
+    EXPECT_EQ( cpu.reg(Register::R0),    tryte{"000000"}) ;
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{0})  ;
+
+    cpu.execute();
+    EXPECT_EQ( cpu.reg(Register::R1),    tryte{"0+0000"}) ;
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{1})  ;
+}
+
+
+TEST_F(CPUTest, Shiftn2)
+{
+    assembleAssign(Architecture::sixTrit::Register::Rn1, tryte{"000-00"});
+    assembleAssign(Architecture::sixTrit::Register::R0,  tryte{"000000"});
+    assembleAssign(Architecture::sixTrit::Register::R1,  tryte{"00+000"});
+
+    cpu.execute();
+    cpu.execute();
+    cpu.execute();
+
+    ASSERT_EQ( cpu.reg(Register::Rn1),   tryte{"000-00"});
+    ASSERT_EQ( cpu.reg(Register::R0),    tryte{"000000"});
+    ASSERT_EQ( cpu.reg(Register::R1),    tryte{"00+000"});
+
+
+    assemble(Architecture::sixTrit::Shift, Architecture::sixTrit::Register::Rn1, trybble{-2});
+    assemble(Architecture::sixTrit::Shift, Architecture::sixTrit::Register::R0,  trybble{-2});
+    assemble(Architecture::sixTrit::Shift, Architecture::sixTrit::Register::R1,  trybble{-2});
+
+///
+    cpu.execute();
+    EXPECT_EQ( cpu.reg(Register::Rn1),    tryte{"00000-"}) ;
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{-1})  ;
+
+    cpu.execute();
+    EXPECT_EQ( cpu.reg(Register::R0),    tryte{"000000"}) ;
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{0})  ;
+
+    cpu.execute();
+    EXPECT_EQ( cpu.reg(Register::R1),    tryte{"0000+0"}) ;
+    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{1})  ;
+}
 
 

@@ -38,6 +38,27 @@ void CPU::executeRegisterInstructions(tryte  operation, tryte operand)
         }
         break;
 
+    case OpCode::Shift:
+
+        {
+            auto shift = static_cast<int>(operand.trybbles().first);
+
+            auto t = reg(opreg);
+
+            if(shift < 0)
+            {
+                t >>= -shift;
+            }
+            else
+            {
+                t <<= shift;
+            }
+
+            setReg(opreg, t, ByPassRegisterChecks::no);
+            updateSignFlag(opreg) ;
+        }
+        break;
+
 
     case OpCode::Copy:
         {

@@ -117,8 +117,8 @@ enum  OpCode        // // trybble  -13 to 13
     Pop,                    // destination      unused                              dest=stack[SP] SP++             E S            StackOverflow if stack is empty      InvalidRegister if destination is readonly
     CmpI,                   // Reg X            immediate                                                           E C         
     CmpR,                   // Reg X            low:: Reg Y                                                         E C         
-    Neg,                    // reg              unused                              reg = -reg                                                
-    I12,                    // unused           unused                                                                              InvalidOpCode
+    Neg,                    // reg              unused                              reg = -reg                      E S                         
+    Shift,                  // reg              low:N                               reg<<=N or reg >>=N             E S                
     I13,                    // unused           unused                                                                              InvalidOpCode
 };
 

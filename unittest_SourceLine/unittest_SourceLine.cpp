@@ -452,6 +452,7 @@ INSTANTIATE_TEST_SUITE_P
         std::make_pair("CpuControl",        Architecture::sixTrit::OpCode::CpuControl),
         std::make_pair("Assign",            Architecture::sixTrit::OpCode::Assign),
         std::make_pair("Neg",               Architecture::sixTrit::OpCode::Neg),
+        std::make_pair("Shift",             Architecture::sixTrit::OpCode::Shift),
         std::make_pair("Copy",              Architecture::sixTrit::OpCode::Copy),         
         std::make_pair("Out",               Architecture::sixTrit::OpCode::Out),          
         std::make_pair("In",                Architecture::sixTrit::OpCode::In),           
@@ -468,6 +469,3 @@ INSTANTIATE_TEST_SUITE_P
         std::make_pair("R0",                std::nullopt)
     )
 );
-
-
-
