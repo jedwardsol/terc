@@ -1,14 +1,16 @@
-.stack 100
+.stack 10
 
 .code
 :start  
-    Assign      R0      &helloWorld
+    Assign      R10     10
+    Assign      R1      &helloWorld
 
     CallI       True    $printString
 
     Assign      R1      &answer
     Load        R1      R1 0
     Out         R1      1
+    Out         R10     0               ; newline
 
 :end
 
@@ -17,11 +19,13 @@
 
 .address 100
 
-:printString
+:printString        ; string in R1.
 
-    Copy        RPC     RRA             ; ret
-
-
+    Load        R0      R1  0            ; R0 = *(R1+0)
+    JmpR        Z       RRA             ; return if zero
+    Out         R0      0               ; print ASCII R1
+    AddI        R1      1               ; R1++
+    JmpI        True    $printString
 
 .data
     :helloWorld string "The answer is "

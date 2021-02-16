@@ -68,6 +68,7 @@ void Assembler::parseCode     (const SourceLine &source)
 
         case Architecture::sixTrit::OpCode::Assign:                 // destination      immediate                           dest = immediate           
         case Architecture::sixTrit::OpCode::CmpI:                   // Reg X            immediate                                                      
+        case Architecture::sixTrit::OpCode::AddI:                   // Reg X            immediate                                                      
             parseCode_OpCodeRegisterImmediate(source);
             break;
 
@@ -81,6 +82,9 @@ void Assembler::parseCode     (const SourceLine &source)
         case Architecture::sixTrit::OpCode::Shift:                  // reg              low:N                               reg<<=N or reg >>=N
             parseCode_OpCodeRegisterTrybble(source);
             break;
+
+        default:
+            error("Unhandled instruction");
         }
     }
 }
@@ -331,7 +335,7 @@ void Assembler::parseCode_OpCodeRegisterRegisterTrybble(const SourceLine &source
 
     tryte  second
     {
-        trybble{ static_cast<int>(reg1.value()) },
+        trybble{ static_cast<int>(reg2.value()) },
         t.value() ,
     };
 
