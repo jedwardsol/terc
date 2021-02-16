@@ -36,7 +36,7 @@ protected:
     {
         auto port = static_cast<Architecture::KnownIOPorts>(static_cast<int>(ioPort)) ;
 
-        if(port == Architecture::KnownIOPorts::ExceptionOut)
+        if(port == Architecture::KnownIOPorts::O_Exception)
         {
             auto exception = static_cast<Architecture::Exception>(static_cast<int>(data));
 

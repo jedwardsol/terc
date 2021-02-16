@@ -23,15 +23,15 @@ struct PrintingIOPorts : Architecture::IOPorts
     {
         auto port = static_cast<Architecture::KnownIOPorts>(static_cast<int>(portNumber));
 
-        if(port == Architecture::KnownIOPorts::tryteOut)
+        if(port == Architecture::KnownIOPorts::IO_tryte)
         {
             std::cout << data;
         }
-        else if(port == Architecture::KnownIOPorts::ASCIIOut)
+        else if(port == Architecture::KnownIOPorts::IO_ASCII)
         {
             std::cout << static_cast<char>(data);
         }
-        else if(port == Architecture::KnownIOPorts::ExceptionOut)
+        else if(port == Architecture::KnownIOPorts::O_Exception)
         {
             if(data != Architecture::Exception::Halted)
             {
@@ -46,12 +46,26 @@ struct PrintingIOPorts : Architecture::IOPorts
         return Architecture::Exception::Okay;
     }
 
-    Architecture::Exception  in (const trybble    port,        tryte   &result)
-    {
-        std::cout << "Port " << port << " <- " << 0 << '\n';
 
-        result = tryte{0};
-        
+    Architecture::Exception  in (const trybble    portNumber,        tryte   &result)
+    {
+        auto port = static_cast<Architecture::KnownIOPorts>(static_cast<int>(portNumber));
+
+        if(port==Architecture::KnownIOPorts::IO_tryte)
+        {
+            do
+            {
+                std::cin.clear();
+                std::cin >> result;
+            } while(!std::cin);
+        }
+        else
+        {
+            std::cout << "Port " << portNumber << " <- " << 0 << '\n';
+
+            result = tryte{0};
+        }
+
         return Architecture::Exception::Okay;
     }
 };
@@ -82,16 +96,24 @@ try
 
     Architecture::sixTrit::CPU    cpu{code,data,ioPorts};
 
+          int instructionCount{};
+    const int instructionCountLimit{5'000'000};
     do
     {
+        instructionCount++;
         cpu.execute();
-    } while(cpu.reg(Architecture::sixTrit::Register::REXC) <= 0);
+    } while(   cpu.reg(Architecture::sixTrit::Register::REXC) <= 0
+            && instructionCount < instructionCountLimit);
 
     std::cout << "\n";
 
     if(cpu.reg(Architecture::sixTrit::Register::REXC) == Architecture::Exception::Halted)
     {
         std::cout << "Program ran successfully\n";
+    }
+    else if(instructionCount == instructionCountLimit)
+    {
+        std::cout << "Program timed out\n";
     }
     else
     {

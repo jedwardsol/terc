@@ -69,7 +69,7 @@ void CPU::execute()
 
 void CPU::raiseException(Exception code, tryte PC)
 {
-    static auto exceptionPort = tryte{ static_cast<int>( KnownIOPorts::ExceptionOut)};
+    static auto exceptionPort = tryte{ static_cast<int>( KnownIOPorts::O_Exception)};
            auto exceptionCode = tryte{ static_cast<int>( code)};
 
     setReg(Register::REXC, exceptionCode, ByPassRegisterChecks::yes);

@@ -138,3 +138,4 @@ std::string  to_string(const tryte&);
 
 std::ostream &operator<<(std::ostream &, const trit  &);
 std::ostream &operator<<(std::ostream &, const tryte &);
+std::istream &operator>>(std::istream &,       tryte &);

@@ -40,3 +40,38 @@ std::ostream &operator<<(std::ostream &out, const tryte &t)
     str << to_string(t) << '(' << static_cast<int>(t) << ')';
     return out << str.str();
 }
+
+
+std::istream &operator>>(std::istream &in,       tryte &t)
+{
+    std::string input;
+
+    in >> input;
+
+// try the string
+
+    try
+    {
+        t = tryte{input};
+        return in;
+    }
+    catch(...)
+    {
+    }
+
+// try as an integer
+    try
+    {
+        int i = std::stoi(input);
+
+        t=tryte{i};
+
+        return in;
+    }
+    catch(...)
+    {
+    }
+
+    in.setstate(std::ios_base::failbit);
+    return in;
+}

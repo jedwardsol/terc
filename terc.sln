@@ -49,6 +49,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "6trit", "6trit", "{25632754
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assembly", "assembly", "{F568F8B7-1EEE-4BB9-ABDD-322AA0D4AD68}"
 	ProjectSection(SolutionItems) = preProject
+		assembly\GCD.terc6 = assembly\GCD.terc6
 		assembly\helloWorld.terc6 = assembly\helloWorld.terc6
 		assembly\minimal.terc6 = assembly\minimal.terc6
 	EndProjectSection

@@ -118,7 +118,7 @@ enum  OpCode        // // trybble  -13 to 13
     Neg,                    // reg              unused                              reg = -reg                      E S                         
     Shift,                  // reg              low:N                               reg<<=N or reg >>=N             E S                
     AddI,                   // reg              immediate                           reg += I                        E S O            
-    AddR,                   // reg              low:reg2   high:direction           reg += reg2 or reg -= reg2      E S O           
+    AddR,                   // reg              low:reg2   high: direction          reg += reg2 * sign(dir)         E S O           
     I13,                    // unused           unused                                                                              InvalidOpCode
 };
 

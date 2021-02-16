@@ -4,8 +4,6 @@
     :start  CpuControl         True     Halt
 
 
-
-
 ;Directives
 ;
 ;    .code  .data
@@ -32,15 +30,16 @@
 
 ;OpCodes
 ;
-;    CallI  CallR
-;    JmpI   JmpR
-;    CpuControl
-;    Assign Copy
-;    Out    In
-;    Load   Store
-;    Push   Pop
-;    CmpI   CmpR
-;    Neg
+;   CallI  CallR
+;   JmpI   JmpR
+;   CpuControl
+;   Assign Copy
+;   Out    In
+;   Load   Store
+;   Push   Pop
+;   CmpI   CmpR
+;   Neg
+;   AddI    AddR
 
 ;Registers
 ;
@@ -78,6 +77,3 @@
 ;CpuControls
 ;
 ;    Nop    Halt    Breakpoint    Trace    Invalid
-
-
-    

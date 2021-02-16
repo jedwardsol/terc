@@ -51,10 +51,6 @@ void Assembler::parseCode     (const SourceLine &source)
             parseCode_OpCodeConditionRegister(source);
             break;
 
-        case Architecture::sixTrit::OpCode::Load:                   // destination      low:regsource      high:offset      dest = [source+offset]     
-        case Architecture::sixTrit::OpCode::Store:                  // source           low:regdest        high:offset      [dest+offset] = source     
-            parseCode_OpCodeRegisterRegisterTrybble(source);
-            break;
 
 /////
 // register
@@ -82,6 +78,13 @@ void Assembler::parseCode     (const SourceLine &source)
         case Architecture::sixTrit::OpCode::Shift:                  // reg              low:N                               reg<<=N or reg >>=N
             parseCode_OpCodeRegisterTrybble(source);
             break;
+
+        case Architecture::sixTrit::OpCode::Load:                   // destination      low:regsource      high:offset      dest = [source+offset]     
+        case Architecture::sixTrit::OpCode::Store:                  // source           low:regdest        high:offset      [dest+offset] = source     
+        case Architecture::sixTrit::OpCode::AddR:                   // reg              low:reg2   high: direction          reg += reg2 * sign(dir)         E S O           
+            parseCode_OpCodeRegisterRegisterTrybble(source);
+            break;
+
 
         default:
             error("Unhandled instruction");

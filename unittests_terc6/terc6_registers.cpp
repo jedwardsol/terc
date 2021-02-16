@@ -47,9 +47,9 @@ TEST_F(CPUTest, AbsoluteJump)
 {
     assembleAssign(Architecture::sixTrit::Register::RPC,  tryte{8});
 
-    assemble(Architecture::sixTrit::OpCode::Out,            Architecture::sixTrit::Register::R0, static_cast<int>(Architecture::KnownIOPorts::ASCIIOut));
-    assemble(Architecture::sixTrit::OpCode::Out,            Architecture::sixTrit::Register::R0, static_cast<int>(Architecture::KnownIOPorts::ASCIIOut));
-    assemble(Architecture::sixTrit::OpCode::Out,            Architecture::sixTrit::Register::R0, static_cast<int>(Architecture::KnownIOPorts::ASCIIOut));
+    assemble(Architecture::sixTrit::OpCode::Out,            Architecture::sixTrit::Register::R0, static_cast<int>(Architecture::KnownIOPorts::IO_ASCII));
+    assemble(Architecture::sixTrit::OpCode::Out,            Architecture::sixTrit::Register::R0, static_cast<int>(Architecture::KnownIOPorts::IO_ASCII));
+    assemble(Architecture::sixTrit::OpCode::Out,            Architecture::sixTrit::Register::R0, static_cast<int>(Architecture::KnownIOPorts::IO_ASCII));
 
     assembleCpuControl(Architecture::CpuControl::Halt);
 
@@ -60,12 +60,9 @@ TEST_F(CPUTest, AbsoluteJump)
     EXPECT_EQ(cpu.reg(Register::RPC),   8);
     EXPECT_EQ(cpu.reg(Register::REXC),  Architecture::Exception::Halted);
     ASSERT_EQ(outs.size(), 1);
-    EXPECT_EQ(outs[0].first,  static_cast<int>(Architecture::KnownIOPorts::ExceptionOut));
+    EXPECT_EQ(outs[0].first,  static_cast<int>(Architecture::KnownIOPorts::O_Exception));
     EXPECT_EQ(outs[0].second, Architecture::Exception::Halted);
 }
-
-
-
 
 
 TEST_F(CPUTest, MovIrBad)
@@ -735,63 +732,28 @@ TEST_F(CPUTest, Shiftn2)
 
 
 
-
-TEST_F(CPUTest, AddI0)
-{
-    assembleAssign(Architecture::sixTrit::Register::Rn1, tryte{"0000-0"});
-    assembleAssign(Architecture::sixTrit::Register::R0,  tryte{"000000"});
-    assembleAssign(Architecture::sixTrit::Register::R1,  tryte{"000+00"});
-
-    cpu.execute();
-    cpu.execute();
-    cpu.execute();
-
-    ASSERT_EQ( cpu.reg(Register::Rn1),   tryte{"0000-0"});
-    ASSERT_EQ( cpu.reg(Register::R0),    tryte{"000000"});
-    ASSERT_EQ( cpu.reg(Register::R1),    tryte{"000+00"});
-
-
-    assemble(Architecture::sixTrit::AddI, Architecture::sixTrit::Register::Rn1, tryte{0});
-    assemble(Architecture::sixTrit::AddI, Architecture::sixTrit::Register::R0,  tryte{0});
-    assemble(Architecture::sixTrit::AddI, Architecture::sixTrit::Register::R1,  tryte{0});
-
-///
-    cpu.execute();
-    EXPECT_EQ( cpu.reg(Register::Rn1),    tryte{"0000-0"}) ;
-    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{-1})  ;
-    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Overflow),trit{0})  ;
-
-    cpu.execute();
-    EXPECT_EQ( cpu.reg(Register::R0),    tryte{"000000"}) ;
-    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{0})  ;
-    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Overflow),trit{0})  ;
-
-    cpu.execute();
-    EXPECT_EQ( cpu.reg(Register::R1),    tryte{"000+00"}) ;
-    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),    trit{1})  ;
-    EXPECT_EQ( cpu.getFlag(Architecture::Flag::Overflow),trit{0})  ;
-}
-
-
-
 TEST_F(CPUTest, AddI)
 {
     std::vector tests
     {
-        std::make_tuple( tryte{0},  tryte{0},   tryte{0},  trit{0}),
-        std::make_tuple( tryte{1},  tryte{0},   tryte{1},  trit{0}),
-        std::make_tuple( tryte{0},  tryte{1},   tryte{1},  trit{0}),
-        std::make_tuple( tryte{1},  tryte{2},   tryte{3},  trit{0}),
-        std::make_tuple( tryte{2},  tryte{1},   tryte{3},  trit{0}),
+        std::make_tuple( tryte{ 0},        tryte{ 0},  tryte{ 0},        trit{ 0}),
+        std::make_tuple( tryte{ 1},        tryte{ 0},  tryte{ 1},        trit{ 0}),
+        std::make_tuple( tryte{ 0},        tryte{-1},  tryte{-1},        trit{ 0}),
+        std::make_tuple( tryte{-1},        tryte{ 0},  tryte{-1},        trit{ 0}),
+        std::make_tuple( tryte{ 0},        tryte{ 1},  tryte{ 1},        trit{ 0}),
+        std::make_tuple( tryte{ 1},        tryte{ 2},  tryte{ 3},        trit{ 0}),
+        std::make_tuple( tryte{ 2},        tryte{ 1},  tryte{ 3},        trit{ 0}),
+        std::make_tuple( tryte{ 1},        tryte{-1},  tryte{ 0},        trit{ 0}),
+        std::make_tuple( tryte{-1},        tryte{ 1},  tryte{ 0},        trit{ 0}),
 
-        std::make_tuple( tryte{1},  tryte{-1},  tryte{0},  trit{0}),
-        std::make_tuple( tryte{-1}, tryte{ 1},  tryte{0},  trit{0}),
+        std::make_tuple( tryte{"++++++"},  tryte{-1},  tryte{"+++++0"},  trit{ 0}),
+        std::make_tuple( tryte{"------"},  tryte{ 1},  tryte{"-----0"},  trit{ 0}),
 
-        std::make_tuple( tryte{"++++++"},  tryte{-1},  tryte{"+++++0"},  trit{0}),
-        std::make_tuple( tryte{"------"},  tryte{ 1},  tryte{"-----0"},  trit{0}),
-
-        std::make_tuple( tryte{"++++++"},  tryte{ 1},  tryte{"------"},  trit{1}),
+        std::make_tuple( tryte{"++++++"},  tryte{ 1},  tryte{"------"},  trit{ 1}),
         std::make_tuple( tryte{"------"},  tryte{-1},  tryte{"++++++"},  trit{-1}),
+
+        std::make_tuple( tryte{"+++++0"},  tryte{ 2},  tryte{"------"},  trit{ 1}),
+        std::make_tuple( tryte{"-----0"},  tryte{-2},  tryte{"++++++"},  trit{-1}),
     };
 
     for(const auto test : tests)
@@ -815,3 +777,101 @@ TEST_F(CPUTest, AddI)
 
 
 
+TEST_F(CPUTest, AddRAdd)
+{
+    std::vector tests
+    {
+//                       X                 Y           sign         result            overflow
+        std::make_tuple( tryte{ 0},        tryte{ 0},  trybble{1},  tryte{ 0},        trit{ 0}),
+        std::make_tuple( tryte{ 1},        tryte{ 0},  trybble{1},  tryte{ 1},        trit{ 0}),
+        std::make_tuple( tryte{ 0},        tryte{-1},  trybble{1},  tryte{-1},        trit{ 0}),
+        std::make_tuple( tryte{-1},        tryte{ 0},  trybble{1},  tryte{-1},        trit{ 0}),
+        std::make_tuple( tryte{ 0},        tryte{ 1},  trybble{1},  tryte{ 1},        trit{ 0}),
+        std::make_tuple( tryte{ 1},        tryte{ 2},  trybble{1},  tryte{ 3},        trit{ 0}),
+        std::make_tuple( tryte{ 2},        tryte{ 1},  trybble{1},  tryte{ 3},        trit{ 0}),
+        std::make_tuple( tryte{ 1},        tryte{-1},  trybble{1},  tryte{ 0},        trit{ 0}),
+        std::make_tuple( tryte{-1},        tryte{ 1},  trybble{1},  tryte{ 0},        trit{ 0}),
+
+        std::make_tuple( tryte{"++++++"},  tryte{-1},  trybble{1},  tryte{"+++++0"},  trit{ 0}),
+        std::make_tuple( tryte{"------"},  tryte{ 1},  trybble{1},  tryte{"-----0"},  trit{ 0}),
+
+        std::make_tuple( tryte{"++++++"},  tryte{ 1},  trybble{1},  tryte{"------"},  trit{ 1}),
+        std::make_tuple( tryte{"------"},  tryte{-1},  trybble{1},  tryte{"++++++"},  trit{-1}),
+
+        std::make_tuple( tryte{"+++++0"},  tryte{ 2},  trybble{1},  tryte{"------"},  trit{ 1}),
+        std::make_tuple( tryte{"-----0"},  tryte{-2},  trybble{1},  tryte{"++++++"},  trit{-1}),
+
+    };
+
+    for(const auto test : tests)
+    {
+        const auto x                = std::get<0>(test);
+        const auto y                = std::get<1>(test);
+        const auto sign             = std::get<2>(test);
+
+        const auto expectedResult   = std::get<3>(test);
+        const auto expectedOverflow = std::get<4>(test);
+
+        assembleAssign(Architecture::sixTrit::Register::R0,  x);
+        assembleAssign(Architecture::sixTrit::Register::R1,  y);
+        assemble      (Architecture::sixTrit::AddR, Architecture::sixTrit::Register::R0,
+                                                    trybble{static_cast<int>(Architecture::sixTrit::Register::R1)}, sign);
+
+        cpu.execute();
+        cpu.execute();
+        ASSERT_EQ( cpu.reg(Register::R0),    x);
+        ASSERT_EQ( cpu.reg(Register::R1),    y);
+
+        cpu.execute();
+        EXPECT_EQ( cpu.reg(Register::R0),    expectedResult) ;
+        EXPECT_EQ( cpu.getFlag(Architecture::Flag::Overflow),expectedOverflow)  ;
+    }
+}
+
+
+
+
+TEST_F(CPUTest, AddRSub)
+{
+    std::vector tests
+    {
+//                       X                 Y           sign          result            overflow
+        std::make_tuple( tryte{ 0},        tryte{ 0},  trybble{-1},  tryte{ 0},        trit{ 0}),
+        std::make_tuple( tryte{ 1},        tryte{ 0},  trybble{-1},  tryte{ 1},        trit{ 0}),
+        std::make_tuple( tryte{ 2},        tryte{ 0},  trybble{-1},  tryte{ 2},        trit{ 0}),
+        std::make_tuple( tryte{-1},        tryte{ 0},  trybble{-1},  tryte{-1},        trit{ 0}),
+        std::make_tuple( tryte{-2},        tryte{ 0},  trybble{-1},  tryte{-2},        trit{ 0}),
+
+        std::make_tuple( tryte{ 0},        tryte{ 1},  trybble{-1},  tryte{-1},        trit{ 0}),
+        std::make_tuple( tryte{ 0},        tryte{ 2},  trybble{-1},  tryte{-2},        trit{ 0}),
+        std::make_tuple( tryte{ 0},        tryte{-1},  trybble{-1},  tryte{ 1},        trit{ 0}),
+        std::make_tuple( tryte{ 0},        tryte{-2},  trybble{-1},  tryte{ 2},        trit{ 0}),
+
+        std::make_tuple( tryte{"++++++"},  tryte{-1},  trybble{-1},  tryte{"------"},  trit{ 1}),
+        std::make_tuple( tryte{"------"},  tryte{ 1},  trybble{-1},  tryte{"++++++"},  trit{-1}),
+    };
+
+    for(const auto test : tests)
+    {
+        const auto x                = std::get<0>(test);
+        const auto y                = std::get<1>(test);
+        const auto sign             = std::get<2>(test);
+
+        const auto expectedResult   = std::get<3>(test);
+        const auto expectedOverflow = std::get<4>(test);
+
+        assembleAssign(Architecture::sixTrit::Register::R0,  x);
+        assembleAssign(Architecture::sixTrit::Register::R1,  y);
+        assemble      (Architecture::sixTrit::AddR, Architecture::sixTrit::Register::R0,
+                                                    trybble{static_cast<int>(Architecture::sixTrit::Register::R1)}, sign);
+
+        cpu.execute();
+        cpu.execute();
+        ASSERT_EQ( cpu.reg(Register::R0),    x);
+        ASSERT_EQ( cpu.reg(Register::R1),    y);
+
+        cpu.execute();
+        EXPECT_EQ( cpu.reg(Register::R0),    expectedResult) ;
+        EXPECT_EQ( cpu.getFlag(Architecture::Flag::Overflow),expectedOverflow)  ;
+    }
+}

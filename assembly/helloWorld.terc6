@@ -2,6 +2,7 @@
 
 .code
 :start  
+
     Assign      R1      &helloWorld             ; R1 = string
     CallI       True    $puts                   ; Call
 
@@ -9,7 +10,7 @@
     Load        R1      R1 0                    ; R1 = *(R1+0)
     Out         R1      1                       ; print tryte
 
-    Assign      R10     10                      ; newline
+    Assign      R10     "000+0+"                ; newline
     Out         R10     0                       ; print newline
 
     CallI       True    $exit
@@ -31,8 +32,8 @@
 ;------------------------------------------------------
 
 .data
-    :helloWorld string "The answer is "
-    :answer     tryte  42
+    :helloWorld string "\nThe answer is "
+    :answer     tryte  "0+---0"
 
 
 ;------------------------------------------------------
@@ -66,15 +67,16 @@
 
 ;OpCodes
 ;
-;    CallI  CallR
-;    JmpI   JmpR
-;    CpuControl
-;    Assign Copy
-;    Out    In
-;    Load   Store
-;    Push   Pop
-;    CmpI   CmpR
-;    Neg
+;   CallI  CallR
+;   JmpI   JmpR
+;   CpuControl
+;   Assign Copy
+;   Out    In
+;   Load   Store
+;   Push   Pop
+;   CmpI   CmpR
+;   Neg
+;   AddI    AddR
 
 ;Registers
 ;

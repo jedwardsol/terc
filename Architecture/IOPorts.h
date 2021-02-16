@@ -21,10 +21,10 @@ struct IOPorts
 
 enum class KnownIOPorts     // trybble
 {
-    ExceptionOut = -maxValue(3),
+    O_Exception     = -maxValue(3),
 
-    ASCIIOut     = 0,
-    tryteOut,
+    IO_ASCII        = 0,
+    IO_tryte,
 };
 
 

@@ -1,0 +1,199 @@
+.stack 10
+
+.code
+:start  
+
+; input and check
+
+    Assign      R1      &q1                     ; R1 = string
+    CallI       True    $puts                   ; Call
+    In          Rn1     1
+
+    JmpI        NP      $negativeNumber         ; quit if 0 or negative 
+
+    Assign      R1      &q2                     ; R1 = string
+    CallI       True    $puts                   ; Call
+    In          Rn2     1
+
+    JmpI        NP       $negativeNumber         ; quit if 0 or negative 
+
+
+; calculate
+
+    Copy        R1      Rn1
+    Copy        R2      Rn2
+    CallI       True    $GCD                    ; params in R1, R2.  answer in R0        
+
+; print answer
+
+    Assign      R1      &a1                     ; R1 = string
+    CallI       True    $puts                   ; Call
+    Out         Rn1     1
+
+    Assign      R1      &a2                     ; R1 = string
+    CallI       True    $puts                   ; Call
+    Out         Rn2     1
+
+    Assign      R1      &a3                     ; R1 = string
+    CallI       True    $puts                   ; Call
+    Out         R0      1
+
+    JmpI        True    $exit
+
+
+.address 100
+
+:puts                                           ; string in R1.
+:putsNextChar
+    Load        R0      R1  0                   ; R0 = *(R1+0)
+    JmpR        Z       RRA                     ; return if zero
+    Out         R0      0                       ; print ASCII R1
+    AddI        R1      1                       ; R1++
+    JmpI        True    $putsNextChar
+
+
+:GCD
+
+ :GCDCheckR2
+
+    CmpI        R1      0
+    JmpI        NE      $GCDCheckR1
+
+    Copy        R0      R2                      ; answer is R2
+    JmpR        True    RRA                     ; return
+
+ :GCDCheckR1
+
+    CmpI        R2      0
+    JmpI        NE      $GCDIterate
+
+    Copy        R0      R1                      ; answer is R1
+    JmpR        True    RRA                     ; return
+
+ :GCDIterate
+
+    CallI       True    $sort                   ; make R1 the larger
+
+
+    JmpR        True    RRA
+
+
+:sort
+
+    CmpR        R1      R2
+    JmpI        >=      $doneSort
+
+    Push        R1
+    Push        R2
+    Pop         R1
+    Pop         R2
+
+ :doneSort
+    JmpR        True    RRA
+
+
+
+:negativeNumber
+    Assign      R1      &bad                    ; R1 = string
+    CallI       True    $puts                   ; Call
+    CpuControl  True    Halt
+
+:exit
+    CpuControl  True    Halt
+
+;------------------------------------------------------
+
+.data
+    :q1     string "\nEnter 1st +ve number : "
+    :q2     string "\nEnter 2nd +ve number : "
+    :a1     string "\nThe GCD of "
+    :a2     string " and "
+    :a3     string " is "
+    :bad    string "That's not a positive number."
+
+
+
+;------------------------------------------------------
+
+
+
+
+;Directives
+;
+;    .code  .data
+;    .stack
+;    .address
+
+
+;Label
+;
+;    :labelName
+
+
+;Symbols - can be used where an code immediate or data tryte is used
+;
+;    &dataLabel
+;    $codeLabel
+
+
+;Data
+;
+;   tryte       t1  [t2 [t3 [...]]]]        trytes can be decimal (42)  or 6 balanced ternary trits ( 0+---0 )
+;   string      s1  [s2 [s3 [...]]]]        strings can be quoted to contain whitespace or commands
+
+
+;OpCodes
+;
+;   CallI  CallR
+;   JmpI   JmpR
+;   CpuControl
+;   Assign Copy
+;   Out    In
+;   Load   Store
+;   Push   Pop
+;   CmpI   CmpR
+;   Neg
+;   AddI    AddR
+
+;Registers
+;
+;    RPC
+;    RSP
+;    RFlags
+;    RRA
+;    REXC   REXA
+;           Rn1   Rn2   Rn3   Rn4   Rn5   Rn6   Rn7
+;    R0     R1    R2    R3    R4    R5    R6    R7    R8    R9    R10     R11     R12     R13 
+
+
+;Conditions
+;          
+;    True   False            
+;    
+;    CE     NCE             conditional execution
+;    
+;    P      NP              sign positive
+;    Z      NZ              sign zero
+;    N      NN              sign negative
+;    
+;    GT  >                  comparison...
+;    E   ==
+;    LT  <
+;    LE  <=
+;    NE  !=
+;    GE  >=
+;
+;    O      NO              Overflow
+;    OP                     OverflowPositive
+;    ON                     OverflowNegative,           
+
+
+;CpuControls
+;
+;    Nop    Halt    Breakpoint    Trace    Invalid
+
+; Ports
+;
+;    O_Exception  -13
+;    IO_ASCII       0
+;    IO_tryte       1    

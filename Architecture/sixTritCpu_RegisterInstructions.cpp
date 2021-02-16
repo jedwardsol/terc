@@ -176,6 +176,35 @@ void CPU::executeRegisterInstructions(tryte  operation, tryte operand)
         }
         break;
 
+
+        case OpCode::AddR:
+        {
+            auto t    =  reg(opreg);
+            auto rY   =  static_cast<Register>(static_cast<int>(operand.trybbles().first));
+            auto Y    =  reg(rY);
+            auto sign =  operand.trybbles().second;
+
+
+            trit carry;
+            
+            if(sign == tryte{0})
+            {
+                Y=tryte{0};
+            }
+            else if(sign < tryte{0})
+            {
+                Y=-Y;                
+            }
+
+            t = halfAdder(t,Y,carry);
+
+            setReg(opreg,t);
+            setFlag(Flag::Overflow, carry);
+            updateSignFlag(opreg) ;
+        }
+        break;
+
+
     default:
         throw std::logic_error("Unhandled instruction");
 
