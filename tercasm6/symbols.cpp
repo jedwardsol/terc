@@ -202,7 +202,14 @@ void Assembler::addCodeDependency(std::string_view symbol)
 
 tryte Assembler::parseImmediate (const SourceLine &source, int index)
 {
-    auto string = source.asString(index).value();
+    auto ostring = source.asString(index);
+    
+    if(!ostring)
+    {
+        error("Empty immediate");
+    }
+    
+    auto string = ostring.value();
 
     tryte t;
 

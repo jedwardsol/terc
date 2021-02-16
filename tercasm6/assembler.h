@@ -43,7 +43,17 @@ public:
         {
             currentLineNumber++;
 
-            const SourceLine  source{currentLine};
+            const auto  source = [&]
+            {
+                try
+                {
+                    return SourceLine{currentLine};
+                }
+                catch(const std::exception &e)
+                {
+                    error("Exception <"s + e.what() + "> parsing line");
+                }
+            }();
 
             if(source.tokens().empty())
             {

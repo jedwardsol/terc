@@ -3,6 +3,8 @@
 .code
 :start  
 
+    Assign      R10     10                      ; newline
+
 ; input and check
 
     Assign      R1      &q1                     ; R1 = string
@@ -23,6 +25,7 @@
     Copy        R1      Rn1
     Copy        R2      Rn2
     CallI       True    $GCD                    ; params in R1, R2.  answer in R0        
+    Copy        Rn3     R0                      ; save answer because R0 is volatile
 
 ; print answer
 
@@ -36,7 +39,7 @@
 
     Assign      R1      &a3                     ; R1 = string
     CallI       True    $puts                   ; Call
-    Out         R0      1
+    Out         Rn3     1
 
     JmpI        True    $exit
 
@@ -54,28 +57,35 @@
 
 :GCD
 
- :GCDCheckR2
-
-    CmpI        R1      0
-    JmpI        NE      $GCDCheckR1
-
-    Copy        R0      R2                      ; answer is R2
-    JmpR        True    RRA                     ; return
-
- :GCDCheckR1
-
-    CmpI        R2      0
-    JmpI        NE      $GCDIterate
-
-    Copy        R0      R1                      ; answer is R1
-    JmpR        True    RRA                     ; return
+    Push        RRA                             ; this function calls,   so save return address
 
  :GCDIterate
 
     CallI       True    $sort                   ; make R1 the larger
 
+    Out         R1     1
+    Out         R2     1
+    Out         R10    0
 
-    JmpR        True    RRA
+    ; subtract R2 from R1 until R1 < R2
+
+ :modLoop
+
+    AddR        R1      R2  -1
+
+    CmpR        R1      R2
+    JmpI        >=      $modLoop
+
+ :GCDCheck
+
+    CpuControl  True    Breakpoint
+    CmpI        R1      0
+    JmpI        NE      $GCDIterate
+
+    Copy        R0      R2                      ; answer is R2
+    Pop         RPC                             ; return
+
+
 
 
 :sort
