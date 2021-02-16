@@ -208,8 +208,8 @@ private:
     };
 
 
-    Architecture::MemoryBlock     code{ maxValue(6), maxValue(6)};
-    Architecture::MemoryBlock     data{ 0,           maxValue(6)};
+    Architecture::MemoryBlock     code{ BalancedTernary::maxValue(6), BalancedTernary::maxValue(6)};
+    Architecture::MemoryBlock     data{ 0,                            BalancedTernary::maxValue(6)};
 
 
     std::map<std::string,Symbol>  dataSymbols;

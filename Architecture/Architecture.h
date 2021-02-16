@@ -95,7 +95,7 @@ enum  Exception         // tryte
 
 enum class KnownIOPorts     // trybble
 {
-    O_Exception     = -maxValue(3),
+    O_Exception     = - BalancedTernary::maxValue(3),
 
     IO_ASCII        = 0,
     IO_tryte,

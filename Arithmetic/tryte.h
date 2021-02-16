@@ -34,8 +34,8 @@ public:
 
     constexpr explicit tryte(int i) : tryte{}
 	{
-		if(    i >  maxValue(6)
-		   ||  i < -maxValue(6))
+		if(    i >  BalancedTernary::maxValue(6)
+		   ||  i < -BalancedTernary::maxValue(6))
 		{
             throw std::out_of_range("tryte constructor  "s + std::to_string(i));
 		}

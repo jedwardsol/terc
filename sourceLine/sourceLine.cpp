@@ -115,8 +115,8 @@ std::optional<tryte> SourceLine::asTrybble(int index) const noexcept
 
         try
         {
-            if(    number.value() >  maxValue(3)
-               ||  number.value() < -maxValue(3))
+            if(    number.value() >  BalancedTernary::maxValue(3)       // TODO numeric limits when templatised
+               ||  number.value() < -BalancedTernary::maxValue(3))
             {
                 return std::nullopt;
             }

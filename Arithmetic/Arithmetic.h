@@ -6,7 +6,6 @@ using namespace std::literals;
 #include <stdexcept>
 
 
-// TODO : namespace this
 
 constexpr int     pow3(int n)
 {
@@ -20,6 +19,10 @@ constexpr int     pow3(int n)
     return result;
 }
 
+
+namespace BalancedTernary
+{
+
 constexpr int     numValues(int numTrits)
 {
     return pow3(numTrits);
@@ -30,7 +33,13 @@ constexpr int     maxValue(int numTrits)
     return (numValues(numTrits) - 1) / 2;
 }
 
+constexpr int     minValue(int numTrits)
+{
+    return -maxValue(numTrits);
+}
 
+
+}
 
 
 

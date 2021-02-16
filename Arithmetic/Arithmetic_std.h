@@ -86,7 +86,7 @@ public:
 
 
 // functions
-    [[nodiscard]]static constexpr       int max()           noexcept { return  maxValue(digits); }
+    [[nodiscard]]static constexpr       int max()           noexcept { return  BalancedTernary::maxValue(digits); }
     [[nodiscard]]static constexpr       int min()           noexcept { return -max(); }
     [[nodiscard]]static constexpr       int lowest()        noexcept { return  min(); }
 

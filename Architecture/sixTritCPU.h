@@ -22,16 +22,16 @@ constexpr int     instructionBusSize        {6};
 constexpr int     dataBusSize               {6};
 
 
-constexpr int     maxCodeSize               {maxValue (instructionBusSize)};
-constexpr int     maxDataSize               {maxValue (dataBusSize)};
-constexpr int     maxStackSize              {maxValue (dataBusSize)};
+constexpr int     maxCodeSize               {BalancedTernary::maxValue (instructionBusSize)};
+constexpr int     maxDataSize               {BalancedTernary::maxValue (dataBusSize)};
+constexpr int     maxStackSize              {BalancedTernary::maxValue (dataBusSize)};
 
 constexpr int     recCodeSize               {maxCodeSize};
 constexpr int     recDataSize               {maxDataSize};
 constexpr int     recStackSize              {81};
 
 
-constexpr int     numRegisters              {numValues(3)};
+constexpr int     numRegisters              {BalancedTernary::numValues(3)};
 
 
 enum class Register     // // trybble   -13 to 13
@@ -141,7 +141,7 @@ public:
 
     const tryte &reg(Register  r) const
     {
-        constexpr int     registerOffset    {maxValue(3)};
+        constexpr int     registerOffset    {BalancedTernary::maxValue(3)};
 
         return registers.at(static_cast<int>(r) + registerOffset);
     }
@@ -153,7 +153,7 @@ public:
 
     void setReg(Register  r,   tryte  value,  ByPassRegisterChecks byPassRegisterChecks= ByPassRegisterChecks::no) 
     {
-        constexpr int     registerOffset    {maxValue(3)};
+        constexpr int     registerOffset    {BalancedTernary::maxValue(3)};
 
         if(byPassRegisterChecks == ByPassRegisterChecks::no)
         {
