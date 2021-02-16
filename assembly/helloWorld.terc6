@@ -2,34 +2,42 @@
 
 .code
 :start  
-    Assign      R10     10
-    Assign      R1      &helloWorld
+    Assign      R1      &helloWorld             ; R1 = string
+    CallI       True    $puts                   ; Call
 
-    CallI       True    $printString
+    Assign      R1      &answer                 ; R1 = address of answer
+    Load        R1      R1 0                    ; R1 = *(R1+0)
+    Out         R1      1                       ; print tryte
 
-    Assign      R1      &answer
-    Load        R1      R1 0
-    Out         R1      1
-    Out         R10     0               ; newline
+    Assign      R10     10                      ; newline
+    Out         R10     0                       ; print newline
 
-:end
-
-    CpuControl  True    Halt
+    CallI       True    $exit
 
 
 .address 100
 
-:printString        ; string in R1.
+:puts                                           ; string in R1.
+:putsNextChar
+    Load        R0      R1  0                   ; R0 = *(R1+0)
+    JmpR        Z       RRA                     ; return if zero
+    Out         R0      0                       ; print ASCII R1
+    AddI        R1      1                       ; R1++
+    JmpI        True    $putsNextChar
 
-    Load        R0      R1  0            ; R0 = *(R1+0)
-    JmpR        Z       RRA             ; return if zero
-    Out         R0      0               ; print ASCII R1
-    AddI        R1      1               ; R1++
-    JmpI        True    $printString
+:exit
+    CpuControl  True    Halt
+
+;------------------------------------------------------
 
 .data
     :helloWorld string "The answer is "
     :answer     tryte  42
+
+
+;------------------------------------------------------
+
+
 
 
 ;Directives
