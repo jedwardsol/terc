@@ -15,7 +15,7 @@ constexpr inline tryte  halfAdder(const tryte &lhs, const tryte &rhs,  trit &car
 std::string  to_string(const tryte&);
 
 
-class tryte  // TODO : templatise on number of trits to impleement  trybble, tryte and trord
+class tryte  // TODO : templatise on number of trits to implement  trybble, tryte and trord
 {
 
 public:

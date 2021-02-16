@@ -105,6 +105,8 @@ void CPU::raiseException(Exception code, tryte PC)
 
 bool    CPU::checkPC()
 {
+    auto df = tryte{Exception::DoubleFault};
+    
     if( reg(Register::REXC) ==  tryte{ Exception::DoubleFault})
     {
         throw std::runtime_error{"Continue after double fault"};   // ... and catch fire.

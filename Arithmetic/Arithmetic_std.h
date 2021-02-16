@@ -32,7 +32,7 @@ public:
 
 
 // functions
-    [[nodiscard]]static constexpr       int max()           noexcept { return 1; }
+    [[nodiscard]]static constexpr       int max()           noexcept { return  1; }
     [[nodiscard]]static constexpr       int min()           noexcept { return -1; }
     [[nodiscard]]static constexpr       int lowest()        noexcept { return -1; }
 

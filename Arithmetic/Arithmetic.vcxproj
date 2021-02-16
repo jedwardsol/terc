@@ -165,7 +165,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Arithmetic.cpp" />
     <ClCompile Include="Arithmetic_std.cpp" />
   </ItemGroup>
   <ItemGroup>

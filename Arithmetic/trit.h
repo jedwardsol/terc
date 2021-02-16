@@ -16,20 +16,31 @@ public:
     constexpr trit() noexcept : t{0}
     {}
 
-    constexpr explicit trit(int i) : t{static_cast<int8_t>(i)}
+    constexpr explicit trit(char c) :t{0}
     {
-        checkConstructor(i);
+        switch(c)
+        {
+        case '-':   t=-1; break;
+        case '0':   t= 0; break;
+        case '+':   t= 1; break;
+        default :   throw std::out_of_range("trit constructor  '"s + c +"'"s);
+        }
     }
 
-    constexpr explicit trit(int8_t i) : t{i}
+    constexpr explicit trit(int8_t i)  : t{i}
     {
-        checkConstructor(i);
+        if(i < -1 || i > 1)
+        {
+            throw std::out_of_range("trit constructor  "s + std::to_string(i));
+        }
     }
 
-    constexpr explicit trit(int16_t i) : t{static_cast<int8_t>(i)}
-    {
-        checkConstructor(i);
-    }
+    constexpr explicit trit(int i)     : trit{static_cast<int8_t>(i)}
+    {}
+
+
+    constexpr explicit trit(int16_t i) : trit{static_cast<int8_t>(i)}
+    {}
 
     constexpr trit(const trit&)             noexcept = default;
     constexpr trit(      trit&&)            noexcept = default;
@@ -46,7 +57,7 @@ public:
         return t;
     }
 
-    constexpr operator bool() const noexcept
+    constexpr explicit operator bool() const noexcept
     {
         return t!=0;
     }
@@ -142,16 +153,6 @@ public:
         return *this;
     }
 
-
-private:
-
-    constexpr static void checkConstructor(int i)
-    {
-        if(i < -1 || i > 1)
-        {
-            throw std::out_of_range("trit constructor  "s + std::to_string(i));
-        }
-    }
 };
 
 static_assert(sizeof(trit) ==1);
@@ -159,7 +160,7 @@ static_assert(sizeof(trit) ==1);
 
 
 constexpr inline bool operator==(const trit &lhs, const trit &rhs) noexcept { return lhs.t == rhs.t; }
-constexpr inline bool operator!=(const trit &lhs, const trit &rhs) noexcept { return !(lhs == rhs);  }
+constexpr inline bool operator!=(const trit &lhs, const trit &rhs) noexcept { return !operator==(lhs , rhs);  }
 
 constexpr inline bool operator< (const trit &lhs, const trit &rhs) noexcept { return   lhs.t < rhs.t;}
 constexpr inline bool operator> (const trit &lhs, const trit &rhs) noexcept { return   rhs < lhs;    }

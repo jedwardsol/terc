@@ -263,7 +263,7 @@ std::optional<tryte> CPU::calculateAddress(Architecture::sixTrit::Register   add
     trit    carry;
     address = halfAdder(address,offset,carry);
 
-    if(carry != 0)
+    if(carry != trit{0})
     {
         raiseException(Exception::AccessViolation, reg(Register::RPC));
         return std::nullopt;

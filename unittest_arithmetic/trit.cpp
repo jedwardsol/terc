@@ -22,15 +22,49 @@ TEST(TritTest, Construct)
     EXPECT_EQ(tn.t,-1);
 }
 
+
+TEST(TritTest, ConstructType) 
+{
+    trit    ti  { int{1}     };
+    trit    ti8 { int8_t{1}  };
+    trit    ti16{ int16_t{1} };
+
+    EXPECT_EQ(ti.t,   1);
+    EXPECT_EQ(ti8.t,  1);
+    EXPECT_EQ(ti16.t, 1);
+
+    trit    tn { '-'};
+    trit    t0 { '0' };
+    trit    tp { '+' };
+
+    EXPECT_EQ(tn.t,      -1);
+    EXPECT_EQ(t0.t,    0);
+    EXPECT_EQ(tp.t,    1);
+
+}
+
+
+
+
 TEST(TritTest, BadConstruct) 
 {
-    auto construct = [](int i)
+    auto constructi = [](int i)
     {
         trit t{i};
     };
 
-    EXPECT_THROW(construct( 2),std::out_of_range);
-    EXPECT_THROW(construct(-2),std::out_of_range);
+    EXPECT_THROW(constructi( 2),std::out_of_range);
+    EXPECT_THROW(constructi(-2),std::out_of_range);
+
+
+    auto constructc = [](char c)
+    {
+        trit t{c};
+    };
+
+    EXPECT_THROW(constructc( '1'),std::out_of_range);
+    EXPECT_THROW(constructc( ' '),std::out_of_range);
+
 }
 
 TEST(TritTest, CopyConstruct) 
