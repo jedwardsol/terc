@@ -16,8 +16,6 @@ namespace Architecture::sixTrit
 {
 
 
-
-
 bool CPU::validCondition(Condition condition)
 {
     switch(condition)

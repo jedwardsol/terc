@@ -56,35 +56,49 @@ void Assembler::parseCode     (const SourceLine &source)
 // register
 
 
-        case Architecture::sixTrit::OpCode::Neg:                    // reg              unused                              reg = -reg
         case Architecture::sixTrit::OpCode::Push:                   // source           unused                              SP-- stack[SP]=src         
+            parseCode_OpCodeRegister(source,RegisterIs::Source);
+            break;
+
+        case Architecture::sixTrit::OpCode::Neg:                    // reg              unused                              reg = -reg
         case Architecture::sixTrit::OpCode::Pop:                    // destination      unused                              dest=stack[SP] SP++        
-            parseCode_OpCodeRegister(source);
+            parseCode_OpCodeRegister(source,RegisterIs::Destination);
             break;
 
         case Architecture::sixTrit::OpCode::Assign:                 // destination      immediate                           dest = immediate           
-        case Architecture::sixTrit::OpCode::CmpI:                   // Reg X            immediate                                                      
         case Architecture::sixTrit::OpCode::AddI:                   // Reg X            immediate                                                      
-            parseCode_OpCodeRegisterImmediate(source);
+            parseCode_OpCodeRegisterImmediate(source,RegisterIs::Destination);
+            break;
+
+        case Architecture::sixTrit::OpCode::CmpI:                   // Reg X            immediate                                                      
+            parseCode_OpCodeRegisterImmediate(source,RegisterIs::Source);
             break;
 
         case Architecture::sixTrit::OpCode::Copy:                   // destination      low:source                          destination = source       
+            parseCode_OpCodeRegisterRegister(source,RegisterIs::Destination);
+            break;
+
         case Architecture::sixTrit::OpCode::CmpR:                   // Reg X            low:: Reg Y                                                    
-            parseCode_OpCodeRegisterRegister(source);
+            parseCode_OpCodeRegisterRegister(source,RegisterIs::Source);
             break;
 
         case Architecture::sixTrit::OpCode::Out:                    // source           low:port                            write source to port       
+            parseCode_OpCodeRegisterTrybble(source,RegisterIs::Source);
+            break;
+
         case Architecture::sixTrit::OpCode::In:                     // destination      low:port                            read port to destination   
         case Architecture::sixTrit::OpCode::Shift:                  // reg              low:N                               reg<<=N or reg >>=N
-            parseCode_OpCodeRegisterTrybble(source);
+            parseCode_OpCodeRegisterTrybble(source,RegisterIs::Destination);
+            break;
+
+        case Architecture::sixTrit::OpCode::Store:                  // source           low:regdest        high:offset      [dest+offset] = source     
+            parseCode_OpCodeRegisterRegisterTrybble(source,RegisterIs::Source);
             break;
 
         case Architecture::sixTrit::OpCode::Load:                   // destination      low:regsource      high:offset      dest = [source+offset]     
-        case Architecture::sixTrit::OpCode::Store:                  // source           low:regdest        high:offset      [dest+offset] = source     
         case Architecture::sixTrit::OpCode::AddR:                   // reg              low:reg2   high: direction          reg += reg2 * sign(dir)         E S O           
-            parseCode_OpCodeRegisterRegisterTrybble(source);
+            parseCode_OpCodeRegisterRegisterTrybble(source,RegisterIs::Destination);
             break;
-
 
         default:
             error("Unhandled instruction");
@@ -193,7 +207,19 @@ void Assembler::parseCode_OpCodeConditionRegister   (const SourceLine &source)
 
 ////////////////////////
 
-void Assembler::parseCode_OpCodeRegister               (const SourceLine &source)
+
+void Assembler::checkReadOnlyRegister(Architecture::sixTrit::Register reg)
+{
+    if(   reg == Architecture::sixTrit::Register::REXA
+       || reg == Architecture::sixTrit::Register::REXC
+       || reg == Architecture::sixTrit::Register::RFlags)
+    {
+        error("Register is read-only");
+    }
+}
+
+
+void Assembler::parseCode_OpCodeRegister               (const SourceLine &source, RegisterIs registerIs)
 {
     auto opCode     = source.asOpCode    (0);
     auto reg        = source.asRegister  (1);
@@ -203,7 +229,11 @@ void Assembler::parseCode_OpCodeRegister               (const SourceLine &source
         error("Invalid register");
     }
 
-    // TODO : check for readonly registers
+    if(registerIs == RegisterIs::Destination)
+    {
+        checkReadOnlyRegister(reg.value());
+    }
+
 
     tryte  first
     {
@@ -219,7 +249,7 @@ void Assembler::parseCode_OpCodeRegister               (const SourceLine &source
 
 
 
-void Assembler::parseCode_OpCodeRegisterImmediate      (const SourceLine &source)
+void Assembler::parseCode_OpCodeRegisterImmediate      (const SourceLine &source, RegisterIs registerIs)
 {
     auto opCode     = source.asOpCode    (0);
     auto reg        = source.asRegister  (1);
@@ -227,6 +257,11 @@ void Assembler::parseCode_OpCodeRegisterImmediate      (const SourceLine &source
     if(!reg)
     {
         error("Invalid register");
+    }
+
+    if(registerIs == RegisterIs::Destination)
+    {
+        checkReadOnlyRegister(reg.value());
     }
 
     auto operand = parseImmediate (source,2);
@@ -243,7 +278,7 @@ void Assembler::parseCode_OpCodeRegisterImmediate      (const SourceLine &source
 
 
 
-void Assembler::parseCode_OpCodeRegisterRegister   (const SourceLine &source)
+void Assembler::parseCode_OpCodeRegisterRegister   (const SourceLine &source, RegisterIs registerIs)
 {
     auto opCode     = source.asOpCode    (0);
     auto reg1       = source.asRegister  (1);
@@ -252,6 +287,11 @@ void Assembler::parseCode_OpCodeRegisterRegister   (const SourceLine &source)
     if(!reg1)
     {
         error("Invalid first register");
+    }
+
+    if(registerIs == RegisterIs::Destination)
+    {
+        checkReadOnlyRegister(reg1.value());
     }
 
     if(!reg2)
@@ -275,7 +315,7 @@ void Assembler::parseCode_OpCodeRegisterRegister   (const SourceLine &source)
 }
 
 
-void Assembler::parseCode_OpCodeRegisterTrybble        (const SourceLine &source)
+void Assembler::parseCode_OpCodeRegisterTrybble        (const SourceLine &source, RegisterIs registerIs)
 {
     auto opCode     = source.asOpCode    (0);
     auto reg        = source.asRegister  (1);
@@ -284,6 +324,11 @@ void Assembler::parseCode_OpCodeRegisterTrybble        (const SourceLine &source
     if(!reg)
     {
         error("Invalid register");
+    }
+
+    if(registerIs == RegisterIs::Destination)
+    {
+        checkReadOnlyRegister(reg.value());
     }
 
     if(!t)
@@ -304,11 +349,10 @@ void Assembler::parseCode_OpCodeRegisterTrybble        (const SourceLine &source
     };
 
     addInstruction(first,second);
-
 }
 
 
-void Assembler::parseCode_OpCodeRegisterRegisterTrybble(const SourceLine &source)
+void Assembler::parseCode_OpCodeRegisterRegisterTrybble(const SourceLine &source, RegisterIs registerIs)
 {
     auto opCode     = source.asOpCode    (0);
     auto reg1       = source.asRegister  (1);
@@ -318,6 +362,11 @@ void Assembler::parseCode_OpCodeRegisterRegisterTrybble(const SourceLine &source
     if(!reg1)
     {
         error("Invalid first register");
+    }
+
+    if(registerIs == RegisterIs::Destination)
+    {
+        checkReadOnlyRegister(reg1.value());
     }
 
     if(!reg2)

@@ -1,9 +1,5 @@
 #pragma once
 
-#include "exception.h"
-#include "IOPorts.h"
-#include "MemoryBlock.h"
-
 
 namespace Architecture
 {
@@ -44,17 +40,13 @@ enum class Condition      // // trybble
 {
     AlwaysFalse=-13,
 
-
     ConditionalExecuted,            // EC        +
     ConditionalNotExecuted,         // EC      -
 
-    // TODO : test
-    // TODO : assember
     Overflow,                       // O    - +
     OverflowPositive,               // O      +
     OverflowNegative,               // O    -
     NotOverflow,                    // O     0
-
 
     AlwaysTrue = 0,                 // 0 so empty memory  {"000000"}{"000000"}  decodes to unconditional halt instruction
 
@@ -72,6 +64,43 @@ enum class Condition      // // trybble
     NotEqual,                       // Compare - +
     GreaterOrEqual,                 // Compare  0+
 };
+
+
+enum  Exception         // tryte
+{
+// negative exceptions are not-fatal
+
+    InvalidData = std::numeric_limits<tryte>::min(),
+    InvalidPort,
+    Breakpoint,
+    Trace,
+
+    Okay        =  0,
+
+// Halted is normal shutdown
+
+    Halted,
+
+// positive exceptions are fatal
+
+    BadPC,                      // negative, odd,  
+    InvalidOpCode,
+    InvalidRegister,
+    InvalidCondition,
+
+    AccessViolation,            // bad address
+    DoubleFault = std::numeric_limits<tryte>::max()     // execution after a fatal fault
+};
+
+
+enum class KnownIOPorts     // trybble
+{
+    O_Exception     = -maxValue(3),
+
+    IO_ASCII        = 0,
+    IO_tryte,
+};
+
 
 }
 

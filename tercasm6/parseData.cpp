@@ -40,7 +40,6 @@ void Assembler::parseData(const SourceLine &source)
 
             for(auto c : string)
             {
-                // TODO escape sequences
                 data[currentDataPosition] = tryte{c};
                 incrementDataPosition();
             }

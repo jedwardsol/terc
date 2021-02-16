@@ -11,9 +11,9 @@
 #include "Arithmetic/Arithmetic_std.h"
 #include "Arithmetic/tryte.h"
 
-#include "Architecture/MemoryBlock.h"
+#include "Architecture/Architecture.h"
 #include "Architecture/sixTritCPU.h"
-#include "Architecture/exception.h"
+#include "Architecture/MemoryBlock.h"
 #include "Architecture/IOPorts.h"
 
 

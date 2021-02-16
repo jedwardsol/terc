@@ -129,9 +129,6 @@ TEST_F(CPUTest, ConditionalOnSign)
     assembleCpuControl(Architecture::Condition::Negative,   Architecture::CpuControl::Trace);
     cpu.execute();
     EXPECT_EQ(traceCounter,2);  // didn't execute
-
-    // TODO : table driven tests?
-
 }
 
 
@@ -156,10 +153,6 @@ TEST_F(CPUTest, ConditionalOnComparison)
     assembleCpuControl(Architecture::Condition::GreaterThan,Architecture::CpuControl::Trace);
     cpu.execute();
     EXPECT_EQ(traceCounter,1);  // didn't execute
-
-
-    // TODO : table driven tests?
-
 }
 
 

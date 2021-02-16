@@ -9,9 +9,9 @@
 #include "Arithmetic/trit.h"
 
 #include <Architecture/Architecture.h>
-#include "Architecture/exception.h"
-#include "MemoryBlock.h"
-#include "IOPorts.h"
+
+#include "Architecture/MemoryBlock.h"
+#include "Architecture/IOPorts.h"
 
 
 
@@ -230,7 +230,7 @@ public:
 
 
 
-
+    std::optional<std::pair<tryte, tryte>> fetch();
     void    execute();
     void    executeRegisterInstructions(tryte  operation, tryte operand);
     void    executeConditionalInstructions(tryte  operation, tryte operand);
@@ -293,7 +293,7 @@ private:
 
     std::array<tryte,numRegisters>                  registers{};    // only to be touched in setReg and getReg.  Here for debugability
 
-    bool                                            instructionChangedRPC{};      // TODO : move to flag?
+    bool                                            instructionChangedRPC{};
 };
 
 

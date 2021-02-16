@@ -14,6 +14,23 @@
 namespace Architecture::sixTrit
 {
 
+
+std::optional<std::pair<tryte, tryte>> CPU::fetch()
+{
+    try
+    {
+        auto operation = code[reg(Register::RPC)];
+        auto  operand  = code[reg(Register::RPC)+1];
+
+        return std::make_pair(operation,operand);
+    }
+    catch(const std::exception&)
+    {
+        raiseException(Exception::AccessViolation,reg(Register::RPC));
+        return std::nullopt;
+    }
+}
+
 void CPU::execute()
 {
     if(!checkPC())
@@ -21,9 +38,16 @@ void CPU::execute()
         return;
     }
 
+    auto    instruction=fetch();
 
-    auto  operation      = code[reg(Register::RPC)];
-    auto  operand        = code[reg(Register::RPC)+1];
+    if(!instruction)
+    {
+        return;
+    }
+
+    auto  [operation, operand] = instruction.value();
+
+
 
     auto opcode = static_cast<OpCode>  (static_cast<int>(operation.trybbles().first));
 
@@ -79,31 +103,16 @@ void CPU::raiseException(Exception code, tryte PC)
 }
 
 
-
-
 bool    CPU::checkPC()
 {
     if( reg(Register::REXC) ==  tryte{ Exception::DoubleFault})
     {
-        throw std::runtime_error{"Continue after double fault"};
+        throw std::runtime_error{"Continue after double fault"};   // ... and catch fire.
     }
 
     if( reg(Register::REXC) >  tryte{ Exception::Okay})
     {
         raiseException(Exception::DoubleFault, reg(Register::REXA));
-        return false;
-    }
-
-// let instruction fetch fault instead
-    if( reg(Register::RPC) < tryte{ 0 })            // TODO : allow negative code.  good place for standard library?
-    {
-        raiseException(Exception::BadPC, reg(Register::RPC));
-        return false;
-    }
-
-    if( reg(Register::RPC) >= code.positiveSize()-1)
-    {
-        raiseException(Exception::BadPC, reg(Register::RPC));
         return false;
     }
 
@@ -113,7 +122,7 @@ bool    CPU::checkPC()
         return false;
     }
     
-
+    // no bounds check - instruction fetch will fault instead
 
     instructionChangedRPC = false;
 

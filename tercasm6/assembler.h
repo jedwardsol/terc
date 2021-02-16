@@ -52,6 +52,7 @@ public:
                 catch(const std::exception &e)
                 {
                     error("Exception <"s + e.what() + "> parsing line");
+                    throw;
                 }
             }();
 
@@ -142,7 +143,10 @@ private:
             error("Code position underflow");
         }
 
-        // TODO : check for odd
+        if(i % 2 == 1)
+        {
+            error("RPC can't be odd");
+        }
 
         currentCodePosition=i;
         maxCodePosition = std::max(maxDataPosition,currentCodePosition);
@@ -153,8 +157,6 @@ private:
     {
         setCodePosition(currentCodePosition+2);
     }
-
-
 
 
     enum class Mode
@@ -172,11 +174,19 @@ private:
     void parseCode_OpCodeConditionImmediate     (const SourceLine &source);
     void parseCode_OpCodeConditionRegister      (const SourceLine &source);
 
-    void parseCode_OpCodeRegister               (const SourceLine &source);
-    void parseCode_OpCodeRegisterImmediate      (const SourceLine &source);
-    void parseCode_OpCodeRegisterRegister       (const SourceLine &source);
-    void parseCode_OpCodeRegisterTrybble        (const SourceLine &source);
-    void parseCode_OpCodeRegisterRegisterTrybble(const SourceLine &source);
+
+
+    enum class RegisterIs
+    {
+        Source, Destination
+    };
+    void checkReadOnlyRegister(Architecture::sixTrit::Register reg);
+
+    void parseCode_OpCodeRegister               (const SourceLine &source,RegisterIs registerIs);
+    void parseCode_OpCodeRegisterImmediate      (const SourceLine &source,RegisterIs registerIs);
+    void parseCode_OpCodeRegisterRegister       (const SourceLine &source,RegisterIs registerIs);
+    void parseCode_OpCodeRegisterTrybble        (const SourceLine &source,RegisterIs registerIs);
+    void parseCode_OpCodeRegisterRegisterTrybble(const SourceLine &source,RegisterIs registerIs);
     
     tryte parseImmediate                        (const SourceLine &source, int index);
 

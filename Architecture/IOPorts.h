@@ -1,12 +1,10 @@
 #pragma once
 
 #include "Arithmetic/tryte.h"
-#include "exception.h"
+
 
 namespace Architecture
 {
-
-
 
 struct IOPorts
 {
@@ -19,13 +17,6 @@ struct IOPorts
 
 
 
-enum class KnownIOPorts     // trybble
-{
-    O_Exception     = -maxValue(3),
-
-    IO_ASCII        = 0,
-    IO_tryte,
-};
 
 
 }

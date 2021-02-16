@@ -166,7 +166,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Architecture.h" />
-    <ClInclude Include="exception.h" />
     <ClInclude Include="IOPorts.h" />
     <ClInclude Include="MemoryBlock.h" />
     <ClInclude Include="sixTritCPU.h" />

@@ -28,6 +28,12 @@ void Assembler::parseDirective(const SourceLine &source)
             break;
 
         case Mode::code:
+
+            if(static_cast<int>(newAddress.value()) % 2 == 1)
+            {
+                error("RPC can't be odd");
+            }
+
             setCodePosition(static_cast<int>(newAddress.value()));
             break;
 
