@@ -79,7 +79,7 @@ TEST_F(CPUTest, DoubleFault)
 
 TEST_F(CPUTest, Nop)
 {
-    assembleCpuControl(Architecture::CpuControl::Nop);
+    assembleCpuControl(Architecture::Condition::AlwaysFalse, Architecture::CpuControl::Trace);
 
     cpu.execute();
 
@@ -90,8 +90,8 @@ TEST_F(CPUTest, Nop)
 
 TEST_F(CPUTest, NopNop)
 {
-    assembleCpuControl(Architecture::CpuControl::Nop);
-    assembleCpuControl(Architecture::CpuControl::Nop);
+    assembleCpuControl(Architecture::Condition::AlwaysFalse, Architecture::CpuControl::Trace);
+    assembleCpuControl(Architecture::Condition::AlwaysFalse, Architecture::CpuControl::Trace);
 
     cpu.execute();
     cpu.execute();

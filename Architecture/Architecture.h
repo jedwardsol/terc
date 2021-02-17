@@ -9,11 +9,13 @@ namespace Architecture
 
 enum  class CpuControl      // trybble
 {
-    Nop         = -1,         // do nothing
-    Halt        =  0,         // do halt      (0 so default instruction is halt)
-    Breakpoint,               // send breakpoint exception to exception port
-    Trace,                    // send Trace exception to exception port
-    Invalid
+    Halt,                       // do halt      (0 so default instruction is halt)
+    Breakpoint,                 // send breakpoint exception to exception port
+    Trace,                      // send Trace exception to exception port
+    Invalid                     // raise invalid instruction exception.
+
+    // CpuControl is a conditional instruction.  Nop is CpuControl False Trace
+
 };
 
 

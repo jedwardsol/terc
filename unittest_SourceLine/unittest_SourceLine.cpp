@@ -414,7 +414,6 @@ INSTANTIATE_TEST_SUITE_P
     AsCpuControlP,
     ::testing::Values
     (
-        std::make_pair("Nop",       Architecture::CpuControl::Nop),        
         std::make_pair("Halt",      Architecture::CpuControl::Halt),              
         std::make_pair("Breakpoint",Architecture::CpuControl::Breakpoint),           
         std::make_pair("Trace",     Architecture::CpuControl::Trace),    

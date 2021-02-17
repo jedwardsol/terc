@@ -163,9 +163,6 @@ void CPU::CpuControl(tryte  operand)
         setReg(Register::RPC, reg(Register::RPC), ByPassRegisterChecks::no);
         break;
 
-    case Architecture::CpuControl::Nop:
-        break;
-
     case Architecture::CpuControl::Breakpoint:
         raiseException(Exception::Breakpoint, reg(Register::RPC));
         break;

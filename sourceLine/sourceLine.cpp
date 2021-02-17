@@ -331,7 +331,6 @@ std::optional<Architecture::CpuControl> SourceLine::asCpuControl(int index) cons
 
     const static std::map<std::string_view,Architecture::CpuControl> cpuControls
     {
-        {"Nop",         Architecture::CpuControl::Nop},        
         {"Halt",        Architecture::CpuControl::Halt},              
         {"Breakpoint",  Architecture::CpuControl::Breakpoint},           
         {"Trace",       Architecture::CpuControl::Trace},    
