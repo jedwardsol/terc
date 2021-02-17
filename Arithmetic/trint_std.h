@@ -84,9 +84,8 @@ inline std::string  to_string(const trint<N> &t)
 }
 
 
-/*
-
-inline std::ostream &operator<<(std::ostream &out, const tryte &t)
+template <int N>
+inline std::ostream &operator<<(std::ostream &out, const trint<N> &t)
 {
     std::ostringstream str;
 
@@ -94,7 +93,7 @@ inline std::ostream &operator<<(std::ostream &out, const tryte &t)
     return out << str.str();
 }
 
-
+/*
 inline std::istream &operator>>(std::istream &in,       tryte &t)
 {
     std::string input;

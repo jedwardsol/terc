@@ -138,6 +138,27 @@ public:
 
 
 
+    constexpr explicit trint(trint<N/2> low,  trint<N/2> high) : trint{}
+	{
+		static_assert(low.numTrits * 2 ==numTrits);
+
+		for(int i=0;i<N/2;i++)
+		{
+			setTrit(i, high.getTrit(i));
+		}
+
+		*this <<= N/2;
+
+		for(int i=0;i<N/2;i++)
+		{
+			setTrit(i, low.getTrit(i));
+		}
+	}
+
+
+
+
+
     trint(const trint&)             noexcept = default;
     trint(      trint&&)            noexcept = default;
     trint &operator=(const trint&)  noexcept = default;
@@ -167,13 +188,13 @@ public:
 		if(shift > N) shift = N;
 
 		// shift the top trits left
-		for(int i=N ;i<shift;i--)
+		for(int i=N-1 ;i>=shift;i--)
 		{
 			setTrit(i, getTrit(i-shift));
 		}
 
 		// zero the remaining low trits			
-		for(int i=shift-1;i<=0;i--)
+		for(int i=shift-1;i>=0;i--)
 		{
 			setTrit(i, trit{0});
 		}
@@ -234,8 +255,53 @@ constexpr inline bool operator==(const trint<N> &lhs, const trint<N> &rhs) noexc
 template <int N>
 constexpr inline bool operator!=(const trint<N> &lhs, const trint<N> &rhs) noexcept { return !(lhs == rhs);  }
 
+template <int N>
+constexpr inline bool operator< (const trint<N> &lhs, const trint<N> &rhs) noexcept 
+{ 
+	for(int i=N-1; i>=0; i--)
+	{
+		if(lhs.getTrit(i) < rhs.getTrit(i)) return true;
+		if(lhs.getTrit(i) > rhs.getTrit(i)) return false;
+	}
+
+	// they're equal
+	return false;
+}
 
 
+template <int N>
+constexpr inline bool operator> (const trint<N> &lhs, const trint<N> &rhs) noexcept { return   rhs < lhs;    }
+
+template <int N>
+constexpr inline bool operator<=(const trint<N> &lhs, const trint<N> &rhs) noexcept { return !(lhs  > rhs);  }
+
+template <int N>
+constexpr inline bool operator>=(const trint<N> &lhs, const trint<N> &rhs) noexcept { return !(lhs  < rhs);  }
+
+
+
+template <int N>
+constexpr inline trint<N> halfAdder(const trint<N> &lhs, const trint<N> &rhs,  trit &carry)
+{
+	trit		partialCarry;    
+	trint<N>	result;	
+
+	result.setTrit(0,  halfAdder(lhs.getTrit(0), rhs.getTrit(0), partialCarry));
+
+	for(int i=1;i<N;i++)
+	{
+		result.setTrit(i,  fullAdder(lhs.getTrit(i), rhs.getTrit(i), partialCarry));
+	}
+
+	carry = partialCarry;
+
+	return result;
+}
+
+
+
+
+// useful types
 
 using trybble = trint<3>;
 using tryte   = trint<6>;
