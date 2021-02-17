@@ -7,8 +7,8 @@
 #include "Arithmetic/trint.h"
 #include "Arithmetic/trint_std.h"
 
-#include "Architecture.h"
-#include "MemoryBlock.h"
+#include "Architecture/Architecture.h"
+#include "Architecture/MemoryBlock.h"
 #include "sixTritCPU.h"
 
 

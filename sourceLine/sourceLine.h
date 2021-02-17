@@ -7,7 +7,10 @@
 
 #include "Arithmetic/trint.h"
 #include "Arithmetic/trint_std.h"
-#include "Architecture/sixTritCPU.h"
+
+
+#include "Architecture/Architecture.h"
+#include "terc6cpu/sixTritCPU.h"
 
 
 

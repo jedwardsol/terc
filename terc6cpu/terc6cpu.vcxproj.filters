@@ -15,13 +15,18 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MemoryBlock.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IOPorts.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Architecture.h">
+    <ClCompile Include="sixTritCPU.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sixTritCpu_ConditionalInstructions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sixTritCpu_RegisterInstructions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="sixTritCPU.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

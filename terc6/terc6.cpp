@@ -12,12 +12,9 @@ namespace fs=std::filesystem;
 
 
 #include "Architecture/MemoryBlock.h"
-#include "Architecture/sixTritCPU.h"
+#include "terc6cpu/sixTritCPU.h"
 
 
-
-
-#pragma comment(lib,"Architecture")
 
 
 struct PrintingIOPorts : Architecture::IOPorts

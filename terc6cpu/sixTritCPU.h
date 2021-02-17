@@ -300,3 +300,5 @@ private:
 }
 
 
+
+#pragma comment(lib,"terc6cpu")

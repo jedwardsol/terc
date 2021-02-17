@@ -12,9 +12,9 @@
 #include "Arithmetic/trint_std.h"
 
 #include "Architecture/Architecture.h"
-#include "Architecture/sixTritCPU.h"
 #include "Architecture/MemoryBlock.h"
 #include "Architecture/IOPorts.h"
+#include "terc6cpu/sixTritCPU.h"
 
 
 

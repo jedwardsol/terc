@@ -18,10 +18,7 @@ public:
 private:
     static constexpr int numBytes{  ((N * 2)+7)/8 };
 
-
-
     std::array<uint8_t,numBytes>   trits;    
-
 
 public:
 

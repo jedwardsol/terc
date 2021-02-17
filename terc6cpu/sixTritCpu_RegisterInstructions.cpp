@@ -6,7 +6,7 @@
 #include "Arithmetic/trit.h"
 #include "Arithmetic/trint.h"
 
-#include "MemoryBlock.h"
+#include "Architecture/MemoryBlock.h"
 #include "sixTritCPU.h"
 
 

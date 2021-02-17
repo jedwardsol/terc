@@ -23,7 +23,7 @@ namespace fs=std::filesystem;
 #include "Arithmetic/trint_std.h"
 
 #include "Architecture/MemoryBlock.h"
-#include "Architecture/sixTritCPU.h"
+#include "terc6cpu/sixTritCPU.h"
 
 #include "sourceLine/sourceLine.h"
 
