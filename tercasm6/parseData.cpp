@@ -2,7 +2,7 @@
 
 void Assembler::parseData(const SourceLine &source)
 {
-    const auto   &first = source.asString(0).value();
+    const auto   first = source.asString(0).value();
 
 // Label
 

@@ -131,7 +131,7 @@ public:
 
 		for(int i=0;i<N;i++)
 		{
-			setTrit(i, toTrit( s[N-i-1] ));
+			setTrit(i, toTrit( s[N-i-1LL] ));
 		}
 	}
 

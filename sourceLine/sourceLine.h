@@ -32,7 +32,7 @@ public:
     }
 
 
-    std::optional<std::string_view> asString(int index) const noexcept
+    std::optional<std::string> asString(int index) const noexcept
     {
         if(index >= tokenised.size())
         {

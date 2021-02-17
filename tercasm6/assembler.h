@@ -64,7 +64,7 @@ public:
                 continue;
             }
 
-            const auto &token = source.asString(0).value();
+            const auto token = source.asString(0).value();
 
             if(token[0] == '.')
             {
