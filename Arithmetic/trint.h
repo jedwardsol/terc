@@ -156,6 +156,22 @@ public:
 	}
 
 
+	constexpr std::pair<trint<N/2>,trint<N/2>> halves() const
+	{
+		trint<N/2>	low{};
+		trint<N/2>	high{};
+
+		static_assert(low.numTrits * 2 ==numTrits);
+
+		for(int i=0;i<N/2;i++)
+		{
+			low.setTrit (i, getTrit(i));
+			high.setTrit(i,	getTrit(i + N/2));
+		}
+
+
+		return std::make_pair(low,high);
+	}
 
 
 

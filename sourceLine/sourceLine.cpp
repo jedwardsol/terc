@@ -83,7 +83,7 @@ std::optional<tryte> SourceLine::asTryte(int index) const noexcept
 }
 
 
-std::optional<tryte> SourceLine::asTrybble(int index) const noexcept
+std::optional<trybble> SourceLine::asTrybble(int index) const noexcept
 {
     {
         auto string = asString(index);
@@ -95,9 +95,7 @@ std::optional<tryte> SourceLine::asTrybble(int index) const noexcept
 
         try
         {
-            std::string  expanded = "000"s + std::string(string.value());
-
-            tryte   t{expanded};
+            trybble   t{string.value()};
                 
             return t;
         }
@@ -121,9 +119,7 @@ std::optional<tryte> SourceLine::asTrybble(int index) const noexcept
                 return std::nullopt;
             }
 
-            tryte   t{number.value()};
-
-                    
+            trybble   t{number.value()};
                 
             return t;
         }

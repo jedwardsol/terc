@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Arithmetic/tryte.h"
+#include "Arithmetic/trint.h"
 
 
 namespace Architecture

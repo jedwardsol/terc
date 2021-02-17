@@ -5,7 +5,8 @@
 #include <deque>
 #include <optional>
 
-#include "Arithmetic/tryte.h"
+#include "Arithmetic/trint.h"
+#include "Arithmetic/trint_std.h"
 #include "Architecture/sixTritCPU.h"
 
 

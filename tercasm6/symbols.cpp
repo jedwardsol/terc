@@ -53,7 +53,7 @@ void Assembler::resolveDependencies()
 
         symbol->numReferences++;
 
-        code[address + 1] = symbol->address;
+        code[static_cast<int>(address) + 1] = symbol->address;
     }
 
 

@@ -8,8 +8,6 @@ using namespace std::literals;
 
 #include "CPUTest.h"
 
-
-
                             
 TEST_F(CPUTest, LoadImmediate)
 {
@@ -57,11 +55,11 @@ TEST_F(CPUTest, AbsoluteJump)
     cpu.execute();
     cpu.execute();
 
-    EXPECT_EQ(cpu.reg(Register::RPC),   8);
-    EXPECT_EQ(cpu.reg(Register::REXC),  Architecture::Exception::Halted);
+    EXPECT_EQ(cpu.reg(Register::RPC),   tryte{8});
+    EXPECT_EQ(cpu.reg(Register::REXC),  tryte{Architecture::Exception::Halted});
     ASSERT_EQ(outs.size(), 1);
-    EXPECT_EQ(outs[0].first,  static_cast<int>(Architecture::KnownIOPorts::O_Exception));
-    EXPECT_EQ(outs[0].second, Architecture::Exception::Halted);
+    EXPECT_EQ(outs[0].first,  trybble{static_cast<int>(Architecture::KnownIOPorts::O_Exception)});
+    EXPECT_EQ(outs[0].second, tryte{Architecture::Exception::Halted});
 }
 
 
@@ -162,15 +160,15 @@ TEST_F(CPUTest, InOut)
 
     ASSERT_EQ( outs.size(), 2 );
 
-    EXPECT_EQ( outs[0].first,  tryte{1} );
+    EXPECT_EQ( outs[0].first,  trybble{1} );
     EXPECT_EQ( outs[0].second, tryte{-42} );
 
-    EXPECT_EQ( outs[1].first,  tryte{2} );
+    EXPECT_EQ( outs[1].first,  trybble{2} );
     EXPECT_EQ( outs[1].second, tryte{-42} );
 
     ASSERT_EQ( ins.size(), 2 );
-    EXPECT_EQ( ins[0],  tryte{3} );
-    EXPECT_EQ( ins[1],  tryte{4} );
+    EXPECT_EQ( ins[0],  trybble{3} );
+    EXPECT_EQ( ins[1],  trybble{4} );
 
     EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::Rn2), tryte{1});
     EXPECT_EQ(cpu.reg(Architecture::sixTrit::Register::Rn3), tryte{2});
@@ -201,27 +199,27 @@ TEST_F(CPUTest, DataLoadAndStore)
     assemble(Architecture::sixTrit::OpCode::Load,           Architecture::sixTrit::Register::R6,  addressReg, trybble{+1});      // load from data[282]
 
 
-    ASSERT_EQ( data[address-1],0);
-    ASSERT_EQ( data[address],  0);
-    ASSERT_EQ( data[address+1],0);
+    ASSERT_EQ( data[address-1],tryte{0});
+    ASSERT_EQ( data[address],  tryte{0});
+    ASSERT_EQ( data[address+1],tryte{0});
 
-    ASSERT_EQ( cpu.reg(Architecture::sixTrit::Register::R4),0);
-    ASSERT_EQ( cpu.reg(Architecture::sixTrit::Register::R5),0);
-    ASSERT_EQ( cpu.reg(Architecture::sixTrit::Register::R6),0);
+    ASSERT_EQ( cpu.reg(Architecture::sixTrit::Register::R4),tryte{0});
+    ASSERT_EQ( cpu.reg(Architecture::sixTrit::Register::R5),tryte{0});
+    ASSERT_EQ( cpu.reg(Architecture::sixTrit::Register::R6),tryte{0});
 
     do
     {
         cpu.execute();
-    } while(cpu.reg(Architecture::sixTrit::Register::REXC) <=0 );
+    } while(cpu.reg(Architecture::sixTrit::Register::REXC) <= tryte{0} );
 
 
-    EXPECT_EQ( data[address-1],value-1);
-    EXPECT_EQ( data[address],  value);
-    EXPECT_EQ( data[address+1],value+1);
+    EXPECT_EQ( data[address-1],tryte{value-1});
+    EXPECT_EQ( data[address],  tryte{value});
+    EXPECT_EQ( data[address+1],tryte{value+1});
 
-    EXPECT_EQ( cpu.reg(Architecture::sixTrit::Register::R4),value-1);
-    EXPECT_EQ( cpu.reg(Architecture::sixTrit::Register::R5),value);
-    EXPECT_EQ( cpu.reg(Architecture::sixTrit::Register::R6),value+1);
+    EXPECT_EQ( cpu.reg(Architecture::sixTrit::Register::R4),tryte{value-1});
+    EXPECT_EQ( cpu.reg(Architecture::sixTrit::Register::R5),tryte{value});
+    EXPECT_EQ( cpu.reg(Architecture::sixTrit::Register::R6),tryte{value+1});
 }
 
 
@@ -248,27 +246,27 @@ TEST_F(CPUTest, StackLoadAndStore)
     assemble(Architecture::sixTrit::OpCode::Load,       Architecture::sixTrit::Register::R6, addressReg, trybble{+1});      // load from data[282]
 
 
-    ASSERT_EQ( data[address-1],0);
-    ASSERT_EQ( data[address],  0);
-    ASSERT_EQ( data[address+1],0);
+    ASSERT_EQ( data[address-1],tryte{0});
+    ASSERT_EQ( data[address],  tryte{0});
+    ASSERT_EQ( data[address+1],tryte{0});
 
-    ASSERT_EQ( cpu.reg(Architecture::sixTrit::Register::R4),0);
-    ASSERT_EQ( cpu.reg(Architecture::sixTrit::Register::R5),0);
-    ASSERT_EQ( cpu.reg(Architecture::sixTrit::Register::R6),0);
+    ASSERT_EQ( cpu.reg(Architecture::sixTrit::Register::R4),tryte{0});
+    ASSERT_EQ( cpu.reg(Architecture::sixTrit::Register::R5),tryte{0});
+    ASSERT_EQ( cpu.reg(Architecture::sixTrit::Register::R6),tryte{0});
 
     do
     {
         cpu.execute();
-    } while(cpu.reg(Architecture::sixTrit::Register::REXC) <=0 );
+    } while(cpu.reg(Architecture::sixTrit::Register::REXC) <= tryte{0} );
 
 
-    EXPECT_EQ( data[address-1],value-1);
-    EXPECT_EQ( data[address],  value);
-    EXPECT_EQ( data[address+1],value+1);
+    EXPECT_EQ( data[address-1],tryte{value-1});
+    EXPECT_EQ( data[address],  tryte{value});
+    EXPECT_EQ( data[address+1],tryte{value+1});
 
-    EXPECT_EQ( cpu.reg(Architecture::sixTrit::Register::R4),value-1);
-    EXPECT_EQ( cpu.reg(Architecture::sixTrit::Register::R5),value);
-    EXPECT_EQ( cpu.reg(Architecture::sixTrit::Register::R6),value+1);
+    EXPECT_EQ( cpu.reg(Architecture::sixTrit::Register::R4),tryte{value-1});
+    EXPECT_EQ( cpu.reg(Architecture::sixTrit::Register::R5),tryte{value});
+    EXPECT_EQ( cpu.reg(Architecture::sixTrit::Register::R6),tryte{value+1});
 }
 
 TEST_F(CPUTest, AccessViolation)
@@ -283,7 +281,7 @@ TEST_F(CPUTest, AccessViolation)
     cpu.execute();
 
 
-    EXPECT_EQ( cpu.reg(Architecture::sixTrit::Register::REXC),Architecture::Exception::AccessViolation);
+    EXPECT_EQ( cpu.reg(Architecture::sixTrit::Register::REXC),tryte{Architecture::Exception::AccessViolation});
 }
 
 
@@ -291,10 +289,10 @@ TEST_F(CPUTest, PushPop)
 {
     auto rsp = Architecture::sixTrit::Register::RSP;
 
-    ASSERT_EQ( cpu.reg(rsp), 0 );
-    ASSERT_EQ( data[-1] , 0 );
-    ASSERT_EQ( data[-2] , 0 );
-    ASSERT_EQ( data[-3] , 0 );
+    ASSERT_EQ( cpu.reg(rsp), tryte{0} );
+    ASSERT_EQ( data[-1] ,    tryte{0} );
+    ASSERT_EQ( data[-2] ,    tryte{0} );
+    ASSERT_EQ( data[-3] ,    tryte{0} );
 
     assembleAssign(Architecture::sixTrit::Register::R0, tryte{42});
     cpu.execute();
@@ -302,39 +300,39 @@ TEST_F(CPUTest, PushPop)
 
     assemble(Architecture::sixTrit::OpCode::Push,           Architecture::sixTrit::Register::R0, 0 );
     cpu.execute();
-    EXPECT_EQ( cpu.reg(rsp), -1 );
-    EXPECT_EQ( data[ -1] , 42 );
+    EXPECT_EQ( cpu.reg(rsp), tryte{-1} );
+    EXPECT_EQ( data[ -1] ,   tryte{42} );
 
     assemble(Architecture::sixTrit::OpCode::Push,           Architecture::sixTrit::Register::R0, 0 );
     cpu.execute();
-    EXPECT_EQ( cpu.reg(rsp), -2 );
-    EXPECT_EQ( data[ -2] , 42 );
+    EXPECT_EQ( cpu.reg(rsp), tryte{-2} );
+    EXPECT_EQ( data[ -2] ,   tryte{42} );
 
     assemble(Architecture::sixTrit::OpCode::Push,           Architecture::sixTrit::Register::R0, 0 );
     cpu.execute();
-    EXPECT_EQ( cpu.reg(rsp), -3 );
-    EXPECT_EQ( data[ -3] , 42 );
+    EXPECT_EQ( cpu.reg(rsp), tryte{-3} );
+    EXPECT_EQ( data[ -3] ,   tryte{42} );
 
 
 //--
 
     assemble(Architecture::sixTrit::OpCode::Pop,            Architecture::sixTrit::Register::R1, 0 );
     cpu.execute();
-    EXPECT_EQ( cpu.reg(rsp), -2 );
-    EXPECT_EQ( cpu.reg(Register::R1), 42 );
+    EXPECT_EQ( cpu.reg(rsp),          tryte{-2} );
+    EXPECT_EQ( cpu.reg(Register::R1), tryte{42} );
 
     assemble(Architecture::sixTrit::OpCode::Pop,            Architecture::sixTrit::Register::R2, 0 );
     cpu.execute();
-    EXPECT_EQ( cpu.reg(rsp), -1 );
-    EXPECT_EQ( cpu.reg(Register::R2), 42 );
+    EXPECT_EQ( cpu.reg(rsp),            tryte{-1} );
+    EXPECT_EQ( cpu.reg(Register::R2),   tryte{42} );
 
     assemble(Architecture::sixTrit::OpCode::Pop,            Architecture::sixTrit::Register::R3, 0 );
     cpu.execute();
-    EXPECT_EQ( cpu.reg(rsp), 0 );
-    EXPECT_EQ( cpu.reg(Register::R3), 42 );
+    EXPECT_EQ( cpu.reg(rsp),            tryte{0} );
+    EXPECT_EQ( cpu.reg(Register::R3), tryte{42} );
 
 
-    EXPECT_NE( cpu.reg(Register::REXC), Architecture::Exception::AccessViolation );
+    EXPECT_NE( cpu.reg(Register::REXC), tryte{Architecture::Exception::AccessViolation });
 }
 
 
@@ -343,7 +341,7 @@ TEST_F(CPUTest, StackOverflow)
 {
     auto rsp = Architecture::sixTrit::Register::RSP;
 
-    ASSERT_EQ( cpu.reg(rsp), 0 );
+    ASSERT_EQ( cpu.reg(rsp), tryte{0} );
 
     assembleAssign(Architecture::sixTrit::Register::R0, tryte{42});
 
@@ -361,13 +359,13 @@ TEST_F(CPUTest, StackOverflow)
     do
     {
         cpu.execute();
-    } while(cpu.reg(Architecture::sixTrit::Register::REXC) <=0 );
+    } while(cpu.reg(Architecture::sixTrit::Register::REXC) <= tryte{0} );
 
 
 
-    EXPECT_EQ( cpu.reg(Register::REXC), Architecture::Exception::AccessViolation );
-    EXPECT_EQ( cpu.reg(rsp), data.negativeSize()-1);
-    EXPECT_EQ( data[ -1 ] , 42 );
+    EXPECT_EQ( cpu.reg(Register::REXC), tryte{Architecture::Exception::AccessViolation} );
+    EXPECT_EQ( cpu.reg(rsp), tryte{data.negativeSize()-1});
+    EXPECT_EQ( data[ -1 ] , tryte{42} );
 
 }
 
@@ -378,7 +376,7 @@ TEST_F(CPUTest, StackUnderflow)
 {
     auto rsp = Architecture::sixTrit::Register::RSP;
 
-    ASSERT_EQ( cpu.reg(rsp), 0 );
+    ASSERT_EQ( cpu.reg(rsp), tryte{0} );
 
     assembleAssign(Architecture::sixTrit::Register::R0, tryte{42});
 
@@ -398,20 +396,19 @@ TEST_F(CPUTest, StackUnderflow)
     do
     {
         cpu.execute();
-    } while(cpu.reg(Architecture::sixTrit::Register::REXC) <=0 );
+    } while(cpu.reg(Architecture::sixTrit::Register::REXC) <= tryte{0} );
 
 
-
-    EXPECT_EQ( cpu.reg(Register::REXC), Architecture::Exception::AccessViolation );
-    EXPECT_EQ( cpu.reg(Register::R0),   42 );
-    EXPECT_EQ( cpu.reg(rsp), 0 );
+    EXPECT_EQ( cpu.reg(Register::REXC), tryte{Architecture::Exception::AccessViolation} );
+    EXPECT_EQ( cpu.reg(Register::R0),   tryte{42} );
+    EXPECT_EQ( cpu.reg(rsp),            tryte{0} );
 }
 
 
 
 TEST_F(CPUTest, Flags)
 {
-    ASSERT_EQ( cpu.reg(Register::RFlags), 0);
+    ASSERT_EQ( cpu.reg(Register::RFlags), tryte{0});
 
     EXPECT_EQ( cpu.getFlag(Architecture::Flag::Sign),        trit{0});
     EXPECT_EQ( cpu.getFlag(Architecture::Flag::ExecutedConditional), trit{0});
@@ -642,9 +639,9 @@ TEST_F(CPUTest, Shift0)
     ASSERT_EQ( cpu.reg(Register::R1),    tryte{"000+00"});
 
 
-    assemble(Architecture::sixTrit::Shift, Architecture::sixTrit::Register::Rn1, trybble{0});
-    assemble(Architecture::sixTrit::Shift, Architecture::sixTrit::Register::R0,  trybble{0});
-    assemble(Architecture::sixTrit::Shift, Architecture::sixTrit::Register::R1,  trybble{0});
+    assemble(Architecture::sixTrit::Shift, Architecture::sixTrit::Register::Rn1, trybble{0}, trybble{0});
+    assemble(Architecture::sixTrit::Shift, Architecture::sixTrit::Register::R0,  trybble{0}, trybble{0});
+    assemble(Architecture::sixTrit::Shift, Architecture::sixTrit::Register::R1,  trybble{0}, trybble{0});
 
 ///
     cpu.execute();
@@ -676,9 +673,9 @@ TEST_F(CPUTest, Shift2)
     ASSERT_EQ( cpu.reg(Register::R1),    tryte{"000+00"});
 
 
-    assemble(Architecture::sixTrit::Shift, Architecture::sixTrit::Register::Rn1, trybble{2});
-    assemble(Architecture::sixTrit::Shift, Architecture::sixTrit::Register::R0,  trybble{2});
-    assemble(Architecture::sixTrit::Shift, Architecture::sixTrit::Register::R1,  trybble{2});
+    assemble(Architecture::sixTrit::Shift, Architecture::sixTrit::Register::Rn1, trybble{2}, trybble{0});
+    assemble(Architecture::sixTrit::Shift, Architecture::sixTrit::Register::R0,  trybble{2}, trybble{0});
+    assemble(Architecture::sixTrit::Shift, Architecture::sixTrit::Register::R1,  trybble{2}, trybble{0});
 
 ///
     cpu.execute();
@@ -710,9 +707,9 @@ TEST_F(CPUTest, Shiftn2)
     ASSERT_EQ( cpu.reg(Register::R1),    tryte{"00+000"});
 
 
-    assemble(Architecture::sixTrit::Shift, Architecture::sixTrit::Register::Rn1, trybble{-2});
-    assemble(Architecture::sixTrit::Shift, Architecture::sixTrit::Register::R0,  trybble{-2});
-    assemble(Architecture::sixTrit::Shift, Architecture::sixTrit::Register::R1,  trybble{-2});
+    assemble(Architecture::sixTrit::Shift, Architecture::sixTrit::Register::Rn1, trybble{-2}, trybble{0});
+    assemble(Architecture::sixTrit::Shift, Architecture::sixTrit::Register::R0,  trybble{-2}, trybble{0});
+    assemble(Architecture::sixTrit::Shift, Architecture::sixTrit::Register::R1,  trybble{-2}, trybble{0});
 
 ///
     cpu.execute();

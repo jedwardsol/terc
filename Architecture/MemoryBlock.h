@@ -11,7 +11,7 @@ using namespace std::literals;
 #include <system_error>
 #include <cerrno>
 #include <cstdint>
-#include "Arithmetic/tryte.h"
+#include "Arithmetic/trint.h"
 
 
 
@@ -45,6 +45,18 @@ public:
     {
         return memory.at(index+zeroOffset);
     }
+
+
+    tryte &operator[](tryte index)
+    {
+        return memory.at(static_cast<int>(index)+zeroOffset);
+    }
+
+    const tryte &operator[](tryte index) const
+    {
+        return memory.at(static_cast<int>(index)+zeroOffset);
+    }
+
 
 #pragma warning(pop)
 

@@ -19,8 +19,8 @@ namespace fs=std::filesystem;
 #include "Arithmetic/Arithmetic.h"
 #include "Arithmetic/trit.h"
 #include "Arithmetic/trit_std.h"
-#include "Arithmetic/tryte.h"
-#include "Arithmetic/tryte_std.h"
+#include "Arithmetic/trint.h"
+#include "Arithmetic/trint_std.h"
 
 #include "Architecture/MemoryBlock.h"
 #include "Architecture/sixTritCPU.h"

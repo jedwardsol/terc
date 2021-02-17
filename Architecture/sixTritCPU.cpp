@@ -4,7 +4,8 @@
 
 #include "Arithmetic/Arithmetic.h"
 #include "Arithmetic/trit.h"
-#include "Arithmetic/tryte.h"
+#include "Arithmetic/trint.h"
+#include "Arithmetic/trint_std.h"
 
 #include "Architecture.h"
 #include "MemoryBlock.h"
@@ -20,7 +21,7 @@ std::optional<std::pair<tryte, tryte>> CPU::fetch()
     try
     {
         auto operation = code[reg(Register::RPC)];
-        auto  operand  = code[reg(Register::RPC)+1];
+        auto  operand  = code[static_cast<int>(reg(Register::RPC))+1];
 
         return std::make_pair(operation,operand);
     }
@@ -47,9 +48,7 @@ void CPU::execute()
 
     auto  [operation, operand] = instruction.value();
 
-
-
-    auto opcode = static_cast<OpCode>  (static_cast<int>(operation.trybbles().first));
+    auto opcode = static_cast<OpCode>  (static_cast<int>(operation.halves().first));
 
 
     switch(opcode)
@@ -93,8 +92,8 @@ void CPU::execute()
 
 void CPU::raiseException(Exception code, tryte PC)
 {
-    static auto exceptionPort = tryte{ static_cast<int>( KnownIOPorts::O_Exception)};
-           auto exceptionCode = tryte{ static_cast<int>( code)};
+    static auto exceptionPort = trybble { static_cast<int>( KnownIOPorts::O_Exception)};
+           auto exceptionCode = tryte   { static_cast<int>( code)};
 
     setReg(Register::REXC, exceptionCode, ByPassRegisterChecks::yes);
     setReg(Register::REXA, PC,            ByPassRegisterChecks::yes);
@@ -118,7 +117,7 @@ bool    CPU::checkPC()
         return false;
     }
 
-    if( reg(Register::RPC) % 2 == 1)
+    if( static_cast<int>(reg(Register::RPC)) % 2 == 1)
     {
         raiseException(Exception::BadPC, reg(Register::RPC));
         return false;
@@ -155,7 +154,7 @@ bool    CPU::updatePC()
 
 void CPU::CpuControl(tryte  operand)
 {
-    auto cpuControl = static_cast<Architecture::CpuControl>(static_cast<int>(operand.trybbles().first));
+    auto cpuControl = static_cast<Architecture::CpuControl>(static_cast<int>(operand.halves().first));
 
     switch(cpuControl)
     {

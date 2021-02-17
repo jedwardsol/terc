@@ -170,8 +170,6 @@
     <ClInclude Include="trint_std.h" />
     <ClInclude Include="trit.h" />
     <ClInclude Include="trit_std.h" />
-    <ClInclude Include="tryte.h" />
-    <ClInclude Include="tryte_std.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dummy.cpp" />

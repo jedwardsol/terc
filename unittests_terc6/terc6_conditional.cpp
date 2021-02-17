@@ -223,7 +223,7 @@ TEST_F(CPUTest, CallImmediate)
 
     cpu.execute();
     ASSERT_EQ(outs.size(),1);
-    EXPECT_EQ(outs[0].first, 1);
+    EXPECT_EQ(outs[0].first, trybble{1});
 
 
 // ret
@@ -238,8 +238,8 @@ TEST_F(CPUTest, CallImmediate)
 
     cpu.execute();
     ASSERT_EQ(outs.size(),2);
-    EXPECT_EQ(outs[0].first, 1);
-    EXPECT_EQ(outs[1].first, 2);
+    EXPECT_EQ(outs[0].first, trybble{1});
+    EXPECT_EQ(outs[1].first, trybble{2});
 }
 
 
@@ -279,7 +279,7 @@ TEST_F(CPUTest, CallRegister)
 
     cpu.execute();
     ASSERT_EQ(outs.size(),1);
-    EXPECT_EQ(outs[0].first, 1);
+    EXPECT_EQ(outs[0].first, trybble{1});
 
 
 // pop/ret
@@ -296,6 +296,6 @@ TEST_F(CPUTest, CallRegister)
 
     cpu.execute();
     ASSERT_EQ(outs.size(),2);
-    EXPECT_EQ(outs[0].first, 1);
-    EXPECT_EQ(outs[1].first, 2);
+    EXPECT_EQ(outs[0].first, trybble{1});
+    EXPECT_EQ(outs[1].first, trybble{2});
 }

@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "Arithmetic/tryte.h"
-#include "Arithmetic/tryte_std.h"
+#include "Arithmetic/trint.h"
+#include "Arithmetic/trint_std.h"
 
 
 #pragma comment(lib,"Arithmetic")

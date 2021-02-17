@@ -5,7 +5,7 @@
 
 #include "Arithmetic/Arithmetic.h"
 #include "Arithmetic/trit.h"
-#include "Arithmetic/tryte.h"
+#include "Arithmetic/trint.h"
 
 #include "Architecture.h"
 #include "MemoryBlock.h"
@@ -91,8 +91,8 @@ bool  CPU::isConditionTrue(Condition condition)
 
 void CPU::executeConditionalInstructions(tryte  operation, tryte operand)
 {
-    auto opcode         = static_cast<OpCode>   (static_cast<int>(operation.trybbles().first));
-    auto opcondition    = static_cast<Condition>(static_cast<int>(operation.trybbles().second));
+    auto opcode         = static_cast<OpCode>   (static_cast<int>(operation.halves().first));
+    auto opcondition    = static_cast<Condition>(static_cast<int>(operation.halves().second));
 
     if(!validCondition(opcondition))
     {
@@ -148,7 +148,7 @@ void CPU::jumpImmediate(tryte operand)
 
 void CPU::jumpRegister (tryte operand)
 {
-    auto jumpReg  = static_cast<Register>(static_cast<int>(operand.trybbles().first));
+    auto jumpReg  = static_cast<Register>(static_cast<int>(operand.halves().first));
     auto jumpDest = reg(jumpReg);
     jumpImmediate(jumpDest);
 }

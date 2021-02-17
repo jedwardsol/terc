@@ -93,8 +93,8 @@ inline std::ostream &operator<<(std::ostream &out, const trint<N> &t)
     return out << str.str();
 }
 
-/*
-inline std::istream &operator>>(std::istream &in,       tryte &t)
+template <int N>
+inline std::istream &operator>>(std::istream &in,       trint<N> &t)
 {
     std::string input;
 
@@ -104,7 +104,7 @@ inline std::istream &operator>>(std::istream &in,       tryte &t)
 
     try
     {
-        t = tryte{input};
+        t = trint<N>{input};
         return in;
     }
     catch(...)
@@ -116,7 +116,7 @@ inline std::istream &operator>>(std::istream &in,       tryte &t)
     {
         int i = std::stoi(input);
 
-        t=tryte{i};
+        t=trint<N>{i};
 
         return in;
     }
@@ -128,4 +128,3 @@ inline std::istream &operator>>(std::istream &in,       tryte &t)
     return in;
 }
 
-*/

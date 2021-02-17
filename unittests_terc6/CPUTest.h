@@ -8,8 +8,8 @@
 #include <tuple>
 
 #include "Arithmetic/Arithmetic.h"
-#include "Arithmetic/tryte.h"
-#include "Arithmetic/tryte_std.h"
+#include "Arithmetic/trint.h"
+#include "Arithmetic/trint_std.h"
 
 #include "Architecture/Architecture.h"
 #include "Architecture/sixTritCPU.h"
@@ -85,9 +85,21 @@ protected:
         tryte   first  { trybble{static_cast<int>(opcode)}, trybble{static_cast<int>(reg)}};
         tryte   second { operand };
 
-        code[PC++]   = first;
+        code[PC++] = first;
         code[PC++] = second;
     }
+
+    void assemble(Architecture::sixTrit::OpCode   opcode,
+                  Architecture::sixTrit::Register reg,
+                  tryte                           operand)
+    {
+        tryte   first  { trybble{static_cast<int>(opcode)}, trybble{static_cast<int>(reg)}};
+
+        code[PC++] = first;
+        code[PC++] = operand;
+    }
+
+
 
     void assemble(Architecture::sixTrit::OpCode   opcode,
                   Architecture::sixTrit::Register reg,
@@ -169,8 +181,8 @@ protected:
 
 
 
-    int                                 PC{0};
-    std::vector<std::pair<tryte,tryte>> outs;
-    std::vector<tryte>                  ins;
-    int                                 traceCounter{};
+    int                                     PC{0};
+    std::vector<std::pair<trybble,tryte>>   outs;
+    std::vector<trybble>                    ins;
+    int                                     traceCounter{};
 };

@@ -21,16 +21,10 @@
     <ClInclude Include="trit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="tryte.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="trint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="trit_std.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="tryte_std.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="trint_std.h">

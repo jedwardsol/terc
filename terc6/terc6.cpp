@@ -6,8 +6,8 @@
 namespace fs=std::filesystem;
 
 #include "Arithmetic/Arithmetic.h"
-#include "Arithmetic/tryte.h"
-#include "Arithmetic/tryte_std.h"
+#include "Arithmetic/trint.h"
+#include "Arithmetic/trint_std.h"
 
 
 
@@ -35,11 +35,11 @@ struct PrintingIOPorts : Architecture::IOPorts
         }
         else if(port == Architecture::KnownIOPorts::IO_ASCII)
         {
-            std::cout << static_cast<char>(data);
+            std::cout << static_cast<char>(static_cast<int>(data));
         }
         else if(port == Architecture::KnownIOPorts::O_Exception)
         {
-            if(data != Architecture::Exception::Halted)
+            if(data != tryte{Architecture::Exception::Halted})
             {
                 std::cout << "\nException " << data << '\n';
             }
@@ -108,12 +108,12 @@ try
     {
         instructionCount++;
         cpu.execute();
-    } while(   cpu.reg(Architecture::sixTrit::Register::REXC) <= 0
+    } while(   cpu.reg(Architecture::sixTrit::Register::REXC) <= tryte{0}
             && instructionCount < instructionCountLimit);
 
     std::cout << "\n";
 
-    if(cpu.reg(Architecture::sixTrit::Register::REXC) == Architecture::Exception::Halted)
+    if(cpu.reg(Architecture::sixTrit::Register::REXC) == tryte{Architecture::Exception::Halted})
     {
         std::cout << "Program ran successfully\n";
     }

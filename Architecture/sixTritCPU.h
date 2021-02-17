@@ -5,7 +5,7 @@
 #include <optional>
 #include <cassert>
 #include "Arithmetic/Arithmetic.h"
-#include "Arithmetic/tryte.h"
+#include "Arithmetic/trint.h"
 #include "Arithmetic/trit.h"
 
 #include <Architecture/Architecture.h>
@@ -171,7 +171,7 @@ public:
             }
             else if(   r == Register::RSP)
             {
-                if(value > 0)
+                if(value > tryte{0})
                 {
                     // RSP can't be in data zone
                     raiseException(Exception::AccessViolation, reg(Register::RPC));

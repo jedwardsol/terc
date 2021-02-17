@@ -4,7 +4,7 @@
 
 #include "Arithmetic/Arithmetic.h"
 #include "Arithmetic/trit.h"
-#include "Arithmetic/tryte.h"
+#include "Arithmetic/trint.h"
 
 #include "MemoryBlock.h"
 #include "sixTritCPU.h"
@@ -16,8 +16,8 @@ namespace Architecture::sixTrit
 
 void CPU::executeRegisterInstructions(tryte  operation, tryte operand)
 {
-    auto opcode = static_cast<OpCode>  (static_cast<int>(operation.trybbles().first));
-    auto opreg  = static_cast<Register>(static_cast<int>(operation.trybbles().second));
+    auto opcode = static_cast<OpCode>  (static_cast<int>(operation.halves().first));
+    auto opreg  = static_cast<Register>(static_cast<int>(operation.halves().second));
 
     switch(opcode)
     {
@@ -41,7 +41,7 @@ void CPU::executeRegisterInstructions(tryte  operation, tryte operand)
     case OpCode::Shift:
 
         {
-            auto shift = static_cast<int>(operand.trybbles().first);
+            auto shift = static_cast<int>(operand.halves().first);
 
             auto t = reg(opreg);
 
@@ -62,7 +62,7 @@ void CPU::executeRegisterInstructions(tryte  operation, tryte operand)
 
     case OpCode::Copy:
         {
-            auto srcreg  = static_cast<Register>(static_cast<int>(operand.trybbles().first));
+            auto srcreg  = static_cast<Register>(static_cast<int>(operand.halves().first));
             setReg(opreg, reg(srcreg), ByPassRegisterChecks::no);
             updateSignFlag(opreg) ;
         }
@@ -70,7 +70,7 @@ void CPU::executeRegisterInstructions(tryte  operation, tryte operand)
 
     case OpCode::Out:
         {
-            auto exception = ioPorts.out(operand.trybbles().first, reg(opreg));
+            auto exception = ioPorts.out(operand.halves().first, reg(opreg));
 
             if(exception != Exception::Okay)
             {
@@ -83,7 +83,7 @@ void CPU::executeRegisterInstructions(tryte  operation, tryte operand)
         {
             tryte value;
 
-            auto exception = ioPorts.in(operand.trybbles().first, value);
+            auto exception = ioPorts.in(operand.halves().first, value);
 
             if(exception != Exception::Okay)
             {
@@ -99,15 +99,15 @@ void CPU::executeRegisterInstructions(tryte  operation, tryte operand)
 
     case OpCode::Load:
         load(opreg,
-             static_cast<sixTrit::Register>(operand.trybbles().first.operator int()),
-             operand.trybbles().second);
+             static_cast<sixTrit::Register>(operand.halves().first.operator int()),
+             operand.halves().second);
 
         break;
 
     case OpCode::Store:
         store(opreg,
-              static_cast<sixTrit::Register>(operand.trybbles().first.operator int()),
-              operand.trybbles().second);
+              static_cast<sixTrit::Register>(operand.halves().first.operator int()),
+              operand.halves().second);
         break;
 
 
@@ -142,7 +142,7 @@ void CPU::executeRegisterInstructions(tryte  operation, tryte operand)
         case OpCode::CmpR:
         {
             auto X  =   reg(opreg);
-            auto rY = static_cast<Register>(static_cast<int>(operand.trybbles().first));
+            auto rY = static_cast<Register>(static_cast<int>(operand.halves().first));
             auto Y  =   reg(rY);
 
             if(X < Y)
@@ -180,18 +180,18 @@ void CPU::executeRegisterInstructions(tryte  operation, tryte operand)
         case OpCode::AddR:
         {
             auto t    =  reg(opreg);
-            auto rY   =  static_cast<Register>(static_cast<int>(operand.trybbles().first));
+            auto rY   =  static_cast<Register>(static_cast<int>(operand.halves().first));
             auto Y    =  reg(rY);
-            auto sign =  operand.trybbles().second;
+            auto sign =  operand.halves().second;
 
 
             trit carry;
             
-            if(sign == tryte{0})
+            if(sign == trybble{0})
             {
                 Y=tryte{0};
             }
-            else if(sign < tryte{0})
+            else if(sign < trybble{0})
             {
                 Y=-Y;                
             }
@@ -260,8 +260,10 @@ std::optional<tryte> CPU::calculateAddress(Architecture::sixTrit::Register   add
 {
     auto address = reg(addressReg);
 
+    auto promotedOffset = tryte{offset, trybble{0}};    // TODO
+
     trit    carry;
-    address = halfAdder(address,offset,carry);
+    address = halfAdder(address,promotedOffset,carry);
 
     if(carry != trit{0})
     {
@@ -278,7 +280,7 @@ void CPU::push (Architecture::sixTrit::Register   sourceReg)
     
     if(address)
     {
-        if(address.value() >= 0)
+        if(address.value() >= tryte{0})
         {
             raiseException(Exception::AccessViolation, reg(Register::RPC));
         }
@@ -304,7 +306,7 @@ void CPU::pop  (Architecture::sixTrit::Register   destReg)
     
     if(newAddress)
     {
-        if(newAddress.value() > 0)
+        if(newAddress.value() > tryte{0})
         {
             raiseException(Exception::AccessViolation, reg(Register::RPC));
         }
