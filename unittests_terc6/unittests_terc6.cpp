@@ -1,6 +1,5 @@
 #include "googletest/gtest.h"
 
-#pragma comment(lib,"arithmetic")
 #pragma comment(lib,"architecture")
 
 

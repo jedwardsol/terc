@@ -16,7 +16,9 @@ public:
     static constexpr int numTrits{N};
 
 private:
-    static constexpr int numBytes{ bytesNeeded(N) };
+    static constexpr int numBytes{  ((N * 2)+7)/8 };
+
+
 
     std::array<uint8_t,numBytes>   trits;    
 

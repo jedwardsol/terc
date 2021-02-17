@@ -1,6 +1,5 @@
 #include "googletest/gtest.h"
 
-#pragma comment(lib,"arithmetic")
 
 
 int main(int argc, char *argv[]) 

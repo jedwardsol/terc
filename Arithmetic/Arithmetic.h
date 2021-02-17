@@ -5,8 +5,6 @@ using namespace std::literals;
 #include <exception>
 #include <stdexcept>
 
-
-
 constexpr int     pow3(int n)
 {
     int result = 1;
@@ -18,8 +16,6 @@ constexpr int     pow3(int n)
 
     return result;
 }
-
-
 
 
 namespace BalancedTernary
@@ -43,12 +39,5 @@ constexpr int     minValue(int numTrits)
 
 }
 
-
-constexpr int bytesNeeded(int numTrits)
-{
-    int bitsNeeded = numTrits * 2;
-    int bytesNeeded = (bitsNeeded + 7) / 8;
-    return bytesNeeded;
-}
 
 

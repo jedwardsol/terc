@@ -171,9 +171,6 @@
     <ClInclude Include="trit.h" />
     <ClInclude Include="trit_std.h" />
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="dummy.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

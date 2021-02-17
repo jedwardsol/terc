@@ -4,7 +4,6 @@
 #include "Arithmetic/trint_std.h"
 
 
-#pragma comment(lib,"Arithmetic")
 
 
 int main()

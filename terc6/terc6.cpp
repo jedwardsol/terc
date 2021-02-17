@@ -17,7 +17,6 @@ namespace fs=std::filesystem;
 
 
 
-#pragma comment(lib,"Arithmetic")
 #pragma comment(lib,"Architecture")
 
 

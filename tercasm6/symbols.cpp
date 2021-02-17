@@ -4,7 +4,6 @@
 #include <cassert>
 #include "assembler.h"
 
-#pragma comment(lib,"Arithmetic")
 
 using namespace std::literals;
 
