@@ -12,11 +12,12 @@ class trit
 {
 public:
     int8_t      t : 2;
+    int8_t unused : 6;
 
-    constexpr trit() noexcept : t{0}
+    constexpr trit() noexcept : t{0}, unused{0}
     {}
 
-    constexpr explicit trit(char c) :t{0}
+    constexpr explicit trit(char c) : trit{}
     {
         switch(c)
         {
@@ -27,7 +28,7 @@ public:
         }
     }
 
-    constexpr explicit trit(int8_t i)  : t{i}
+    constexpr explicit trit(int8_t i)  : t{i} , unused{0}
     {
         if(i < -1 || i > 1)
         {

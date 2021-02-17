@@ -27,10 +27,17 @@ public:
 	{
 		assert(i < N);
 
-		auto byte = trits.at(i / 4);
-		byte >>= (i % 4);
+		auto byte  = trits.at(i / 4);
+		auto shift = (i % 4) * 2;
 
-		return trit{ int{ byte & 0b11 } };
+		byte >>= shift;
+		byte &= 0b11;
+		
+		trit t{};
+
+		memcpy(&t,&byte,1);
+
+		return t;
 	}
 
 	constexpr void	setTrit(int i, trit  t)
@@ -38,12 +45,13 @@ public:
 		assert(i < N);
 
 		auto &byte = trits.at(i / 4);
+		auto shift = (i % 4) * 2;
 
-		auto	mask = 0b11   << (i%4);
-		uint8_t	data;
-		memcpy(&data,&t,1);
-		data <<=i%4;
+		auto	mask = 0b11   << shift;
+		int8_t  data{t.t};
 
+		data <<= shift;
+		data &=  mask;
 		byte &= ~mask;
 		byte |=  data;
 
@@ -60,7 +68,7 @@ public:
 		if(    value >  BalancedTernary::maxValue(numTrits)
 		   ||  value < -BalancedTernary::maxValue(numTrits))
 		{
-            throw std::out_of_range("trint constructor  "s + std::to_string(value));
+            throw std::out_of_range("trint<"s + std::to_string(N) + "> constructor "s + std::to_string(value));
 		}
 
 
@@ -90,7 +98,7 @@ public:
 			else 
 			{
 				setTrit(N-1, trit{-1});
-				i++;
+				value++;
 			}
  
 			value /= 3;
@@ -101,6 +109,34 @@ public:
 			*this=-*this;
 		}
 	}
+
+
+    explicit trint(const std::string_view s) : trint{}
+	{
+		if(s.size() != N)
+		{
+            throw std::out_of_range("trint<"s + std::to_string(N) + "> constructor size "s + std::string{s});
+		}
+
+
+		auto toTrit = [](char c) ->trit
+		{
+			switch(c)
+			{
+			case '-': return trit{-1};
+			case '0': return trit{ 0};
+			case '+': return trit{ 1};
+			default : throw std::out_of_range("tryte constructor char "s + c);
+			}
+		};
+
+		for(int i=0;i<N;i++)
+		{
+			setTrit(i, toTrit( s[N-i-1] ));
+		}
+	}
+
+
 
     trint(const trint&)             noexcept = default;
     trint(      trint&&)            noexcept = default;
@@ -125,14 +161,19 @@ public:
 
     constexpr trint &operator<<=(int shift) noexcept
     {
-		auto offset=std::max( shift-N, N);
+		assert(shift >= 0);
 
-		for(int i=N ;i<offset ;i--)
+		if(shift < 0) shift = 0;
+		if(shift > N) shift = N;
+
+		// shift the top trits left
+		for(int i=N ;i<shift;i--)
 		{
-			setTrit(i, getTrit(i-offset));
+			setTrit(i, getTrit(i-shift));
 		}
 
-		for(int i=offset ;i<=0;i--)
+		// zero the remaining low trits			
+		for(int i=shift-1;i<=0;i--)
 		{
 			setTrit(i, trit{0});
 		}
@@ -142,14 +183,19 @@ public:
 
     constexpr trint &operator>>=(int shift) noexcept
     {
-		auto offset=std::max( shift-N, N);
+		assert(shift >= 0);
 
-		for(int i=0;i<N-offset;i++)
+		if(shift < 0) shift = 0;
+		if(shift > N) shift = N;
+
+		// shift the low trits right
+		for(int i=0;i<N-shift;i++)
 		{
-			setTrit(i, getTrit(i+offset));
+			setTrit(i, getTrit(i+shift));
 		}
 
-		for(int i=N-offset;i<N;i++)
+		// zero the remain top trits
+		for(int i=N-shift;i<N;i++)
 		{
 			setTrit(i, trit{0});
 		}
@@ -158,7 +204,38 @@ public:
     }
 
 
+    constexpr explicit operator    int() const
+	{
+		int result{};
+
+		for(int i=0; i<N;i++)
+		{
+			result += static_cast<int>(getTrit(i)) * pow3(i);
+		}
+
+		return result;
+	}
 };
+
+template <int N>
+constexpr inline bool operator==(const trint<N> &lhs, const trint<N> &rhs) noexcept 
+{ 
+	for(int i=0;i<N;i++)
+	{
+		if( lhs.getTrit(i) != rhs.getTrit(i))
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+template <int N>
+constexpr inline bool operator!=(const trint<N> &lhs, const trint<N> &rhs) noexcept { return !(lhs == rhs);  }
+
+
+
 
 using trybble = trint<3>;
 using tryte   = trint<6>;
