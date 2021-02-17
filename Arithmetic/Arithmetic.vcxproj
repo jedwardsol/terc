@@ -165,13 +165,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Arithmetic_std.cpp" />
+    <ClInclude Include="Arithmetic.h" />
+    <ClInclude Include="trint.h" />
+    <ClInclude Include="trint_std.h" />
+    <ClInclude Include="trit.h" />
+    <ClInclude Include="trit_std.h" />
+    <ClInclude Include="tryte.h" />
+    <ClInclude Include="tryte_std.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Arithmetic.h" />
-    <ClInclude Include="Arithmetic_std.h" />
-    <ClInclude Include="trit.h" />
-    <ClInclude Include="tryte.h" />
+    <ClCompile Include="dummy.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

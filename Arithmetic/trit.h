@@ -91,7 +91,6 @@ public:
         return previous;
     }
 
-
     constexpr trit &operator--() 
     {
         if(t == -1)
@@ -100,10 +99,8 @@ public:
         }
 
         t--;
-
         return *this;
     }
-
 
     constexpr trit operator--(int) 
     {
@@ -116,8 +113,6 @@ public:
         operator--();
         return previous;
     }
-
-
 
     constexpr trit &operator+=(const trit &rhs) 
     {
@@ -160,7 +155,7 @@ static_assert(sizeof(trit) ==1);
 
 
 constexpr inline bool operator==(const trit &lhs, const trit &rhs) noexcept { return lhs.t == rhs.t; }
-constexpr inline bool operator!=(const trit &lhs, const trit &rhs) noexcept { return !operator==(lhs , rhs);  }
+constexpr inline bool operator!=(const trit &lhs, const trit &rhs) noexcept { return !(lhs == rhs);  }
 
 constexpr inline bool operator< (const trit &lhs, const trit &rhs) noexcept { return   lhs.t < rhs.t;}
 constexpr inline bool operator> (const trit &lhs, const trit &rhs) noexcept { return   rhs < lhs;    }
@@ -202,5 +197,3 @@ constexpr inline trit  fullAdder(const trit &lhs, const trit &rhs,  trit &carry)
 
     return finalSum;
 }
-
-

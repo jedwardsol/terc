@@ -1,0 +1,4 @@
+namespace Arithmetic
+{
+int a;
+}

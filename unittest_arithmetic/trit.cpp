@@ -5,8 +5,9 @@ using namespace std::literals;
 #include <sstream>
 
 #include "Arithmetic/Arithmetic.h"
-#include "Arithmetic/Arithmetic_std.h"
+
 #include "Arithmetic/trit.h"
+#include "Arithmetic/trit_std.h"
 
 
 TEST(TritTest, Construct) 

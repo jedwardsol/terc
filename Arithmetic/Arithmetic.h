@@ -20,6 +20,8 @@ constexpr int     pow3(int n)
 }
 
 
+
+
 namespace BalancedTernary
 {
 
@@ -41,5 +43,12 @@ constexpr int     minValue(int numTrits)
 
 }
 
+
+constexpr int bytesNeeded(int numTrits)
+{
+    int bitsNeeded = numTrits * 2;
+    int bytesNeeded = (bitsNeeded + 7) / 8;
+    return bytesNeeded;
+}
 
 

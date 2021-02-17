@@ -24,5 +24,8 @@
     <ClCompile Include="tryte.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="trint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

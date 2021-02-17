@@ -15,15 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Arithmetic_std.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="Arithmetic.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Arithmetic_std.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="trit.h">
@@ -32,5 +24,22 @@
     <ClInclude Include="tryte.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="trint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="trit_std.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tryte_std.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="trint_std.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dummy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

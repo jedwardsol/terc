@@ -12,7 +12,8 @@
 #include <map>
 
 #include "Arithmetic/Arithmetic.h"
-#include "Arithmetic/Arithmetic_std.h"
+#include "Arithmetic/tryte.h"
+#include "Arithmetic/tryte_std.h"
 
 #include "Architecture/MemoryBlock.h"
 #include "Architecture/sixTritCPU.h"
