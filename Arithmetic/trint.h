@@ -64,6 +64,11 @@ public:
 
     constexpr explicit trint(int value) : trint{}
 	{
+		if(value==0)
+		{
+			return;
+		}
+
 		if(    value >  BalancedTernary::maxValue(numTrits)
 		   ||  value < -BalancedTernary::maxValue(numTrits))
 		{

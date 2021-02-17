@@ -58,6 +58,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assembly", "assembly", "{F5
 		assembly\GCD.terc6 = assembly\GCD.terc6
 		assembly\helloWorld.terc6 = assembly\helloWorld.terc6
 		assembly\minimal.terc6 = assembly\minimal.terc6
+		assembly\profile.terc6 = assembly\profile.terc6
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sourceLine", "sourceLine\sourceLine.vcxproj", "{4E5DAC9C-1D08-4B96-97DD-23FDB512070D}"

@@ -3,28 +3,30 @@
 .code
 :start  
 
-    Assign      R1      &helloWorld             ; R1 = string
-    CallI       True    $puts                   ; Call
+    Assign      R2      300
 
-    Assign      R1      &answer                 ; R1 = address of answer
-    Load        R1      R1 0                    ; R1 = *(R1+0)
-    Out         R1      1                       ; print tryte
+ :mainLoop
 
-    Assign      R10     "000+0+"                ; newline
-    Out         R10     0                       ; print newline
+    CallI       True    $count
+    AddI        R2      -1
+    JmpI        NZ      $mainLoop
+
 
     JmpI        True    $exit
 
 
+
+:count
+
+    Assign      R1      ------
+ :countLoop
+    AddI        R1      1
+    JmpI        NO      $countLoop
+
+    JmpR        True    RRA
+
 .address 100
 
-:puts                                           ; string in R1.
-:putsNextChar
-    Load        R0      R1  0                   ; R0 = *(R1+0)
-    JmpR        Z       RRA                     ; return if zero
-    Out         R0      0                       ; print ASCII R1
-    AddI        R1      1                       ; R1++
-    JmpI        True    $putsNextChar
 
 :exit
     CpuControl  True    Halt
