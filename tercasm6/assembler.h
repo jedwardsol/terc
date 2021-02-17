@@ -199,15 +199,15 @@ private:
 
     struct Symbol
     {
-        tryte   address;
-        int     lineWhereDefined;
-        int     numReferences;
+        tryte   address{};
+        int     lineWhereDefined{};
+        int     numReferences{};
     };
 
     struct Dependency
     {
         std::string symbol;
-        int         lineWhereDefined;
+        int         lineWhereDefined{};
     };
 
 

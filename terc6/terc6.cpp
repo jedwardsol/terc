@@ -4,12 +4,11 @@
 #include <exception>
 #include <filesystem>
 namespace fs=std::filesystem;
+#include <chrono>
 
 #include "Arithmetic/Arithmetic.h"
 #include "Arithmetic/trint.h"
 #include "Arithmetic/trint_std.h"
-
-
 
 #include "Architecture/MemoryBlock.h"
 #include "terc6cpu/sixTritCPU.h"
@@ -98,6 +97,7 @@ try
 
     Architecture::sixTrit::CPU    cpu{code,data,ioPorts};
 
+    auto start= std::chrono::steady_clock::now();        
           int instructionCount{};
     const int instructionCountLimit{5'000'000};
     do
@@ -111,7 +111,13 @@ try
 
     if(cpu.reg(Architecture::sixTrit::Register::REXC) == tryte{Architecture::Exception::Halted})
     {
+        auto end = std::chrono::steady_clock::now();        
+
+        auto duration   = end-start;
+        auto ms         = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+
         std::cout << "Program ran successfully\n";
+        std::cout << instructionCount << " instructions in " << ms << "ms\n";
     }
     else if(instructionCount == instructionCountLimit)
     {

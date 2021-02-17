@@ -5,11 +5,12 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
-
 #include <exception>
 #include <system_error>
 #include <stdexcept>
-#include <map>
+#include <filesystem>
+namespace fs=std::filesystem;
+
 
 #include "Arithmetic/Arithmetic.h"
 #include "Arithmetic/trint.h"
@@ -34,12 +35,23 @@ try
         throw std::runtime_error{"Missing input FileName"};
     }
 
-    Assembler assembler{args[0]};
+
+    fs::path  sourceName{args[0]};
+
+    if(!sourceName.has_extension())
+    {
+        sourceName.replace_extension(".terc6");
+    }
+
+    Assembler assembler{sourceName};
     
     assembler.parseFile();
     assembler.resolveDependencies();
     assembler.writeMap();
     assembler.writeSections();
+
+    std::cout << "Success\n";
+
 }
 catch(const std::exception &e)
 {
