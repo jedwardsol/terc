@@ -24,6 +24,12 @@
     <ClCompile Include="disassemble.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="terc6ui_initialise.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="terc6ui_refresh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">

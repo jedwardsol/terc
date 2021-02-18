@@ -12,10 +12,7 @@ using namespace std::literals;
 
 #include "terc6cpu/sixTritCPU.h"
 
-
 using namespace Architecture;
-
-
 
 std::ostream &operator<<(std::ostream &out,     Architecture::sixTrit::OpCode opCode)
 {

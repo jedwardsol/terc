@@ -1,4 +1,6 @@
 #include <Windows.h>
+#include <string>
+#include <map>
 
 #include "Arithmetic/Arithmetic.h"
 #include "Arithmetic/trint.h"
@@ -43,8 +45,9 @@ private:
     Architecture::sixTrit::CPU          cpu;
     HWND                                dlg;
 
-    int                                 currentCodeIndex{};
     int                                 currentStackIndex{};
+    std::map<tryte, int>                codeWindowIndices{};
+
     std::ostringstream                  stdOut;
 
 
@@ -53,28 +56,38 @@ private:
         switch(m)
         {
         case WM_INITDIALOG:
-            setFonts();
+            initialiseUI();
             refreshUI();
             return TRUE;
 
         case WM_COMMAND:
             command(LOWORD(w), HIWORD(w));
             break;
-
-
-
         }
 
         return 0;
     }
 
     void setFonts ();
+
+    void initialiseUI()
+    {
+        setFonts();
+        initialiseUICode();
+        initialiseUIStack();
+        initialiseUIRegisters();
+    }
+
     void refreshUI()
     {
         refreshUICode();
         refreshUIStack();
         refreshUIRegisters();
     }
+
+    void initialiseUICode();
+    void initialiseUIStack()        {}
+    void initialiseUIRegisters()    {}
 
     void refreshUICode();
     void refreshUIStack();
@@ -92,7 +105,6 @@ private:
             reinterpret_cast<UI*>(l)->dlg=h;
         }
 
-
         auto This = reinterpret_cast<UI*>(GetWindowLongPtr(h,DWLP_USER));
 
         if(This)
@@ -105,13 +117,10 @@ private:
         }
     }
 
-
-
 private:
 
     Architecture::Exception  out(const trybble    portNumber,  const tryte    data) override;
     Architecture::Exception  in (const trybble    portNumber,        tryte   &result) override;
-
 
 
 private:
