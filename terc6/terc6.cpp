@@ -14,8 +14,6 @@ namespace fs=std::filesystem;
 #include "terc6cpu/sixTritCPU.h"
 
 
-
-
 struct PrintingIOPorts : Architecture::IOPorts
 {
     ~PrintingIOPorts() override = default;

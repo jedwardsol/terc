@@ -283,7 +283,7 @@ TEST_P(AsRegP, AsReg)
     const SourceLine source{string};
 
     EXPECT_EQ(source.tokens().size(), 1);
-    EXPECT_EQ(source.asRegister(0),  GetParam().second);
+    EXPECT_EQ(source.asRegister6(0),  GetParam().second);
 }
 
 INSTANTIATE_TEST_SUITE_P
@@ -440,7 +440,7 @@ TEST_P(AsOpCodeP, AsOpCode)
     const SourceLine source{string};
 
     EXPECT_EQ(source.tokens().size(), 1);
-    EXPECT_EQ(source.asOpCode(0),  GetParam().second);
+    EXPECT_EQ(source.asOpCode6(0),  GetParam().second);
 }
 
 INSTANTIATE_TEST_SUITE_P

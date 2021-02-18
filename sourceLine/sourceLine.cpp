@@ -167,7 +167,7 @@ std::optional<int> SourceLine::asDecimal(int index) const noexcept
 
 
 
-std::optional<Architecture::sixTrit::OpCode> SourceLine::asOpCode(int index) const noexcept
+std::optional<Architecture::sixTrit::OpCode> SourceLine::asOpCode6(int index) const noexcept
 {
     auto string = asString(index);
 
@@ -213,7 +213,7 @@ std::optional<Architecture::sixTrit::OpCode> SourceLine::asOpCode(int index) con
     return std::optional<Architecture::sixTrit::OpCode>();
 }
 
-std::optional<Architecture::sixTrit::Register> SourceLine::asRegister(int index) const noexcept
+std::optional<Architecture::sixTrit::Register> SourceLine::asRegister6(int index) const noexcept
 {
     auto string = asString(index);
 

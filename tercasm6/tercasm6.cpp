@@ -72,13 +72,14 @@ try
     Architecture::MemoryBlock   codeFile{ -minCodePosition, maxCodePosition, codeFileName.string()};
     Architecture::MemoryBlock   dataFile{  stackSize,       maxDataPosition, dataFileName.string()};
 
-    memcpy(&codeFile[minCodePosition],  &code[minCodePosition],  (maxCodePosition-minCodePosition)*sizeof(tryte));
+    memcpy(&codeFile[minCodePosition],  
+           &code[minCodePosition],  
+           (maxCodePosition-minCodePosition)*sizeof(tryte));
 
     if(maxDataPosition)
     {
         memcpy(&dataFile[0],                &data[0],                (maxDataPosition)*sizeof(tryte));
     }
-
 }
 catch(const std::exception &e)
 {

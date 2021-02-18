@@ -70,6 +70,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "unittest_SourceLine", "unit
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "terc6cpu", "terc6cpu\terc6cpu.vcxproj", "{EDD7B642-DD12-4630-A62C-C0CAFCBF8CD1}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "terc6ui", "terc6ui\terc6ui.vcxproj", "{040B76C1-C1BC-4FFE-BF26-B08A856170F4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -166,6 +168,14 @@ Global
 		{EDD7B642-DD12-4630-A62C-C0CAFCBF8CD1}.Release|x64.Build.0 = Release|x64
 		{EDD7B642-DD12-4630-A62C-C0CAFCBF8CD1}.Release|x86.ActiveCfg = Release|Win32
 		{EDD7B642-DD12-4630-A62C-C0CAFCBF8CD1}.Release|x86.Build.0 = Release|Win32
+		{040B76C1-C1BC-4FFE-BF26-B08A856170F4}.Debug|x64.ActiveCfg = Debug|x64
+		{040B76C1-C1BC-4FFE-BF26-B08A856170F4}.Debug|x64.Build.0 = Debug|x64
+		{040B76C1-C1BC-4FFE-BF26-B08A856170F4}.Debug|x86.ActiveCfg = Debug|Win32
+		{040B76C1-C1BC-4FFE-BF26-B08A856170F4}.Debug|x86.Build.0 = Debug|Win32
+		{040B76C1-C1BC-4FFE-BF26-B08A856170F4}.Release|x64.ActiveCfg = Release|x64
+		{040B76C1-C1BC-4FFE-BF26-B08A856170F4}.Release|x64.Build.0 = Release|x64
+		{040B76C1-C1BC-4FFE-BF26-B08A856170F4}.Release|x86.ActiveCfg = Release|Win32
+		{040B76C1-C1BC-4FFE-BF26-B08A856170F4}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -183,6 +193,7 @@ Global
 		{4E5DAC9C-1D08-4B96-97DD-23FDB512070D} = {195BAD41-7A27-4478-A009-2C65A5E52D5E}
 		{77658BFA-0314-4F27-97FB-4C3122AB9820} = {195BAD41-7A27-4478-A009-2C65A5E52D5E}
 		{EDD7B642-DD12-4630-A62C-C0CAFCBF8CD1} = {25632754-79CC-4C8F-9CA5-8F4D01C48957}
+		{040B76C1-C1BC-4FFE-BF26-B08A856170F4} = {25632754-79CC-4C8F-9CA5-8F4D01C48957}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {42096E51-88D3-4510-AD44-6D5BDBB345B2}

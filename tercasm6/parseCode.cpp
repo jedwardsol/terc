@@ -24,7 +24,7 @@ void Assembler::parseCode     (const SourceLine &source)
 
     else
     {
-        auto opCode = source.asOpCode(0);
+        auto opCode = source.asOpCode6(0);
 
         if(!opCode)
         {
@@ -118,7 +118,7 @@ void Assembler::addInstruction                         (tryte first, tryte secon
 
 void Assembler::parseCode_OpCodeConditionCpuControl    (const SourceLine &source)
 {
-    auto opCode     = source.asOpCode    (0);
+    auto opCode     = source.asOpCode6   (0);
     auto condition  = source.asCondition (1);
     auto cpuControl = source.asCpuControl(2);
 
@@ -150,7 +150,7 @@ void Assembler::parseCode_OpCodeConditionCpuControl    (const SourceLine &source
 
 void Assembler::parseCode_OpCodeConditionImmediate     (const SourceLine &source)
 {
-    auto opCode     = source.asOpCode    (0);
+    auto opCode     = source.asOpCode6   (0);
     auto condition  = source.asCondition (1);
     
     if(!condition)
@@ -174,9 +174,9 @@ void Assembler::parseCode_OpCodeConditionImmediate     (const SourceLine &source
 
 void Assembler::parseCode_OpCodeConditionRegister   (const SourceLine &source)
 {
-    auto opCode     = source.asOpCode    (0);
+    auto opCode     = source.asOpCode6   (0);
     auto condition  = source.asCondition (1);
-    auto reg        = source.asRegister  (2);
+    auto reg        = source.asRegister6 (2);
 
     if(!condition)
     {
@@ -221,8 +221,8 @@ void Assembler::checkReadOnlyRegister(Architecture::sixTrit::Register reg)
 
 void Assembler::parseCode_OpCodeRegister               (const SourceLine &source, RegisterIs registerIs)
 {
-    auto opCode     = source.asOpCode    (0);
-    auto reg        = source.asRegister  (1);
+    auto opCode     = source.asOpCode6    (0);
+    auto reg        = source.asRegister6  (1);
 
     if(!reg)
     {
@@ -251,8 +251,8 @@ void Assembler::parseCode_OpCodeRegister               (const SourceLine &source
 
 void Assembler::parseCode_OpCodeRegisterImmediate      (const SourceLine &source, RegisterIs registerIs)
 {
-    auto opCode     = source.asOpCode    (0);
-    auto reg        = source.asRegister  (1);
+    auto opCode     = source.asOpCode6   (0);
+    auto reg        = source.asRegister6 (1);
 
     if(!reg)
     {
@@ -280,9 +280,9 @@ void Assembler::parseCode_OpCodeRegisterImmediate      (const SourceLine &source
 
 void Assembler::parseCode_OpCodeRegisterRegister   (const SourceLine &source, RegisterIs registerIs)
 {
-    auto opCode     = source.asOpCode    (0);
-    auto reg1       = source.asRegister  (1);
-    auto reg2       = source.asRegister  (2);
+    auto opCode     = source.asOpCode6   (0);
+    auto reg1       = source.asRegister6 (1);
+    auto reg2       = source.asRegister6 (2);
 
     if(!reg1)
     {
@@ -317,8 +317,8 @@ void Assembler::parseCode_OpCodeRegisterRegister   (const SourceLine &source, Re
 
 void Assembler::parseCode_OpCodeRegisterTrybble        (const SourceLine &source, RegisterIs registerIs)
 {
-    auto opCode     = source.asOpCode    (0);
-    auto reg        = source.asRegister  (1);
+    auto opCode     = source.asOpCode6   (0);
+    auto reg        = source.asRegister6 (1);
     auto t          = source.asTrybble   (2);
 
     if(!reg)
@@ -354,9 +354,9 @@ void Assembler::parseCode_OpCodeRegisterTrybble        (const SourceLine &source
 
 void Assembler::parseCode_OpCodeRegisterRegisterTrybble(const SourceLine &source, RegisterIs registerIs)
 {
-    auto opCode     = source.asOpCode    (0);
-    auto reg1       = source.asRegister  (1);
-    auto reg2       = source.asRegister  (2);
+    auto opCode     = source.asOpCode6   (0);
+    auto reg1       = source.asRegister6 (1);
+    auto reg2       = source.asRegister6 (2);
     auto t          = source.asTrybble   (3);
 
     if(!reg1)

@@ -46,11 +46,14 @@ public:
 
     std::optional<tryte>                                asTryte     (int index) const noexcept;
     std::optional<trybble>                              asTrybble   (int index) const noexcept;
-    std::optional<Architecture::sixTrit::OpCode>        asOpCode    (int index) const noexcept;
-    std::optional<Architecture::sixTrit::Register>      asRegister  (int index) const noexcept;
     std::optional<Architecture::Condition>              asCondition (int index) const noexcept;
     std::optional<Architecture::CpuControl>             asCpuControl(int index) const noexcept;
     
+    std::optional<Architecture::sixTrit::OpCode>        asOpCode6   (int index) const noexcept;
+    std::optional<Architecture::sixTrit::Register>      asRegister6 (int index) const noexcept;
+
+
+
 
 private:
 
