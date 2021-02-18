@@ -14,8 +14,9 @@
 #define IDC_R7                          1008
 #define IDC_R8                          1009
 #define IDC_R9                          1010
-#define IDC_LIST1                       1011
 #define IDC_DISASS                      1011
+#define IDC_BUTTON1                     1012
+#define IDC_STEP                        1012
 #define IDC_R10                         1018
 #define IDC_R11                         1019
 #define IDC_R12                         1020
@@ -36,7 +37,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        103
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1012
+#define _APS_NEXT_CONTROL_VALUE         1013
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

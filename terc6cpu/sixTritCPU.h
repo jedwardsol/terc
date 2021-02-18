@@ -146,6 +146,8 @@ public:
         return registers.at(static_cast<int>(r) + registerOffset);
     }
 
+    
+//private:    
     enum class ByPassRegisterChecks
     {
         no, yes
@@ -208,12 +210,15 @@ public:
 
 #pragma warning(pop)
 
+public:
     // flag isn't under the control of any instruction
     trit getFlag(Flag flag) const
     {
         return reg(Register::RFlags).getTrit(static_cast<int>(flag));
     }
 
+
+//private:
     void setFlag(Flag flag,   trit value) 
     {
         assert(    flag == Architecture::Flag::Comparison
@@ -229,9 +234,13 @@ public:
     }
 
 
-
+private:
     std::optional<std::pair<tryte, tryte>> fetch();
+
+public:
     void    execute();
+
+private:
     void    executeRegisterInstructions(tryte  operation, tryte operand);
     void    executeConditionalInstructions(tryte  operation, tryte operand);
 

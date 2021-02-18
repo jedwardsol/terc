@@ -47,6 +47,9 @@ private:
     Architecture::sixTrit::CPU          cpu;
     HWND                                dlg;
 
+    int                                 currentCodeIndex{};
+
+
 
     INT_PTR proc(UINT m,WPARAM w,LPARAM l)
     {
@@ -58,8 +61,11 @@ private:
             return TRUE;
 
         case WM_COMMAND:
-            command(LOWORD(w));
+            command(LOWORD(w), HIWORD(w));
             break;
+
+
+
         }
 
         return 0;
@@ -67,7 +73,7 @@ private:
 
     void setFonts ();
     void refreshUI();
-    void command  (int  control);
+    void command  (int  control,  int message);
 
 
     static INT_PTR procWrapper(HWND h,UINT m,WPARAM w,LPARAM l)

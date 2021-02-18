@@ -50,15 +50,6 @@ try
     UI{code, data}.messageLoop();
 
 
-/* 
-    do
-    {
-        cpu.execute();
-    } while(   cpu.reg(Architecture::sixTrit::Register::REXC) <= tryte{0}
-            && instructionCount < instructionCountLimit);
-*/
-
-
 }
 catch(const std::exception &e)
 {
@@ -112,10 +103,10 @@ void UI::refreshUI()
 
     auto    RPC = static_cast<int>(cpu.reg(Architecture::sixTrit::Register::RPC));
 
-    for(int PC=RPC-10; PC < RPC+20; PC+=2)
+    for(int PC=RPC-10; PC < RPC+40; PC+=2)
     {
         if(    PC >= -code.negativeSize()
-           &&  PC <   code.positiveSize()-2)
+           &&  PC <=  code.positiveSize()-2)
         {
             auto first  = code[PC];
             auto second = code[PC+1];
@@ -125,24 +116,43 @@ void UI::refreshUI()
 
             str << std::left << std::setw(12) <<  tryte{PC} << " : " << disassemble(first,second);
 
-            SendDlgItemMessage(dlg,IDC_DISASS,LB_ADDSTRING,0, reinterpret_cast<LPARAM>(str.str().c_str()));
+            auto index = static_cast<int>(SendDlgItemMessage(dlg,IDC_DISASS,LB_ADDSTRING,0, reinterpret_cast<LPARAM>(str.str().c_str())));
+
+            if(PC == RPC)
+            {
+                currentCodeIndex = index;
+            }
         }
     }
 
 
-
-
-
-
+    SendDlgItemMessage(dlg,IDC_DISASS,LB_SETCURSEL,currentCodeIndex, 0);
 }
 
-void UI::command  (int  control)
+void UI::command  (int  control, int message)
 {
     switch(control)
     {
     case IDCANCEL:
         EndDialog(dlg,0);
         break;
+
+    case IDC_STEP:
+    
+        cpu.execute();
+        refreshUI();
+        break;
+
+    case IDC_DISASS:
+
+        if(message == LBN_SELCHANGE)
+        {
+            SendDlgItemMessage(dlg,IDC_DISASS,LB_SETCURSEL,currentCodeIndex, 0);
+        }
+
+        break;
+
+
     }
 
 
