@@ -17,6 +17,8 @@ namespace fs=std::filesystem;
 #include "Architecture/MemoryBlock.h"
 #include "terc6cpu/sixTritCPU.h"
 
+#include <commctrl.h>
+#pragma comment(lib,"Comctl32")
 #include "UI.h"
 
 
@@ -46,6 +48,11 @@ try
     const Architecture::MemoryBlock     code {codeFileName.string() };        
           Architecture::MemoryBlock     data {dataFileName.string() , 
                                               finaldataFileName.string()};        
+
+
+    INITCOMMONCONTROLSEX init{sizeof(init),ICC_WIN95_CLASSES};
+    InitCommonControlsEx(&init);
+
  
     UI{code, data}.messageLoop();
 
