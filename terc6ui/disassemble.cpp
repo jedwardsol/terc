@@ -243,36 +243,18 @@ std::string  disassembleConditionalInstructions(tryte  operation, tryte operand)
 std::string  disassemble(tryte  operation, tryte operand)
 {
     std::ostringstream  str;
-    auto                opcode = static_cast<Architecture::sixTrit::OpCode>  (static_cast<int>(operation.halves().first));
+    auto                opCode = static_cast<Architecture::sixTrit::OpCode>  (static_cast<int>(operation.halves().first));
     
-    str<< std::left << std::setw(10) << opcode << " ";
+    str<< std::left << std::setw(10) << opCode << " ";
 
-    switch(opcode)
+    
+    if(isConditionalInstruction(opCode))
     {
-    case Architecture::sixTrit::OpCode::Assign:
-    case Architecture::sixTrit::OpCode::Copy:
-    case Architecture::sixTrit::OpCode::Out:
-    case Architecture::sixTrit::OpCode::In:
-    case Architecture::sixTrit::OpCode::Load:
-    case Architecture::sixTrit::OpCode::Store:
-    case Architecture::sixTrit::OpCode::Push:
-    case Architecture::sixTrit::OpCode::Pop:
-    case Architecture::sixTrit::OpCode::CmpI:
-    case Architecture::sixTrit::OpCode::CmpR:
-    case Architecture::sixTrit::OpCode::Neg:
-    case Architecture::sixTrit::OpCode::Shift:
-    case Architecture::sixTrit::OpCode::AddI:
-    case Architecture::sixTrit::OpCode::AddR:
-        str << disassembleRegisterInstructions(operation, operand);
-        break;
-
-    case Architecture::sixTrit::OpCode::CallI:
-    case Architecture::sixTrit::OpCode::CallR:
-    case Architecture::sixTrit::OpCode::JmpI:
-    case Architecture::sixTrit::OpCode::JmpR:
-    case Architecture::sixTrit::OpCode::CpuControl:
         str << disassembleConditionalInstructions(operation, operand);
-        break;
+    }
+    else
+    {
+        str << disassembleRegisterInstructions(operation, operand);
     }
 
     return str.str();

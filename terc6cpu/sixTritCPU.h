@@ -4,6 +4,8 @@
 #include <array>
 #include <optional>
 #include <cassert>
+#include <set>
+
 #include "Arithmetic/Arithmetic.h"
 #include "Arithmetic/trint.h"
 #include "Arithmetic/trit.h"
@@ -123,7 +125,19 @@ enum  OpCode        // // trybble  -13 to 13
 };
 
 
+bool inline isConditionalInstruction(Architecture::sixTrit::OpCode opCode)
+{
+    static const std::set<Architecture::sixTrit::OpCode> conditionalInstructions
+    {
+        Architecture::sixTrit::OpCode::CallI,
+        Architecture::sixTrit::OpCode::CallR,
+        Architecture::sixTrit::OpCode::JmpI,
+        Architecture::sixTrit::OpCode::JmpR,
+        Architecture::sixTrit::OpCode::CpuControl,
+    };
 
+    return conditionalInstructions.find(opCode) != conditionalInstructions.end();
+}
 
 class CPU
 {
@@ -245,6 +259,8 @@ private:
     void    executeConditionalInstructions(tryte  operation, tryte operand);
 
     bool    validCondition (Condition condition);
+
+public:
     bool    isConditionTrue(Condition condition);
 
 private:

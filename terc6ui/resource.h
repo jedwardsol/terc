@@ -15,7 +15,6 @@
 #define IDC_R8                          1009
 #define IDC_R9                          1010
 #define IDC_DISASS                      1011
-#define IDC_BUTTON1                     1012
 #define IDC_STEP                        1012
 #define IDC_R10                         1018
 #define IDC_R11                         1019
@@ -30,6 +29,10 @@
 #define IDC_Rn1                         1028
 #define IDC_RPC                         1029
 #define IDC_RRA                         1030
+#define IDC_CONDITION                   1031
+#define IDC_REXC                        1034
+#define IDC_REXA                        1035
+#define IDC_CONDITION2                  1036
 
 // Next default values for new objects
 // 

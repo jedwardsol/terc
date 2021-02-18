@@ -72,7 +72,16 @@ private:
     }
 
     void setFonts ();
-    void refreshUI();
+    void refreshUI()
+    {
+        refreshUICode();
+        refreshUIRegisters();
+    }
+
+    void refreshUICode();
+    void refreshUIRegisters();
+
+
     void command  (int  control,  int message);
 
 
@@ -143,9 +152,9 @@ private:
     {
         {Architecture::sixTrit::Register::RPC,  IDC_RPC},
         {Architecture::sixTrit::Register::RRA,  IDC_RRA},
+        {Architecture::sixTrit::Register::REXC, IDC_REXC},
+        {Architecture::sixTrit::Register::REXA, IDC_REXA},
 //      {Architecture::sixTrit::Register::RSP,  IDC_RSP},
-//      {Architecture::sixTrit::Register::REXC, IDC_REXC},
-//      {Architecture::sixTrit::Register::REXA, IDC_REXA},
     };
 
 

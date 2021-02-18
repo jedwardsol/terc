@@ -69,6 +69,7 @@ void UI::setFonts()
 
     for(auto &GPR : GPRs)
     {
+        SendDlgItemMessage(dlg,GPR.control,WM_SETFONT,reinterpret_cast<WPARAM>(monospaced),FALSE);
     }
 
     for(auto &otherReg : otherRegisters)
@@ -80,7 +81,64 @@ void UI::setFonts()
 }
 
 
-void UI::refreshUI()
+void UI::refreshUICode()
+{
+    SendDlgItemMessage(dlg,IDC_DISASS,LB_RESETCONTENT,0,0);
+
+    auto    RPC  = static_cast<int>(cpu.reg(Architecture::sixTrit::Register::RPC));
+
+    for(int PC=RPC-10; PC < RPC+40; PC+=2)
+    {
+        if(    PC >= -code.negativeSize()
+           &&  PC <=  code.positiveSize()-2)
+        {
+            auto first  = code[PC];
+            auto second = code[PC+1];
+
+            std::ostringstream str;
+
+            str << std::left << std::setw(12) <<  tryte{PC} << " : " << disassemble(first,second);
+
+            auto index = static_cast<int>(SendDlgItemMessage(dlg,IDC_DISASS,LB_ADDSTRING,0, reinterpret_cast<LPARAM>(str.str().c_str())));
+
+            if(PC == RPC)
+            {
+                currentCodeIndex = index;
+            }
+        }
+    }
+
+    SendDlgItemMessage(dlg,IDC_DISASS,LB_SETCURSEL,currentCodeIndex, 0);
+
+    auto operation = code[RPC];
+
+    auto                opCode = static_cast<Architecture::sixTrit::OpCode>  (static_cast<int>(operation.halves().first));
+
+    if(Architecture::sixTrit::isConditionalInstruction(opCode))
+    {
+        auto condition = static_cast<Architecture::Condition>  (static_cast<int>(operation.halves().second));
+
+        if(cpu.isConditionTrue(condition))
+        {
+            SetDlgItemText(dlg,IDC_CONDITION,"True");
+        }
+        else
+        {
+            SetDlgItemText(dlg,IDC_CONDITION,"False");
+        }
+    }
+    else
+    {
+        SetDlgItemText(dlg,IDC_CONDITION,"N/A");
+    }
+
+    if(cpu.reg(Architecture::sixTrit::Register::REXC) > tryte{0})
+    {
+        EnableWindow(GetDlgItem(dlg,IDC_STEP),FALSE);
+    }
+}
+
+void UI::refreshUIRegisters()
 {
     for(auto &GPR : GPRs)
     {
@@ -97,36 +155,6 @@ void UI::refreshUI()
         str << reg;
         SetDlgItemText(dlg,otherReg.control,str.str().c_str());
     }
-
-
-    SendDlgItemMessage(dlg,IDC_DISASS,LB_RESETCONTENT,0,0);
-
-    auto    RPC = static_cast<int>(cpu.reg(Architecture::sixTrit::Register::RPC));
-
-    for(int PC=RPC-10; PC < RPC+40; PC+=2)
-    {
-        if(    PC >= -code.negativeSize()
-           &&  PC <=  code.positiveSize()-2)
-        {
-            auto first  = code[PC];
-            auto second = code[PC+1];
-
-
-            std::ostringstream str;
-
-            str << std::left << std::setw(12) <<  tryte{PC} << " : " << disassemble(first,second);
-
-            auto index = static_cast<int>(SendDlgItemMessage(dlg,IDC_DISASS,LB_ADDSTRING,0, reinterpret_cast<LPARAM>(str.str().c_str())));
-
-            if(PC == RPC)
-            {
-                currentCodeIndex = index;
-            }
-        }
-    }
-
-
-    SendDlgItemMessage(dlg,IDC_DISASS,LB_SETCURSEL,currentCodeIndex, 0);
 }
 
 void UI::command  (int  control, int message)
