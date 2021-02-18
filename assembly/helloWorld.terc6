@@ -6,7 +6,10 @@
     Assign      R1      &helloWorld             ; R1 = string
     CallI       True    $puts                   ; Call
 
-    Assign      R1      &answer                 ; R1 = address of answer
+    Assign      R1      &answer                 ; R1 = string
+    CallI       True    $puts                   ; Call
+
+    Assign      R1      &theAnswer                 ; R1 = address of answer
     Load        R1      R1 0                    ; R1 = *(R1+0)
     Out         R1      1                       ; print tryte
 
@@ -32,8 +35,9 @@
 ;------------------------------------------------------
 
 .data
-    :helloWorld string "\nThe answer is "
-    :answer     tryte  "0+---0"
+    :helloWorld     string "\nHello World\nAnd now for something completely different;\n"
+    :answer         string "\nThe answer is "
+    :theAnswer      tryte  "0+---0"
 
 
 ;------------------------------------------------------

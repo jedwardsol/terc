@@ -1,0 +1,100 @@
+.stack 20
+
+.code
+
+    Assign      R1 -9
+
+    AddI        R1  -1
+    Push        R1
+
+    AddI        R1  -1
+    Push        R1
+
+    AddI        R1  -1
+    Push        R1
+
+    AddI        R1  -1
+    Push        R1
+
+
+    Pop         R0    
+    Pop         R0    
+    Pop         R0    
+    Pop         R0    
+
+    CpuControl         True     Halt
+
+
+;Directives
+;
+;    .code  .data
+;    .stack
+;    .address
+
+
+;Label
+;
+;    :labelName
+
+
+;Symbols - can be used where an code immediate or data tryte is used
+;
+;    &dataLabel
+;    $codeLabel
+
+
+;Data
+;
+;   tryte       t1  [t2 [t3 [...]]]]        trytes can be decimal (42)  or 6 balanced ternary trits ( 0+---0 )
+;   string      s1  [s2 [s3 [...]]]]        strings can be quoted to contain whitespace or commands
+
+
+;OpCodes
+;
+;   CallI  CallR
+;   JmpI   JmpR
+;   CpuControl
+;   Assign Copy
+;   Out    In
+;   Load   Store
+;   Push   Pop
+;   CmpI   CmpR
+;   Neg
+;   AddI    AddR
+
+;Registers
+;
+;    RPC
+;    RSP
+;    RFlags
+;    RRA
+;    REXC   REXA
+;           Rn1   Rn2   Rn3   Rn4   Rn5   Rn6   Rn7
+;    R0     R1    R2    R3    R4    R5    R6    R7    R8    R9    R10     R11     R12     R13 
+
+
+;Conditions
+;          
+;    True   False            
+;    
+;    CE     NCE             conditional execution
+;    
+;    P      NP              sign positive
+;    Z      NZ              sign zero
+;    N      NN              sign negative
+;    
+;    GT  >                  comparison...
+;    E   ==
+;    LT  <
+;    LE  <=
+;    NE  !=
+;    GE  >=
+;
+;    O      NO              Overflow
+;    OP                     OverflowPositive
+;    ON                     OverflowNegative,           
+
+
+;CpuControls
+;
+;    Nop    Halt    Breakpoint    Trace    Invalid

@@ -19,32 +19,38 @@ namespace fs=std::filesystem;
 
 #include "UI.h"
 
-
-
-
 Architecture::Exception  UI::out(const trybble    portNumber,  const tryte    data) 
 {
     auto port = static_cast<Architecture::KnownIOPorts>(static_cast<int>(portNumber));
 
     if(port == Architecture::KnownIOPorts::IO_tryte)
     {
-        std::cout << data;
+        stdOut << data;
     }
     else if(port == Architecture::KnownIOPorts::IO_ASCII)
     {
-        std::cout << static_cast<char>(static_cast<int>(data));
+        auto c = static_cast<char>(static_cast<int>(data));
+
+        if(c == '\n')
+        {
+            stdOut << '\r';
+        }
+
+        stdOut << c;
     }
     else if(port == Architecture::KnownIOPorts::O_Exception)
     {
         if(data != tryte{Architecture::Exception::Halted})
         {
-            std::cout << "\nException " << data << '\n';
+            stdOut << "\nException " << data << '\n';
         }
     }
     else 
     {
-        std::cout << "\nPort " << portNumber << " -> " << data << '\n';
+        stdOut << "\nPort " << portNumber << " -> " << data << '\n';
     }
+
+    SetDlgItemText(dlg,IDC_STDOUT,stdOut.str().c_str());
 
     return Architecture::Exception::Okay;
 }

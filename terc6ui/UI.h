@@ -7,11 +7,7 @@
 #include "Architecture/MemoryBlock.h"
 #include "terc6cpu/sixTritCPU.h"
 
-
 #include    "resource.h"
-
-
-
 #include    "resource.h"
 
 
@@ -48,7 +44,8 @@ private:
     HWND                                dlg;
 
     int                                 currentCodeIndex{};
-
+    int                                 currentStackIndex{};
+    std::ostringstream                  stdOut;
 
 
     INT_PTR proc(UINT m,WPARAM w,LPARAM l)
@@ -75,10 +72,12 @@ private:
     void refreshUI()
     {
         refreshUICode();
+        refreshUIStack();
         refreshUIRegisters();
     }
 
     void refreshUICode();
+    void refreshUIStack();
     void refreshUIRegisters();
 
 
@@ -154,7 +153,7 @@ private:
         {Architecture::sixTrit::Register::RRA,  IDC_RRA},
         {Architecture::sixTrit::Register::REXC, IDC_REXC},
         {Architecture::sixTrit::Register::REXA, IDC_REXA},
-//      {Architecture::sixTrit::Register::RSP,  IDC_RSP},
+        {Architecture::sixTrit::Register::RSP,  IDC_RSP},
     };
 
 
