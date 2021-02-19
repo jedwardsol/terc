@@ -43,7 +43,8 @@ void UI::setFonts()
     SendDlgItemMessage(dlg,IDC_DISASS,WM_SETFONT,reinterpret_cast<WPARAM>(monospaced),FALSE);
     SendDlgItemMessage(dlg,IDC_RFLAGS,WM_SETFONT,reinterpret_cast<WPARAM>(monospaced),FALSE);
     SendDlgItemMessage(dlg,IDC_STDOUT,WM_SETFONT,reinterpret_cast<WPARAM>(monospaced),FALSE);
-    SendDlgItemMessage(dlg,IDC_STACK,WM_SETFONT,reinterpret_cast<WPARAM>(monospaced),FALSE);
+    SendDlgItemMessage(dlg,IDC_STACK, WM_SETFONT,reinterpret_cast<WPARAM>(monospaced),FALSE);
+    SendDlgItemMessage(dlg,IDC_DATA,  WM_SETFONT,reinterpret_cast<WPARAM>(monospaced),FALSE);
 }
 
 

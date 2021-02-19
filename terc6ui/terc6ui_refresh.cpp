@@ -119,3 +119,31 @@ void UI::refreshUIStack()
 
     SendDlgItemMessage(dlg,IDC_STACK,LB_SETCURSEL,currentStackIndex, 0);
 }
+
+
+
+void UI::refreshUIData()
+{
+    SendDlgItemMessage(dlg,IDC_DATA,LB_RESETCONTENT,0,0);
+
+    auto    dataBottom  = 0;
+    auto    dataTop     = data.positiveSize();
+
+    for(int address =dataBottom; address < ((dataTop + 5)/6)*6; address+=6)
+    {
+        std::ostringstream str;
+
+        str << std::left << std::setw(12) << tryte{address} << " : " ;
+
+        for(int i = address;  i < address + 6 && i < dataTop; i++)
+        {
+            auto t = data[address];
+
+            str << std::left << std::setw(12) << t << " " ;
+        }
+
+        SendDlgItemMessage(dlg,IDC_DATA,LB_ADDSTRING,0, reinterpret_cast<LPARAM>(str.str().c_str()));
+    }
+
+
+}

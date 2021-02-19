@@ -151,7 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="disassemble.cpp" />
+    <ClCompile Include="terc6ui_disassemble.cpp" />
     <ClCompile Include="terc6ui.cpp" />
     <ClCompile Include="terc6ui_initialise.cpp" />
     <ClCompile Include="terc6ui_IO.cpp" />

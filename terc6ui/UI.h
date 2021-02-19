@@ -75,6 +75,7 @@ private:
         setFonts();
         initialiseUICode();
         initialiseUIStack();
+        initialiseUIData();
         initialiseUIRegisters();
     }
 
@@ -82,15 +83,18 @@ private:
     {
         refreshUICode();
         refreshUIStack();
+        refreshUIData();
         refreshUIRegisters();
     }
 
     void initialiseUICode();
     void initialiseUIStack()        {}
+    void initialiseUIData()         {}
     void initialiseUIRegisters()    {}
 
     void refreshUICode();
     void refreshUIStack();
+    void refreshUIData();
     void refreshUIRegisters();
 
 
