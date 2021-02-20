@@ -74,9 +74,7 @@ private:
         }
     }
 
-
 private:
-
 
     Architecture::MemoryBlock const    &code;
     Architecture::MemoryBlock          &data;
