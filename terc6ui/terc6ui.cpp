@@ -68,13 +68,13 @@ void UI::command  (int  control, int message)
     switch(control)
     {
     case IDCANCEL:
+        SetEvent(stepStop[1]);
+        thread.join();
         EndDialog(dlg,0);
         break;
 
     case IDC_STEP:
-    
-        cpu.execute();
-        refreshUI();
+        SetEvent(stepStop[0]);
         break;
 
     case IDC_STEP10:

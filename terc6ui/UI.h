@@ -1,6 +1,7 @@
 #include <Windows.h>
 #include <string>
 #include <map>
+#include <thread>
 
 #include "Arithmetic/Arithmetic.h"
 #include "Arithmetic/trint.h"
@@ -38,17 +39,48 @@ struct UI : Architecture::IOPorts
     }
 
 
+    void cpuThread()
+    {
+        bool done{};
+
+        while(!done)
+        {
+            auto signal = WaitForMultipleObjects(2,stepStop.data(),FALSE,INFINITE);
+
+            if(signal == WAIT_OBJECT_0)
+            {
+                cpu.execute();
+                PostMessage(dlg,WM_REFRESH,0,0);
+            }
+            else 
+            {
+                done=true;
+            }
+        }
+    }
+
+
 private:
+
+    HWND                                dlg;
 
     Architecture::MemoryBlock const    &code;
     Architecture::MemoryBlock          &data;
     Architecture::sixTrit::CPU          cpu;
-    HWND                                dlg;
+    std::array<HANDLE,2>                stepStop{CreateEvent(nullptr,FALSE,FALSE,nullptr),
+                                                             CreateEvent(nullptr,FALSE,FALSE,nullptr)};
+    std::thread                         thread{ &UI::cpuThread,this};;
+
 
     int                                 currentStackIndex{};
     std::map<tryte, int>                codeWindowIndices{};
 
     std::ostringstream                  stdOut;
+
+    static constexpr auto               WM_REFRESH = WM_APP;
+
+
+    
 
 
     INT_PTR proc(UINT m,WPARAM w,LPARAM l)
@@ -59,6 +91,10 @@ private:
             initialiseUI();
             refreshUI();
             return TRUE;
+
+        case WM_REFRESH:
+            refreshUI();
+            break;
 
         case WM_COMMAND:
             command(LOWORD(w), HIWORD(w));
