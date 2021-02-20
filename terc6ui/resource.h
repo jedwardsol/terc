@@ -5,12 +5,14 @@
 #define IDD_UI                          101
 #define IDC_DISASS                      1010
 #define IDC_STEP                        1012
-#define IDC_STEP10                      1013
+#define IDC_RUN                         1013
 #define IDC_STACK                       1014
 #define IDC_STDOUT                      1015
 #define IDC_DATA                        1016
 #define IDC_STACK_BOX                   1017
 #define IDC_CODE_BOX                    1018
+#define IDC_STDIN                       1019
+#define IDC_STDIN_IN                    1020
 #define IDC_Rn7                         1500
 #define IDC_Rn6                         1501
 #define IDC_Rn5                         1502
@@ -43,7 +45,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        103
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1019
+#define _APS_NEXT_CONTROL_VALUE         1020
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

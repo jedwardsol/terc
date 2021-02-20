@@ -57,8 +57,9 @@ void UI::refreshCode()
 
     if(cpu.reg(Architecture::sixTrit::Register::REXC) > tryte{0})
     {
+        ResetEvent(events[event::step]);
         EnableWindow(GetDlgItem(dlg,IDC_STEP),FALSE);
-        EnableWindow(GetDlgItem(dlg,IDC_STEP10),FALSE);
+        EnableWindow(GetDlgItem(dlg,IDC_RUN),FALSE);
     }
 }
 

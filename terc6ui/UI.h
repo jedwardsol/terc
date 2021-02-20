@@ -26,8 +26,9 @@ struct UI : Architecture::IOPorts
     ~UI() override 
     {
         DeleteObject(monospaced);
-        CloseHandle(stepStop[0]);
-        CloseHandle(stepStop[1]);
+        CloseHandle(events[event::step]);
+        CloseHandle(events[event::stop]);
+        CloseHandle(events[event::stdIn]);
     }
 
     void run()
@@ -59,12 +60,12 @@ private:
 
         while(!done)
         {
-            auto signal = WaitForMultipleObjects(2,stepStop.data(),FALSE,INFINITE);
+            auto signal = WaitForMultipleObjects(2,events.data(),FALSE,INFINITE);
 
             if(signal == WAIT_OBJECT_0)
             {
                 cpu.execute();
-                PostMessage(dlg,WM_REFRESH,0,0);
+                SendMessage(dlg,WM_REFRESH,0,0);
             }
             else 
             {
@@ -80,8 +81,16 @@ private:
     Architecture::MemoryBlock const    &code;
     Architecture::MemoryBlock          &data;
     Architecture::sixTrit::CPU          cpu;
-    std::array<HANDLE,2>                stepStop{CreateEvent(nullptr,FALSE,FALSE,nullptr),
-                                                             CreateEvent(nullptr,FALSE,FALSE,nullptr)};
+
+
+    enum  event
+    {
+        step, stop, stdIn
+    };
+
+    std::array<HANDLE,3>                events{CreateEvent(nullptr,TRUE, FALSE,nullptr),
+                                               CreateEvent(nullptr,TRUE, FALSE,nullptr),
+                                               CreateEvent(nullptr,FALSE,FALSE,nullptr)};
 
     HWND                                dlg           {nullptr};
 
@@ -168,23 +177,23 @@ private:
         switch(control)
         {
         case IDCANCEL:
-            SetEvent(stepStop[1]);
+            ResetEvent(events[event::step]);
+            SetEvent(events[event::stop]);
             EndDialog(dlg,0);
             break;
 
         case IDC_STEP:
-            SetEvent(stepStop[0]);
+            PulseEvent(events[event::step]);
             break;
 
-    //    case IDC_STEP10:
-    //    
-    //        for(int i=0;i<10 && cpu.reg(Architecture::sixTrit::Register::REXC) <= tryte{0} ;i++)
-    //        {
-    //            cpu.execute();
-    //        }
-    //        refreshUI();
-    //        break;
-    //
+        case IDC_RUN:
+            SetEvent(events[event::step]);
+            break;
+
+        case IDC_STDIN_IN:
+            SetEvent(events[event::stdIn]);
+            break;
+    
 
         case IDC_DISASS:
             if(message == LBN_SELCHANGE)

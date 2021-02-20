@@ -60,7 +60,3 @@ catch(const std::exception &e)
     MessageBox(nullptr,e.what(),"Terc6UI",MB_OK|MB_ICONEXCLAMATION);
 }
 
-
-
-
-

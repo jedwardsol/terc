@@ -58,22 +58,46 @@ Architecture::Exception  UI::out(const trybble    portNumber,  const tryte    da
 
 Architecture::Exception  UI::in (const trybble    portNumber,        tryte   &result) 
 {
-    auto port = static_cast<Architecture::KnownIOPorts>(static_cast<int>(portNumber));
+    bool                    goodInput{false};
 
-    if(port==Architecture::KnownIOPorts::IO_tryte)
+    while(!goodInput)
     {
-        do
+        auto signal = WaitForMultipleObjects(2,&events[1],FALSE,INFINITE);
+
+        if(signal == WAIT_OBJECT_0)     // stop
         {
-            std::cin.clear();
-            std::cin >> result;
-        } while(!std::cin);
-    }
-    else
-    {
-        std::cout << "Port " << portNumber << " <- " << 0 << '\n';
+            result = tryte{0};
+            return Architecture::Exception::Halted;
+        }
 
-        result = tryte{0};
+        char    data[100];
+        GetDlgItemText(dlg,IDC_STDIN,data,sizeof(data));
+
+        std::string         string{data};
+        std::istringstream  in{data};
+
+
+        auto port = static_cast<Architecture::KnownIOPorts>(static_cast<int>(portNumber));
+
+
+        if(port==Architecture::KnownIOPorts::IO_tryte)
+        {
+            in >> result;
+        }
+        else
+        {
+            result = tryte{0};
+        }
+
+        if(in)
+        {
+            goodInput=true;
+            auto pos=in.tellg();
+            string.erase(0,pos);
+            SetDlgItemText(dlg,IDC_STDIN,string.c_str());
+        }
     }
+
 
     return Architecture::Exception::Okay;
 }
