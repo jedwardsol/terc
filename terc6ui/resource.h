@@ -2,16 +2,15 @@
 // Microsoft Visual C++ generated include file.
 // Used by Resource.rc
 //
-#define IDD_DIALOG1                     101
 #define IDD_UI                          101
 #define IDC_DISASS                      1010
-#define IDC_CONDITION                   1011
 #define IDC_STEP                        1012
 #define IDC_STEP10                      1013
 #define IDC_STACK                       1014
 #define IDC_STDOUT                      1015
-#define IDC_STACK2                      1016
 #define IDC_DATA                        1016
+#define IDC_STACK_BOX                   1017
+#define IDC_CODE_BOX                    1018
 #define IDC_Rn7                         1500
 #define IDC_Rn6                         1501
 #define IDC_Rn5                         1502
@@ -33,9 +32,7 @@
 #define IDC_R11                         1518
 #define IDC_R12                         1519
 #define IDC_R13                         1520
-#define IDC_RPC                         1521
 #define IDC_RRA                         1522
-#define IDC_RSP                         1523
 #define IDC_REXC                        1524
 #define IDC_REXA                        1525
 #define IDC_RFLAGS                      1526
@@ -46,7 +43,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        103
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1016
+#define _APS_NEXT_CONTROL_VALUE         1019
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

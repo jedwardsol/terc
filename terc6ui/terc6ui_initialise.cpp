@@ -24,32 +24,34 @@ void UI::setFonts()
 {
     LOGFONTA font{};
 
-    auto defaultFont =  reinterpret_cast<HFONT>(SendDlgItemMessage(dlg,GPRs[0].control, WM_GETFONT, 0,0));
+    auto defaultFont =  reinterpret_cast<HFONT>(SendDlgItemMessage(dlg,registers[0].control, WM_GETFONT, 0,0));
     GetObject(defaultFont,sizeof(font),&font);
 
     strcpy_s(font.lfFaceName,"Consolas");
-    HFONT monospaced=CreateFontIndirectA(&font);//reinterpret_cast<HFONT>(GetStockObject(OEM_FIXED_FONT));
+    monospaced=CreateFontIndirectA(&font);//reinterpret_cast<HFONT>(GetStockObject(OEM_FIXED_FONT));
 
-    for(auto &GPR : GPRs)
+
+    auto monospace=[this](int control)
     {
-        SendDlgItemMessage(dlg,GPR.control,WM_SETFONT,reinterpret_cast<WPARAM>(monospaced),FALSE);
+        SendDlgItemMessage(dlg,control,WM_SETFONT,reinterpret_cast<WPARAM>(monospaced),FALSE);
+    };
+
+    for(auto &reg : registers)
+    {
+        monospace(reg.control);
     }
 
-    for(auto &otherReg : otherRegisters)
-    {
-        SendDlgItemMessage(dlg,otherReg.control,WM_SETFONT,reinterpret_cast<WPARAM>(monospaced),FALSE);
-    }
-
-    SendDlgItemMessage(dlg,IDC_DISASS,WM_SETFONT,reinterpret_cast<WPARAM>(monospaced),FALSE);
-    SendDlgItemMessage(dlg,IDC_RFLAGS,WM_SETFONT,reinterpret_cast<WPARAM>(monospaced),FALSE);
-    SendDlgItemMessage(dlg,IDC_STDOUT,WM_SETFONT,reinterpret_cast<WPARAM>(monospaced),FALSE);
-    SendDlgItemMessage(dlg,IDC_STACK, WM_SETFONT,reinterpret_cast<WPARAM>(monospaced),FALSE);
-    SendDlgItemMessage(dlg,IDC_DATA,  WM_SETFONT,reinterpret_cast<WPARAM>(monospaced),FALSE);
+    monospace(IDC_DISASS);
+    monospace(IDC_RFLAGS);
+    monospace(IDC_STDOUT);
+    monospace(IDC_STACK_BOX);
+    monospace(IDC_STACK);
+    monospace(IDC_DATA);
 }
 
 
 
-void UI::initialiseUICode()
+void UI::initialiseCode()
 {
     SendDlgItemMessage(dlg,IDC_DISASS,LB_RESETCONTENT,0,0);
 

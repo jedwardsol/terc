@@ -19,8 +19,12 @@ namespace fs=std::filesystem;
 
 // TODO : read map file
 
-void UI::refreshUICode()
+void UI::refreshCode()
 {
+    std::ostringstream title;
+    title << "Code. RPC : " << tryte{cpu.reg(Architecture::sixTrit::Register::RPC)};
+
+
 // scroll
 
     auto RPC = cpu.reg(Architecture::sixTrit::Register::RPC);
@@ -37,16 +41,35 @@ void UI::refreshUICode()
 
         if(cpu.isConditionTrue(condition))
         {
-            SetDlgItemText(dlg,IDC_CONDITION,"True");
+            title << "  Conditional=True";
         }
         else
         {
-            SetDlgItemText(dlg,IDC_CONDITION,"False");
+            title << "  Conditional=False";
         }
     }
-    else
+
+
+    SetDlgItemText(dlg,IDC_CODE_BOX,title.str().c_str());
+
+
+// exception registers
+
+    if(cpu.reg(Architecture::sixTrit::Register::REXC) > tryte{0})
     {
-        SetDlgItemText(dlg,IDC_CONDITION,"N/A");
+        EnableWindow(GetDlgItem(dlg,IDC_STEP),FALSE);
+        EnableWindow(GetDlgItem(dlg,IDC_STEP10),FALSE);
+    }
+}
+
+void UI::refreshRegisters()
+{
+    for(auto &reg : registers)
+    {
+        auto value    = cpu.reg(reg.reg);
+        std::ostringstream str;
+        str << value;
+        SetDlgItemText(dlg,reg.control,str.str().c_str());
     }
 
 
@@ -63,36 +86,15 @@ void UI::refreshUICode()
     SetDlgItemText(dlg,IDC_RFLAGS,flags.c_str());
 
 
-// exception registers
-
-    if(cpu.reg(Architecture::sixTrit::Register::REXC) > tryte{0})
-    {
-        EnableWindow(GetDlgItem(dlg,IDC_STEP),FALSE);
-        EnableWindow(GetDlgItem(dlg,IDC_STEP10),FALSE);
-    }
 }
 
-void UI::refreshUIRegisters()
+void UI::refreshStack()
 {
-    for(auto &GPR : GPRs)
-    {
-        auto reg    = cpu.reg(GPR.reg);
-        std::ostringstream str;
-        str << reg;
-        SetDlgItemText(dlg,GPR.control,str.str().c_str());
-    }
+    std::ostringstream title;
+    title << "Stack. RSP : " << tryte{cpu.reg(Architecture::sixTrit::Register::RSP)};
+    SetDlgItemText(dlg,IDC_STACK_BOX,title.str().c_str());
 
-    for(auto &otherReg : otherRegisters)
-    {
-        auto reg    = cpu.reg(otherReg.reg);
-        std::ostringstream str;
-        str << reg;
-        SetDlgItemText(dlg,otherReg.control,str.str().c_str());
-    }
-}
 
-void UI::refreshUIStack()
-{
     SendDlgItemMessage(dlg,IDC_STACK,LB_RESETCONTENT,0,0);
 
     auto    RSP         = static_cast<int>(cpu.reg(Architecture::sixTrit::Register::RSP));
@@ -122,7 +124,7 @@ void UI::refreshUIStack()
 
 
 
-void UI::refreshUIData()
+void UI::refreshData()
 {
     SendDlgItemMessage(dlg,IDC_DATA,LB_RESETCONTENT,0,0);
 
@@ -144,6 +146,4 @@ void UI::refreshUIData()
 
         SendDlgItemMessage(dlg,IDC_DATA,LB_ADDSTRING,0, reinterpret_cast<LPARAM>(str.str().c_str()));
     }
-
-
 }

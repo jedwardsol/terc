@@ -51,7 +51,7 @@ try
     INITCOMMONCONTROLSEX init{sizeof(init),ICC_WIN95_CLASSES};
     InitCommonControlsEx(&init);
  
-    UI{code, data}.messageLoop();
+    UI{code, data}.run();
 
 
 }
@@ -62,47 +62,5 @@ catch(const std::exception &e)
 
 
 
-
-void UI::command  (int  control, int message)
-{
-    switch(control)
-    {
-    case IDCANCEL:
-        SetEvent(stepStop[1]);
-        thread.join();
-        EndDialog(dlg,0);
-        break;
-
-    case IDC_STEP:
-        SetEvent(stepStop[0]);
-        break;
-
-    case IDC_STEP10:
-    
-        for(int i=0;i<10 && cpu.reg(Architecture::sixTrit::Register::REXC) <= tryte{0} ;i++)
-        {
-            cpu.execute();
-        }
-        refreshUI();
-        break;
-
-
-    case IDC_DISASS:
-        if(message == LBN_SELCHANGE)
-        {
-            auto RPC = cpu.reg(Architecture::sixTrit::Register::RPC);
-            SendDlgItemMessage(dlg,IDC_DISASS,LB_SETCURSEL,codeWindowIndices[RPC], 0);
-        }
-        break;
-
-    case IDC_STACK:
-
-        if(message == LBN_SELCHANGE)
-        {
-            SendDlgItemMessage(dlg,IDC_STACK, LB_SETCURSEL,currentStackIndex, 0);
-        }
-        break;
-    }
-}
 
 

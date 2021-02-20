@@ -18,16 +18,30 @@
 struct UI : Architecture::IOPorts
 {
     UI(const Architecture::MemoryBlock  &code,
-             Architecture::MemoryBlock  &data) : code{code}, data{data},cpu{code,data,*this}  , dlg{nullptr}
+             Architecture::MemoryBlock  &data) : code{code}, 
+                                                 data{data},
+                                                 cpu{code,data,*this}
     {}
 
-    ~UI() override = default;
+    ~UI() override 
+    {
+        DeleteObject(monospaced);
+        CloseHandle(stepStop[0]);
+        CloseHandle(stepStop[1]);
+    }
 
+    void run()
+    {
+        UIthread.join();
+        ExecuteThread.join();
+    }
+
+private:
 
     void messageLoop()
     {
         auto result = DialogBoxParam(GetModuleHandle(nullptr),
-                                     MAKEINTRESOURCE(IDD_DIALOG1),
+                                     MAKEINTRESOURCE(IDD_UI),
                                      nullptr,
                                      &UI::procWrapper,
                                      reinterpret_cast<LPARAM>(this));
@@ -62,26 +76,71 @@ struct UI : Architecture::IOPorts
 
 private:
 
-    HWND                                dlg;
 
     Architecture::MemoryBlock const    &code;
     Architecture::MemoryBlock          &data;
     Architecture::sixTrit::CPU          cpu;
     std::array<HANDLE,2>                stepStop{CreateEvent(nullptr,FALSE,FALSE,nullptr),
                                                              CreateEvent(nullptr,FALSE,FALSE,nullptr)};
-    std::thread                         thread{ &UI::cpuThread,this};;
 
+    HWND                                dlg           {nullptr};
 
     int                                 currentStackIndex{};
     std::map<tryte, int>                codeWindowIndices{};
 
     std::ostringstream                  stdOut;
 
-    static constexpr auto               WM_REFRESH = WM_APP;
+    static constexpr auto               WM_REFRESH      {WM_APP};
+    HFONT                               monospaced      {nullptr};
+
+    std::thread                         ExecuteThread   { &UI::cpuThread,  this};;
+    std::thread                         UIthread        { &UI::messageLoop,this};;
 
 
-    
+private:
 
+    void initialiseUI()
+    {
+        setFonts();
+        initialiseCode();
+    }
+
+    void refreshUI()
+    {
+        refreshCode();
+        refreshStack();
+        refreshData();
+        refreshRegisters();
+    }
+
+
+    void setFonts ();
+    void initialiseCode();
+
+    void refreshCode();
+    void refreshStack();
+    void refreshData();
+    void refreshRegisters();
+
+    static INT_PTR procWrapper(HWND h,UINT m,WPARAM w,LPARAM l)
+    {
+        if(m==WM_INITDIALOG)
+        {
+            SetWindowLongPtr(h,DWLP_USER,l);
+            reinterpret_cast<UI*>(l)->dlg=h;
+        }
+
+        auto This = reinterpret_cast<UI*>(GetWindowLongPtr(h,DWLP_USER));
+
+        if(This)
+        {
+            return This->proc(m,w,l);
+        }
+        else
+        {
+            return 0;
+        }
+    }
 
     INT_PTR proc(UINT m,WPARAM w,LPARAM l)
     {
@@ -104,58 +163,48 @@ private:
         return 0;
     }
 
-    void setFonts ();
-
-    void initialiseUI()
+    void command  (int  control, int message)
     {
-        setFonts();
-        initialiseUICode();
-        initialiseUIStack();
-        initialiseUIData();
-        initialiseUIRegisters();
-    }
-
-    void refreshUI()
-    {
-        refreshUICode();
-        refreshUIStack();
-        refreshUIData();
-        refreshUIRegisters();
-    }
-
-    void initialiseUICode();
-    void initialiseUIStack()        {}
-    void initialiseUIData()         {}
-    void initialiseUIRegisters()    {}
-
-    void refreshUICode();
-    void refreshUIStack();
-    void refreshUIData();
-    void refreshUIRegisters();
-
-
-    void command  (int  control,  int message);
-
-
-    static INT_PTR procWrapper(HWND h,UINT m,WPARAM w,LPARAM l)
-    {
-        if(m==WM_INITDIALOG)
+        switch(control)
         {
-            SetWindowLongPtr(h,DWLP_USER,l);
-            reinterpret_cast<UI*>(l)->dlg=h;
-        }
+        case IDCANCEL:
+            SetEvent(stepStop[1]);
+            EndDialog(dlg,0);
+            break;
 
-        auto This = reinterpret_cast<UI*>(GetWindowLongPtr(h,DWLP_USER));
+        case IDC_STEP:
+            SetEvent(stepStop[0]);
+            break;
 
-        if(This)
-        {
-            return This->proc(m,w,l);
-        }
-        else
-        {
-            return 0;
+    //    case IDC_STEP10:
+    //    
+    //        for(int i=0;i<10 && cpu.reg(Architecture::sixTrit::Register::REXC) <= tryte{0} ;i++)
+    //        {
+    //            cpu.execute();
+    //        }
+    //        refreshUI();
+    //        break;
+    //
+
+        case IDC_DISASS:
+            if(message == LBN_SELCHANGE)
+            {
+                auto RPC = cpu.reg(Architecture::sixTrit::Register::RPC);
+                SendDlgItemMessage(dlg,IDC_DISASS,LB_SETCURSEL,codeWindowIndices[RPC], 0);
+            }
+            break;
+
+        case IDC_STACK:
+
+            if(message == LBN_SELCHANGE)
+            {
+                SendDlgItemMessage(dlg,IDC_STACK, LB_SETCURSEL,currentStackIndex, 0);
+            }
+            break;
         }
     }
+
+
 
 private:
 
@@ -171,7 +220,7 @@ private:
         int                                 control;
     };
     
-    const static inline regToControl GPRs[]
+    const static inline regToControl registers[]
     {
         {Architecture::sixTrit::Register::Rn7, IDC_Rn7},
         {Architecture::sixTrit::Register::Rn6, IDC_Rn6},
@@ -193,19 +242,10 @@ private:
         {Architecture::sixTrit::Register::R10, IDC_R10},
         {Architecture::sixTrit::Register::R11, IDC_R11},
         {Architecture::sixTrit::Register::R12, IDC_R12},
-        {Architecture::sixTrit::Register::R13, IDC_R13}
-    };
-
-    const static inline regToControl otherRegisters[]
-    {
-        {Architecture::sixTrit::Register::RPC,  IDC_RPC},
+        {Architecture::sixTrit::Register::R13, IDC_R13},
         {Architecture::sixTrit::Register::RRA,  IDC_RRA},
         {Architecture::sixTrit::Register::REXC, IDC_REXC},
         {Architecture::sixTrit::Register::REXA, IDC_REXA},
-        {Architecture::sixTrit::Register::RSP,  IDC_RSP},
     };
-
-
-
 
 };
