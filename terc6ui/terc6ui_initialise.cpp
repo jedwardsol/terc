@@ -58,8 +58,30 @@ void UI::initialiseCode()
     auto    codeBottom  = -code.negativeSize();
     auto    codeTop     = code.positiveSize();
 
+    auto findSymbol = [this](tryte address)
+    {
+        auto find = std::find_if(symbols.begin(),
+                                 symbols.end(),
+                                 [&](const auto &entry)
+                                 {
+                                    return address == entry.address;
+                                 });
+
+        if(find!=symbols.end())
+        {
+            return find->name;
+        }
+        else
+        {
+            return ""s;
+        }
+    };
+
+
     for(int PC=codeBottom; PC < codeTop; PC+=2)
     {
+        auto symbol = findSymbol(tryte{PC});
+
         auto first  = code[PC];
         auto second = code[PC+1];
 
@@ -67,6 +89,11 @@ void UI::initialiseCode()
 
         str << std::left << std::setw(12) <<  tryte{PC} 
             << " : " << disassemble(first,second);
+
+        if(symbol.size())
+        {
+            SendDlgItemMessage(dlg,IDC_DISASS,LB_ADDSTRING,0, reinterpret_cast<LPARAM>(symbol.c_str()));
+        }
 
         auto index = static_cast<int>(SendDlgItemMessage(dlg,IDC_DISASS,LB_ADDSTRING,0, reinterpret_cast<LPARAM>(str.str().c_str())));
 

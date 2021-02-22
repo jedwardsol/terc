@@ -85,8 +85,6 @@ void UI::refreshRegisters()
     flags += " O:"s + to_string(cpu.getFlag(Architecture::Flag::Overflow));
 
     SetDlgItemText(dlg,IDC_RFLAGS,flags.c_str());
-
-
 }
 
 void UI::refreshStack()

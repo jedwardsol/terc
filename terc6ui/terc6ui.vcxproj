@@ -159,6 +159,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
+    <ClInclude Include="symbols.h" />
     <ClInclude Include="UI.h" />
   </ItemGroup>
   <ItemGroup>

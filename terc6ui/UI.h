@@ -11,16 +11,17 @@
 #include "terc6cpu/sixTritCPU.h"
 
 #include    "resource.h"
-#include    "resource.h"
-
+#include    "symbols.h"
 
 
 struct UI : Architecture::IOPorts
 {
     UI(const Architecture::MemoryBlock  &code,
+       const std::vector<symbol>        &symbols,
              Architecture::MemoryBlock  &data) : code{code}, 
                                                  data{data},
-                                                 cpu{code,data,*this}
+                                                 cpu{code,data,*this},
+                                                 symbols{symbols}
     {}
 
     ~UI() override 
@@ -79,6 +80,7 @@ private:
     Architecture::MemoryBlock const    &code;
     Architecture::MemoryBlock          &data;
     Architecture::sixTrit::CPU          cpu;
+    std::vector<symbol> const          &symbols;
 
 
     enum  event

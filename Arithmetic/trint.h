@@ -115,13 +115,19 @@ public:
 	}
 
 
-    explicit trint(const std::string_view s) : trint{}
+    explicit trint(std::string_view s) : trint{}
 	{
+		auto openParen= s.find('(');
+
+		if(openParen!=s.npos)
+		{
+			s.remove_suffix(s.size()-openParen);
+		}
+
 		if(s.size() != N)
 		{
             throw std::out_of_range("trint<"s + std::to_string(N) + "> constructor size "s + std::string{s});
 		}
-
 
 		auto toTrit = [](char c) ->trit
 		{
